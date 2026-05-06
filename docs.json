@@ -1,12 +1,12 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "almond",
-  "name": "Product Guide",
+  "name": "HigherOrder",
   "description": "Step-by-step guides for every product—platform setup, analytics, and integrations in one place.",
   "colors": {
-    "primary": "#166E3F",
-    "light": "#26BD6C",
-    "dark": "#166E3F"
+    "primary": "#5B9378",
+    "light": "#7FB29A",
+    "dark": "#3D6B53"
   },
   "favicon": "/favicon.ico",
   "icons": {
@@ -19,66 +19,74 @@
     "options": ["copy", "view", "assistant", "mcp", "add-mcp"]
   },
   "navigation": {
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Home",
-          "icon": "house",
-          "href": "/"
-        },
-        {
-          "anchor": "Changelog",
-          "icon": "scroll-text",
-          "href": "https://www.mintlify.com/docs/changelog"
-        },
-        {
-          "anchor": "Help",
-          "icon": "life-buoy",
-          "href": "https://www.mintlify.com/docs/contact-support"
-        }
-      ]
-    },
-    "directory": "card",
-    "groups": [
+    "tabs": [
       {
-        "group": "Platform",
-        "icon": "layers",
-        "expanded": true,
-        "pages": [
-          "platform/quickstart",
-          "platform/key-concepts",
-          "platform/configuration/settings",
-          "platform/configuration/user-management",
-          "platform/administration/roles-permissions"
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "AI Assistant",
+            "pages": ["ai-assistant"]
+          },
+          {
+            "group": "Vendor Risk",
+            "pages": [
+              "vendor-risk/inventory",
+              "vendor-risk/contract-standards",
+              "vendor-risk/questionnaire-templates"
+            ]
+          },
+          {
+            "group": "Customer Risk",
+            "pages": ["customer-risk/golden-standards"]
+          },
+          {
+            "group": "Contract Intel",
+            "pages": [
+              "contract-intel/command-center",
+              "contract-intel/portfolio",
+              "contract-intel/golden-standards",
+              "contract-intel/analytics"
+            ]
+          },
+          {
+            "group": "Vendor Risk Intel",
+            "pages": [
+              "vendor-risk-intel/command-center",
+              "vendor-risk-intel/portfolio",
+              "vendor-risk-intel/analytics"
+            ]
+          },
+          {
+            "group": "Contracts",
+            "pages": [
+              "contracts/customer-contracts",
+              "contracts/vendor-contracts"
+            ]
+          },
+          {
+            "group": "Vendor Intake",
+            "pages": ["vendor-intake"]
+          },
+          {
+            "group": "Administration",
+            "pages": ["administration"]
+          }
         ]
       },
       {
-        "group": "Analytics",
-        "icon": "chart-bar",
-        "expanded": true,
-        "pages": [
-          "analytics/quickstart",
-          "analytics/connect-data",
-          "analytics/dashboards/create-dashboard",
-          "analytics/reports/scheduled-reports"
-        ]
-      },
-      {
-        "group": "Integrations",
-        "icon": "plug",
-        "expanded": true,
-        "pages": [
-          "integrations/quickstart",
-          "integrations/authentication",
-          "integrations/connectors/crm",
-          "integrations/webhooks/configure"
+        "tab": "Changelog",
+        "groups": [
+          {
+            "group": "Releases",
+            "pages": []
+          }
         ]
       }
     ]
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/logo/light.png",
+    "dark": "/logo/dark.png"
   },
   "navbar": {
     "links": [],
