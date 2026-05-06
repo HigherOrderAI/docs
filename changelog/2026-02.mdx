@@ -1,0 +1,56 @@
+---
+title: "February 2026"
+description: "Vendor inventory rebuild with AI Auditor evidence, contract coverage analysis, login redesign, and unified contracts pages"
+---
+
+## Week of Feb 23
+
+### New
+- Vendor inventory rebuilt on standardized DataTable — Risk Grade filter, sortable columns, action bar
+- AI Auditor evidence on vendor detail — risk grade, findings, threat model, controls, vendor questions, business impact, certifications
+- 4th Parties tab on vendor detail (sub-processor name, category, data types)
+- Risk Report download button on vendor detail
+- Contract source clauses visible in the UI — each extracted metric shows the underlying clause
+- Hardware-specific contract metrics
+- Login page redesigned with split-panel layout, DM Sans typography, and HigherOrder branding
+- Web manifest for Android and PWA
+
+### Improved
+- Vendor inventory columns flattened (Category, Annual Value, Renewal Date promoted; Exposure Score replaced with Risk Grade)
+- Vendor detail header simplified — risk grade inline, summary cards removed
+- Contracts nav moved below Vendor Risk; parent nav items navigate on click
+- Content max-width widened to 1600px
+
+### Fixed
+- Collapsed sidebar icon centering
+- Result display when no SLA-type matches exist in any contract
+- Slack and web character limits for chat responses
+
+## Week of Feb 16
+
+### New
+- Contract coverage analysis — auto-detects coverage gaps in customer contracts against SLA types
+- Manual-trigger contract analysis
+- Multi-file contract upload with drag-and-drop, parallel extraction, and sequential upload progress
+- Customer Contracts and Vendor Contracts consolidated into tabbed pages (obligations, issues, coverage as tabs)
+
+### Improved
+- AI Chat moved to websockets for streaming responses
+- AI Chat refocus and general UX
+- Customer and vendor name resolution in chat handled by LLM
+- Feature flags reorganized by nav group with per-page toggles
+- Anthropic model upgrade
+
+### Fixed
+- Severity display under signed metrics
+- Value directionality (whether higher or lower is better) for metrics
+- Vendor inventory 404
+- Default vendor selection in chat questions
+
+## Week of Feb 9
+
+### New
+- Contracts encrypted at rest with AWS KMS
+
+### Fixed
+- Session timeout during long workflows

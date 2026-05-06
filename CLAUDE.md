@@ -21,6 +21,10 @@ fits their workflow — not implementation details.
 - Lead with the concrete output the user gets, not the AI machinery
 - Code or config examples in fenced blocks with language tags
 - No filler intro paragraphs — substance in sentence one
+- Changelog ordering: newest at the top. Within a monthly page, list the
+  most recent week first; within the Changelog tab, list the most recent
+  month first. Same rule for any future dated content (release notes,
+  incidents, etc.)
 
 ## Mintlify components allowed
 `<Note>`, `<Tip>`, `<Warning>`, `<Info>`, `<Check>`, `<Card>`, `<CardGroup>`,

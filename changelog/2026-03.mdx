@@ -1,0 +1,79 @@
+---
+title: "March 2026"
+description: "SOC 2, ISO 27001, and VAPT analysis, Slack integration, Vendor Intake wizard, Golden Standards, and Risk Report exports"
+---
+
+## Week of Mar 30
+
+### New
+- VAPT (penetration test) document support in overall risk analysis
+- Excel download for questionnaires
+- Customer Golden Standards — template support, source clause linkage, and additional clauses
+
+### Improved
+- Risk math moved from LLM to JavaScript for deterministic calculations
+- LLM-based location comparison and units method
+- Slack message formatting
+
+### Fixed
+- Customer Golden Standards extraction issues
+- Boolean comparison in metrics
+- Display names in Slack messages
+- Expanded notes and source clause section rendering
+
+## Week of Mar 23
+
+### New
+- Customer Golden Contract and Questionnaire support in Vendor Risk Management
+- Slack user onboarding flow
+
+### Fixed
+- Slack onboarding email correctness
+- MySQL prepared-statement limit issue
+
+## Week of Mar 16
+
+### New
+- Risk Report DOCX export
+- Contract Analysis tab on customer contracts
+- Control and Vendor Questions sections populated with real data
+- Vendor and board document download
+- Slack OAuth onboarding flow and Slack home tab
+- Gemini fallback for Anthropic LLM calls
+
+### Improved
+- Metric units handling consistency
+- Special-character handling in LLM JSON responses
+- Long target value handling
+
+### Fixed
+- Golden Standards metric extraction
+- S3 bucket selection
+- Dummy fallbacks removed (recommendations, compliance score, obligations)
+- Slack restart handling
+
+## Week of Mar 9
+
+### New
+- Vendor Intake wizard — three intake paths (evaluating, vendor selected, existing vendor new product), live client-side risk scoring, and a My Requests tracking table
+- Risk Scoring admin tab — scoring weights and tier thresholds editable without code changes
+- Customer Coverage in Golden Standards
+- AI as additional tab in Golden Standards
+- PDF download support for risk artifacts
+- Slack channel for vendor risk Q&A — SOC, ISO, and risk grades surfaced in Slack
+
+### Improved
+- Vendor list filtering and column layout
+- Tenant isolation hardened across contract processing
+
+## Week of Mar 2
+
+### New
+- SOC 2 analyst report — extracts control coverage and findings from SOC 2 documents
+- ISO 27001 risk analysis
+- Overall Risk Analysis route — combines SOC, ISO, and threat analysis into a single grade
+- Risk Command Center landing page
+
+### Improved
+- Tool-calling enabled by default across the LLM layer
+- Category display name sourced from backend
