@@ -24,6 +24,10 @@
         "tab": "Documentation",
         "groups": [
           {
+            "group": "Getting Started",
+            "pages": ["introduction"]
+          },
+          {
             "group": "AI Assistant",
             "pages": ["ai-assistant"]
           },
