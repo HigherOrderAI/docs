@@ -1,0 +1,59 @@
+---
+title: "Customer Golden Standards"
+description: "Template of your standard customer-contract terms; signed contracts are auto-compared and deviations flagged"
+---
+
+A managed template of the terms you expect to appear in every customer contract — security and SLA commitments, legal and commercial clauses, and AI governance provisions. Each active customer contract is automatically compared against the template, and any contract that over-commits or under-commits relative to your standard is flagged with the specific deviation.
+
+## What it does
+
+- Maintains a structured template of customer-contract terms across three categories: **Security & SLA**, **Legal & Commercial**, **AI Governance**.
+- Extracts terms from a reference customer contract you upload, pre-populating the template.
+- Compares every active customer contract against the template metric-by-metric and reports a per-tenant compliance percentage plus the contracts that deviate.
+- Distinguishes **over-committed** contracts (you promised more than your standard) from **under-committed** contracts (you promised less). Over-commits are surfaced by default; under-commits sit behind a toggle.
+- Supports inline edit, add, and delete; filters by Category, Importance, Verification, Negotiable.
+
+## Inputs
+
+You can populate the template two ways:
+
+- **Upload a reference customer contract.** PDF, DOCX, DOC, or TXT, up to 50MB. The Update Standards dialog accepts drag-drop or click-to-browse. Extraction runs across the three categories in a single pass, typically 30 to 60 seconds.
+- **Add or edit standards manually.** Each row captures Category, Requirement, Required Value, Importance, Verification (Contractual / Evidence-Based / Audit), Negotiable, and Notes (up to 80 characters).
+
+## Outputs
+
+The template is rendered as a table per tab. Each row shows:
+
+| Column | Meaning |
+| --- | --- |
+| Category | Sub-category within the tab |
+| Requirement | The term you expect every customer contract to include |
+| Required Value | The specific threshold or term |
+| Importance | Critical / High / Medium / Low |
+| Verification | Contractual / Evidence-Based / Audit |
+| Negotiable | Whether the term is open to customer negotiation |
+| Notes | Internal context |
+| Source Clause | The clause text the requirement was extracted from (expandable) |
+
+A coverage banner at the top of each tab shows total deviations across active contracts and the percentage of contracts that match your template. Per-row indicators flag metrics with deviations: amber triangle for at least one over-commit, blue info icon for under-commit-only metrics.
+
+Clicking a flagged row opens the **Contract Coverage** dialog, which lists every active customer contract with:
+
+- Contract or customer name
+- Status badge: **Over-committed**, **Meets standard**, **Under-committed**, or **No data**
+- Contract Value
+- Detail — the specific gap or excess on that contract
+
+Counts at the top of the dialog are shown as colored chips: over-committed, meets standard, under-committed.
+
+## How it works
+
+The template lives at the tenant level — there is one set of customer golden standards per tenant. When you upload a reference contract, the platform runs five parallel domain extractions plus validation, then populates the three tabs. After that, every active customer contract is evaluated against the template, producing a compliance percentage and a per-metric deviation list.
+
+The commitment values from this template feed [Vendor Contract Golden Standards](/vendor-risk/contract-standards): vendor requirements weaker than what you have promised customers are flagged automatically on the vendor side.
+
+## Limitations
+
+- No CSV or PDF export from the page.
+- No bulk import. You can extract from one reference contract at a time, or add rows manually.
+- Under-committed deviations are hidden by default behind the **Show under-committed (N)** toggle. Easy to overlook unless you actively check.

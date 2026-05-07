@@ -1,0 +1,50 @@
+---
+title: "Vendor Contract — Golden Standards"
+description: "Library of baseline vendor contract requirements, cross-checked against your customer commitments to flag gaps"
+---
+
+A managed library of the requirements you expect every vendor contract to meet — security and SLA terms, legal and commercial clauses, and AI governance provisions. The platform compares each requirement against the commitments you have already made to your own customers and flags any vendor standard that is weaker than what you owe downstream.
+
+## What it does
+
+- Maintains a structured library of vendor requirements across three categories: **Security & SLA**, **Legal & Commercial**, **AI Governance**.
+- Extracts requirements from a reference vendor contract you upload, pre-populating the library.
+- Continuously cross-checks each vendor requirement against active customer contracts. If a vendor commitment is more lenient than what you have promised customers, the row is flagged with an amber-triangle gap indicator.
+- Supports inline edit, add, and delete of individual standards.
+- Filters by Category, Importance, Verification method, Negotiable, and a **Below Commitment** gap-only toggle.
+
+## Inputs
+
+You can populate the library two ways:
+
+- **Upload a reference vendor contract.** PDF, DOCX, DOC, or TXT, up to 50MB. The Update Standards dialog accepts drag-drop or click-to-browse. The system extracts requirements across the three categories in a single pass, typically 30 to 60 seconds.
+- **Add or edit standards manually.** Each row captures Category, Requirement, Required Value, Importance (Critical / High / Medium / Low), Verification (Contractual / Evidence-Based / Audit), Negotiable (yes / no), and Notes (up to 80 characters).
+
+## Outputs
+
+The library is rendered as a table per tab. Each row shows:
+
+| Column | Meaning |
+| --- | --- |
+| Category | Sub-category within the tab (e.g., Uptime SLA, IP Indemnity) |
+| Requirement | What the vendor must commit to |
+| Required Value | The specific threshold or term (e.g., 99.9% uptime, 30-day cure period) |
+| Importance | Critical / High / Medium / Low |
+| Verification | How compliance is confirmed (Contractual / Evidence-Based / Audit) |
+| Negotiable | Whether the term is open to vendor negotiation |
+| Notes | Internal context |
+| Source | The clause text the requirement was extracted from (expandable) |
+
+A coverage banner at the top of each tab shows how many golden standards fall below your customer commitments, with a **Show N Gaps** toggle that filters to flagged rows only. Clicking a flagged row opens a **Vendor Standard Below Customer Commitment** dialog with: the affected customer's name, the customer commitment value, the vendor commitment value, and a description of the gap.
+
+## How it works
+
+The library lives at the tenant level — there is one set of vendor golden standards per tenant. When you upload a reference contract, the platform runs five parallel domain extractions plus validation, then populates the three tabs. After that, each requirement is evaluated against every active customer contract. Any vendor commitment weaker than the matching customer commitment surfaces as a gap, both in the row indicator and in the per-tab coverage banner.
+
+See [Customer Golden Standards](/customer-risk/golden-standards) for the customer-side template that produces the commitment values used in this comparison.
+
+## Limitations
+
+- No CSV or PDF export from the page. Standards are managed inline only.
+- No bulk import. You can extract from one reference contract at a time, or add rows manually.
+- The "LLM insights" placeholder referenced in code is not yet rendered as a user feature.

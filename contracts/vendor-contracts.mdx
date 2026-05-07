@@ -1,0 +1,54 @@
+---
+title: "Vendor Contracts"
+description: "Upload third-party vendor contracts to extract SLA commitments, renewal dates, and risk levels"
+---
+
+The third-party vendor contract inventory. Upload vendor contracts and the platform extracts the same structures it extracts from customer contracts — SLA commitments, penalties, contacts, communication requirements — but tagged as vendor evidence. The page surfaces gap scores, risk levels, and renewal countdowns per vendor.
+
+## What it does
+
+- Ingests vendor contracts (PDF, DOCX, TXT, XLSX) through the same parsing pipeline used for customer contracts, but tagged as vendor evidence.
+- Lists every vendor in a sortable table with annual spend, gap score, risk level, key risk summary, renewal date with countdown, and health status.
+- Routes to a per-vendor detail page covering Overview, Obligations, Communication, Contact Info, and Penalties.
+- Surfaces a separate **Vendor Obligations** tab that aggregates extracted vendor obligations across the portfolio.
+- Highlights renewals overdue or due within 90 days with colored countdowns.
+
+## Inputs
+
+- **Vendor contract files.** Upload via the **Upload Contract(s)** dialog. Supported types: PDF, DOCX, TXT, XLSX. Multi-file drag-and-drop is supported, and PDFs accept a per-file password.
+- **Inline edits on the vendor detail page.** Vendor name, start date, end date, annual spend, and the full penalty list (same fields as customer contracts).
+
+## Outputs
+
+The page top shows three summary cards: **Third Parties Monitored**, **Upcoming / Pending** (renewals due within 12 months), and **Open / Unresolved Risks**.
+
+The **Vendor Contracts** tab lists each vendor with these columns:
+
+| Column | Meaning |
+| --- | --- |
+| Vendor | Links to the vendor detail page |
+| Annual Spend | Current annual contract value |
+| Gap Score | 0–10 score, color-coded (green &lt; 2.5, yellow &lt; 5, orange &lt; 7.5, red ≥ 7.5) |
+| Risk Level | Low / Medium / High / Critical |
+| Key Risk | Truncated risk summary; click to expand |
+| Renewal | End date plus days-to-renewal countdown ("Xd overdue", "Xd") |
+| Health | Compliant / Gaps Identified / Non-Compliant |
+| Actions | Delete |
+
+### Per-vendor detail page
+
+The vendor detail page mirrors the customer-contract detail page: 5 hero cards (Start Date, End Date, ARR, Signed Metrics, Next Communication) and tabs Overview, Obligations, Communication, Contact Info, Penalties — with the Overview rendered in vendor mode.
+
+### Vendor Obligations tab
+
+Aggregates obligations across every vendor contract so you can scan vendor commitments at the portfolio level.
+
+## How it works
+
+Vendor contracts run through the same extraction pipeline as customer contracts and are stored under the vendor entity. Renewal countdowns are computed from the extracted end date. Gap Score, Risk Level, and Health come from comparing the vendor's commitments against your tenant's [vendor golden standards](/vendor-risk/contract-standards) and against [customer obligations](/contracts/customer-contracts).
+
+## Limitations
+
+- Gap Score, Risk Level, Key Risk, and Health show `—` when the underlying scoring fields are absent — for example, for vendors with no risk-bearing documents processed yet.
+- No bulk export from the vendor list. The only row action is delete.
+- Penalties can be edited inline, but there is no audit log surfaced in the UI.

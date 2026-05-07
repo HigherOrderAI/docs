@@ -1,0 +1,46 @@
+---
+title: "Vendor Intake"
+description: "Multi-step intake wizard with live risk scoring and tier-based review routing for new vendor or product requests"
+---
+
+A four-step wizard for business teams that need a new vendor or product. As the requester fills out exposure details — data types, deployment model, AI usage, integrations — the platform computes a preliminary risk score and tier in real time, then shows which review path the request will take based on the resulting tier.
+
+## What it does
+
+- Walks the requester through four steps: **Scenario**, **Context**, **Exposure**, **Review & Submit**.
+- Computes a preliminary risk score and tier (Low / Medium / High / Critical) live as the user fills out the Exposure step, with contributing factors shown as chips.
+- Routes the request based on tier:
+  - **Low** — automated brief, no analyst review required.
+  - **Medium** — analyst review with targeted output package, 2-week SLA.
+  - **High** — full assessment with document collection, legal and security sync.
+  - **Critical** — executive sign-off required, full dossier, security leadership flagged immediately.
+- Validates each step inline (e.g., minimum 10-character description, valid email on Review).
+- Issues a Request ID (`VR-####`) on the confirmation screen.
+
+## Inputs
+
+The wizard collects:
+
+- **Scenario.** One of three intake paths:
+  - **New vendor — still evaluating options** (compare up to four candidates)
+  - **New vendor — vendor already chosen**
+  - **Existing vendor — new product or feature**
+- **Context.** Use-case description, Team (Engineering, Sales, Marketing, Finance, HR / People, Legal, Customer Success, Operations, Executive, Other), Scale of rollout (under 10 users / 10–100 / whole company), Timeline (Exploring / 3 months / 30 days / Already in trial).
+- **Exposure.** Data types (Health, Financial, Source code / IP, Customer PII, Employee PII, Business data), Data scope, Deployment model, Passive capture (yes / no), AI usage, Integrations.
+- **Review.** Owner name and email.
+
+## Outputs
+
+After completing the wizard, the requester sees a confirmation screen with the Request ID, the vendor or product display, and the same Risk Banner showing the score, the assigned tier, and the contributing factors.
+
+The Risk Banner is the canonical output: it tells the requester (and the security or procurement team) which review path applies.
+
+## How it works
+
+Risk scoring runs in the browser. The wizard reads a scoring configuration — tier thresholds and per-factor weights — and computes the score as inputs change on the Exposure step. The configuration can be edited from [Administration → Risk Scoring](/administration), where thresholds and factor weights can be tuned without code changes.
+
+## Limitations
+
+- **Submission and request tracking are not yet wired in the current build.** Completing the wizard generates a Request ID client-side, but the request is not posted to the intake API. The Risk Banner and tier routing are accurate; backend persistence is the missing piece.
+- **My Requests is sample data only.** The page surfaces a **My Requests** tab that displays a fixed list of example requests — not the user's actual submissions.
+- **Risk scoring configuration is per-browser.** Changes saved in the Administration tab persist in local browser storage; they do not propagate across users or devices in the current build.

@@ -1,0 +1,39 @@
+---
+title: "AI Assistant"
+description: "Vera, the HigherOrder AI copilot for asking questions about contracts, vendors, and risk posture"
+---
+
+The web and Slack copilot named **Vera**. Ask questions about your customer contracts, vendor risk, SLAs, and coverage in natural language. Vera answers with formatted text, optional follow-up suggestions, source citations, and inline PDF downloads for any reports it generates.
+
+## What it does
+
+- Answers questions about contracts, vendors, SLAs, and coverage in a full-page web chat (default landing page) and via Slack.
+- Accepts file attachments for ad-hoc analysis directly inside the chat.
+- Returns formatted answers with optional follow-up suggestion chips, source expanders, and downloadable PDF reports inline.
+- Supports a parallel Slack surface with slash commands `/analyze`, `/help`, `/vendor-intake`, and `/vendor-status`, plus file uploads and message handling.
+- Provides an **Ask Assistant** side panel on the contract detail page for quick contextual Q&A about a specific contract.
+
+## Inputs
+
+- **Free-text questions** in the chat input (placeholder "Message Vera...").
+- **File attachments** via the paperclip icon. Supported types: PDF, DOCX, DOC, TXT, XLSX, XLS. Up to 10 MB per file, 16 MB total per request.
+- **Suggested-question chips.** Tap a canned prompt to send it as a message.
+- **Consent buttons.** When Vera asks for permission to proceed (for example, before generating a long report), an amber bubble offers explicit option buttons.
+
+## Outputs
+
+- **AI message bubbles** with HTML-rendered answers — headings, bold, lists, paragraphs.
+- **Follow-up suggestion pills** under each AI answer.
+- **Sources (N) expander** that reveals the source citations the answer is grounded in.
+- **Inline Download button** for any PDF Vera generates (for example, a vendor risk report).
+- **Timestamps** on every message and a typing indicator while Vera works.
+
+## How it works
+
+The web client opens an authenticated WebSocket session to the chat backend, which routes user messages and uploaded files through Vera. Responses come back as discrete message types — answers, consent requests, file downloads, errors. The same backend powers the Slack agent, so the experience is consistent across surfaces. Vera draws on your tenant's contract, vendor, and Golden Standards data to ground answers; see [Customer Contracts](/contracts/customer-contracts), [Vendor Contracts](/contracts/vendor-contracts), and [Customer Golden Standards](/customer-risk/golden-standards) for the underlying data.
+
+## Limitations
+
+- **No token-by-token streaming.** Messages arrive as complete bubbles after a typing indicator, not as streamed tokens.
+- **Citations expander shows raw JSON** rather than formatted, clickable source links.
+- **Conversation history is per-browser-tab.** There is no persistent multi-session history UI in the web app — no chat archive, no rename, no cross-device continuity.

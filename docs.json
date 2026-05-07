@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "almond",
   "name": "HigherOrder",
-  "description": "Step-by-step guides for every product—platform setup, analytics, and integrations in one place.",
+  "description": "Documentation for the HigherOrder vendor and customer risk platform",
   "colors": {
     "primary": "#5B9378",
     "light": "#7FB29A",
@@ -38,23 +38,6 @@
           {
             "group": "Customer Risk",
             "pages": ["customer-risk/golden-standards"]
-          },
-          {
-            "group": "Contract Intel",
-            "pages": [
-              "contract-intel/command-center",
-              "contract-intel/portfolio",
-              "contract-intel/golden-standards",
-              "contract-intel/analytics"
-            ]
-          },
-          {
-            "group": "Vendor Risk Intel",
-            "pages": [
-              "vendor-risk-intel/command-center",
-              "vendor-risk-intel/portfolio",
-              "vendor-risk-intel/analytics"
-            ]
           },
           {
             "group": "Contracts",
@@ -94,17 +77,6 @@
     "dark": "/logo/dark.png"
   },
   "navbar": {
-    "links": [],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/yourcompany",
-      "linkedin": "https://linkedin.com/company/yourcompany"
-    }
+    "links": []
   }
 }

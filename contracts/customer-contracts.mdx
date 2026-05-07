@@ -1,0 +1,72 @@
+---
+title: "Customer Contracts"
+description: "Upload customer contracts to extract obligations, signed metrics, and coverage gaps against vendor contracts"
+---
+
+The customer-contract inventory. Upload signed customer contracts and the platform extracts SLA metrics, penalties, contacts, and communication requirements into a structured record per contract. The Obligations and Contract Coverage tabs roll up the portfolio so you can see which obligations are at risk and which lack vendor backing.
+
+## What it does
+
+- Ingests signed customer contracts (and addendums) and extracts SLA metrics, penalties, contacts, and communication requirements.
+- Lists every customer contract in a sortable table with ARR, start date, end date, and a per-row delete action.
+- Drills into a per-contract detail page showing extracted obligations grouped by SLA category, penalty schedules (editable), contacts, and communication requirements.
+- Aggregates obligations across all customer contracts on the **Obligations** tab.
+- Compares customer-promised metrics against equivalent vendor commitments on the **Contract Coverage** tab to surface where you have promised customers more than your vendors have promised you.
+- Detects addendums and applies their changes to the parent contract automatically rather than creating a duplicate.
+
+## Inputs
+
+- **Contract files.** Upload via the **Upload Contract(s)** dialog. Supported types: PDF, DOCX, TXT, XLSX. Multi-file drag-and-drop is supported, and PDFs accept a per-file password.
+- **Inline edits on the contract detail page.** Customer name, start date, end date, ARR, and the full penalty list — SLA Type, Metric Name, Threshold, Penalty Amount, Penalty Type (Financial Penalty / Service Credit / Refund / Discount), Description.
+
+## Outputs
+
+The page top shows four summary cards: **Contracts Monitored**, **Unique Customers**, **Failing Contracts**, **At-Risk Value**.
+
+The **Customer Contracts** tab lists each contract with these columns:
+
+| Column | Meaning |
+| --- | --- |
+| Customer Name | Links to the contract detail page |
+| ARR | Annual recurring revenue from this contract |
+| Start Date | Contract start |
+| End Date | Contract end / renewal |
+| Actions | Delete |
+
+### Per-contract detail page
+
+Clicking a customer name opens the contract detail page, with a header showing **Gap Score** (numeric), **Risk Level** badge (Low / Medium / High / Critical), and **Health** badge (Compliant / Gaps Identified / Non-Compliant), plus counts of standards assessed, met, and unmet.
+
+Five hero cards under the header: Start Date, End Date, ARR, Signed Metrics, Next Communication.
+
+Five tabs:
+
+- **Overview** — contract summary
+- **Obligations** — extracted SLA metrics grouped by category (e.g., Availability, Incident Response, Privacy), default sorted by importance, with source-clause links back to the original PDF page
+- **Communication** — Type, Trigger, Recipient, Deadline, Content
+- **Contact Info** — primary contacts, distribution lists (Incident Notifications, Security Alerts, Maintenance Notices), escalation hierarchy, business hours
+- **Penalties** — editable penalty schedule per metric
+
+### Obligations tab
+
+Aggregates obligations across every customer contract. Use this to ask portfolio-level questions: which customers have the strictest incident-response SLAs you owe, which obligations span the most contracts, and so on.
+
+### Contract Coverage tab
+
+Four hero cards: **Total Metrics Analyzed**, **Insufficient Coverage**, **No Vendor Coverage**, **Good Coverage**.
+
+Three sectioned tables: **Vendor Insufficient Coverage**, **No Vendor Coverage**, **Good Vendor Coverage**. Clicking a metric opens a modal with Min / Max / Target, Directionality, vendor-by-vendor sufficient or insufficient status, gap quantity, and recommendations.
+
+## How it works
+
+Users drop contract files into the upload dialog. The platform extracts SLA metrics, penalties, contacts, and communication requirements from the document text and stores them under the matched customer entity. Addendums are detected and merged into the parent contract.
+
+The **Contract Coverage** tab compares every customer-promised metric against the equivalent metric in your [vendor contracts](/contracts/vendor-contracts) and flags where you have committed more to a customer than your vendor has committed to you.
+
+A side panel on the contract detail page hosts the [AI Assistant](/ai-assistant) for contextual Q&A about the open contract.
+
+## Limitations
+
+- No CSV or PDF export of the contract list, the obligations rollup, or the coverage analysis.
+- Penalties can be edited inline, but there is no audit log surfaced in the UI for who changed what.
+- Communication recipients and contact distribution lists are extracted from the contract text. If the contract did not name them, the corresponding fields are empty.

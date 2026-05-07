@@ -1,0 +1,51 @@
+---
+title: "Questionnaire Templates"
+description: "Library of per-tier security questionnaire templates that drive vendor questionnaire scoring"
+---
+
+A library of reusable security questionnaires, each tagged to one or more vendor tiers. Templates can be built from scratch, seeded from a built-in security questionnaire, or extracted from an Excel questionnaire you upload. They are reused every time a vendor questionnaire is analyzed.
+
+## What it does
+
+- Stores multiple templates per tenant. Each template is named, tier-tagged (Critical, High, Medium, Low, or All Tiers), and described.
+- Extracts questions from an uploaded Excel file using LLM extraction, or seeds from a built-in security questionnaire.
+- Organizes questions in a two-level hierarchy: top-level category tabs, then collapsible sub-category sections with question counts.
+- Supports inline edit, add, and delete of questions, plus adjustable category weights and per-question weights.
+- Filters questions across the template by criticality (Critical / High / Medium / Low) and answer type (Text or Yes/No).
+
+## Inputs
+
+When creating or editing a template:
+
+- **Template metadata.** Template Name (required), Vendor Tier (default "All Tiers"), Description (optional).
+- **Question source.** One of: upload an Excel file (`.xlsx` or `.xls`) for LLM-driven extraction; seed from the built-in template; or build manually one question at a time.
+- **Per-question fields.** Question text, Expected Answer (Text type only), Answer Type (Text or Yes/No), Criticality, Weight.
+- **Per-category Weight.** Numeric, step 0.1.
+
+## Outputs
+
+The page is split into a left list and a detail view.
+
+The left list shows one row per template with name, tier badge, and total question count.
+
+The detail view shows the template header (name, tier badge, total question count), category tabs with per-tab weight and counter, and a table of questions in the selected category:
+
+| Column | Meaning |
+| --- | --- |
+| Question | The question text |
+| Expected Answer | The reference answer the platform compares against (Text type only) |
+| Type | Text or Yes/No |
+| Criticality | Critical / High / Medium / Low |
+| Weight | Per-question weight in scoring |
+
+Excel extraction and built-in seed report `categories_created` and `questions_created` counts on completion.
+
+## How it works
+
+Templates live per tenant on the backend. When you upload an Excel questionnaire, an LLM parses it into categories and questions, mapping each row's question, expected answer, criticality, and weight. Templates and their tier tags are then used to match the right questionnaire when a vendor's responses are analyzed at assessment time.
+
+## Limitations
+
+- No bulk export, no version history, and no template duplication or clone in the UI.
+- Replacing existing questions via re-upload or built-in seed is destructive and irreversible. The action is confirmed only via a warning dialog.
+- The page does not surface where or when a template is matched at scoring time — it only states "Used to match the template when analysing a vendor questionnaire."
