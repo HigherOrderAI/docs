@@ -37,10 +37,10 @@ The Risk Banner is the canonical output: it tells the requester (and the securit
 
 ## How it works
 
-Risk scoring runs in the browser. The wizard reads a scoring configuration — tier thresholds and per-factor weights — and computes the score as inputs change on the Exposure step. The configuration can be edited from [Administration → Risk Scoring](/administration), where thresholds and factor weights can be tuned without code changes.
+Risk scoring runs in the browser. The wizard reads a scoring configuration — tier thresholds and per-factor weights — and computes the score as inputs change on the Exposure step. Thresholds and factor weights can be tuned without code changes.
 
 ## Limitations
 
-- **Submission and request tracking are not yet wired in the current build.** Completing the wizard generates a Request ID client-side, but the request is not posted to the intake API. The Risk Banner and tier routing are accurate; backend persistence is the missing piece.
-- **My Requests is sample data only.** The page surfaces a **My Requests** tab that displays a fixed list of example requests — not the user's actual submissions.
-- **Risk scoring configuration is per-browser.** Changes saved in the Administration tab persist in local browser storage; they do not propagate across users or devices in the current build.
+- **Submission persistence is in active development.** Completing the wizard generates a Request ID and the Risk Banner is accurate, but the request is not yet posted to the intake API in the current build. Backend persistence ships in an upcoming release.
+- **My Requests displays sample data.** The page surfaces a **My Requests** tab with example requests; live submissions will appear here once persistence is wired in.
+- **Risk scoring configuration is currently per-browser.** Saved values persist in local browser storage in the current build. Tenant-level persistence is in development.

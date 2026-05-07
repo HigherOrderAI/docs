@@ -1,17 +1,14 @@
 ---
 title: "Administration"
-description: "Manage users, audit history, integrations, vendor-intake risk scoring, and feature flags"
+description: "Manage users and review the platform audit trail"
 ---
 
-A single page with five tabs for managing tenant configuration: users and roles, audit history, third-party integrations, vendor-intake risk scoring, and feature flags. Visible to administrators; the link sits at the bottom of the sidebar.
+The administration page hosts tenant configuration. Today, two tabs are documented: **User Management** and **Audit Log**. Visible to administrators; the link sits at the bottom of the sidebar.
 
 ## What it does
 
 - **User Management.** Add, edit, and assign role and status to users in the tenant.
 - **Audit Log.** Search and filter the platform audit trail.
-- **Integrations.** Connect external systems (Salesforce, Dropbox, Vanta, JIRA, Freshdesk) via API key or OAuth.
-- **Risk Scoring.** Edit the scoring weights and tier thresholds used by the [Vendor Intake](/vendor-intake) wizard.
-- **Feature Flags.** Show or hide pages and capabilities across the navigation.
 
 ## Inputs
 
@@ -22,20 +19,6 @@ Email, First Name, Last Name, Role (User / Manager / Admin), Status (Active / In
 ### Audit Log
 
 Filter selections and search terms.
-
-### Integrations
-
-API keys (password input) for Salesforce and Vanta. OAuth flows for Dropbox, JIRA, and Freshdesk.
-
-### Risk Scoring
-
-- Per-factor **Points** values (0–20) under collapsible factor categories.
-- Per-tier **Min** and **Max** scores (0–99) for Low, Medium, High, and Critical tiers.
-- Per-tier routing description text.
-
-### Feature Flags
-
-Per-flag toggle switches, per-group **Toggle all** switches, and a **Reset to Defaults** action.
 
 ## Outputs
 
@@ -60,25 +43,11 @@ Stats cards: **Total Actions**, **Failed Actions**, **Unique Users**.
 
 Audit table: **Timestamp**, **User**, **Action**, **Details**, **Status** (success / failed).
 
-### Integrations
-
-Per-integration card with name, logo, and a status pill: **Connected**, **Not Configured**, or **Error**. Sections: **CRM** (Salesforce), **Document Storage** (Dropbox), **GRC** (Vanta), **Issue Tracking** (JIRA, Freshdesk).
-
-### Risk Scoring
-
-Live **Max possible score** badge, **Unsaved changes** indicator, four tier rows (Low / Medium / High / Critical), and collapsible factor categories with per-factor Points inputs. **Reset to Defaults** and **Save Changes** buttons.
-
-### Feature Flags
-
-Per-group enabled-count badge ("N of M") and per-card eye / eye-off state indicator. Groups: Dashboard, Customer Contracts, Customer Contract Intel, Vendor Contracts, Vendor Risk, Vendor Risk Intel, Apps, Enforcement, Intelligence, Questionnaires, Legacy, General.
-
 ## How it works
 
-Each tab loads its data independently. User Management, Audit Log, and Integrations save through authenticated, tenant-scoped API calls. Risk Scoring changes persist in the browser's local storage in the current build. Feature Flag changes apply immediately within the current session.
+Each tab loads its data independently and saves through authenticated, tenant-scoped API calls.
 
 ## Limitations
 
 - **User delete is not yet implemented.** The delete action is disabled in the User Management table.
-- **Risk Scoring changes are per-browser.** Saved values persist in local browser storage and do not propagate across users or devices in the current build.
-- **Feature Flags is labeled "Prototype Mode"** and shows an amber warning banner. Treat changes as experimental; they are not a long-term configuration mechanism.
 - The Audit Log derives **Status** from the event type. There is no separate severity column.
