@@ -18,6 +18,12 @@
   "contextual": {
     "options": ["copy", "view", "assistant", "mcp", "add-mcp"]
   },
+  "seo": {
+    "metatags": {
+      "robots": "noindex, nofollow",
+      "googlebot": "noindex, nofollow"
+    }
+  },
   "navigation": {
     "tabs": [
       {
