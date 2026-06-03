@@ -1,8 +1,23 @@
 ---
 title: "May 2026"
-description: "Vendor Portal, model provider fallback, and a mobile-responsive web app"
+description: "Vendor Portal, Trust Center extraction, Exposure Drift Detection, and IdP/SSPM connectors"
 ---
-May opened the platform to vendors directly. Vendor Portal V0.1 lets vendors log in, respond to assessment questionnaires, and upload evidence into your workspace. Document extraction gained an Anthropic fallback so a single provider outage no longer stalls processing, and the web app is now responsive on mobile.
+May opened the platform to vendors directly and to vendor posture in the wild. Vendor Portal V0.1 lets vendors log in, respond to assessment questionnaires, and upload evidence into your workspace. Trust Center extraction pulls public documents straight from vendor Trust Centers (Safebase supported first). Exposure Drift Detection tracks changes in vendor posture and ecosystem signals from a dedicated Drift Center, and IdP and SSPM connectors — Okta, Google Workspace, and Entra ID — wire up from Administration → Integrations. Document extraction also gained an Anthropic fallback so a single provider outage no longer stalls processing, and the web app is now responsive on mobile.
+
+## Week of May 11
+
+### New
+- Trust Center document extraction V0.1 — pull public evidence (SOC 2, ISO 27001, etc.) straight from vendor Trust Centers. Safebase supported first, with a framework to add more. Files sourced this way are marked with a shield icon
+- Exposure Drift Detection — a Drift Center that tracks changes in vendor posture and ecosystem signals end-to-end. Vendor profiles surface a drift tab
+- IdP and SSPM connectors — Okta, Google Workspace, and Entra ID, configurable from Administration → Integrations with OAuth callback handling and live status
+
+### Improved
+- Questionnaire Templates rebuilt for maintainability and extensibility — sheets, sub-categories, questions, and template dialogs are now separate components
+- Mobile-responsive polish — StandardMetricCard rollout, tab overflow fixes, sidebar gradient on collapsed submenu, single-column layouts and vertically stacked buttons on small screens
+- Adding new document types on the backend is simpler
+
+### Fixed
+- ISO 27001 and Privacy Policy views aligned with the backend analyzer refactor
 
 ## Week of May 4
 
