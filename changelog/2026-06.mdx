@@ -1,0 +1,21 @@
+---
+title: "June 2026"
+description: "Findings page, customer-side Question Evaluation, and Vendor Portal V0.5"
+---
+June opens with the customer-side review surfaces. The new Findings page centralises risk findings produced across assessments, and Question Evaluation lets reviewers walk a vendor's answers with an AI Review dialog that proposes an ideal answer and highlights what the vendor's response is missing. Vendor Portal moves to V0.5 with on-demand access codes, broader upload formats, and a size cap.
+
+## Week of Jun 1
+
+### New
+- Findings page V0.1 — a central view for risk findings surfaced from vendor assessments
+- Customer Question Evaluation V0.1 — reviewers see each vendor answer alongside an AI-proposed ideal answer and a list of missing points, with edits saved back to the assessment
+- Vendor Portal V0.5 — vendors can request a new access code on demand; uploads now accept JPEG and XLS; per-file size cap of 5 MB
+
+### Improved
+- "Vendor Questionnaire" renamed to "Vendor Assessments" across the product
+- Document delete is now soft delete across the board — failed and rejected documents included. Reuploading a previously deleted document restores its prior analysis instead of re-running it
+- Vendor inputs are blocked once an assessment is closed
+- Excel questionnaire templates support up to 300 questions
+
+### Fixed
+- Duplicate vendor-assessment IDs that could appear after an old entry was deleted
