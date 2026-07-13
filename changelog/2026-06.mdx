@@ -1,21 +1,69 @@
 ---
 title: "June 2026"
-description: "Findings page, customer-side Question Evaluation, and Vendor Portal V0.5"
+description: "Vendor Database, SSO V1, RBAC V0.1, Risk Scoring Methodology V1, and Dashboards"
 ---
-June opens with the customer-side review surfaces. The new Findings page centralises risk findings produced across assessments, and Question Evaluation lets reviewers walk a vendor's answers with an AI Review dialog that proposes an ideal answer and highlights what the vendor's response is missing. Vendor Portal moves to V0.5 with on-demand access codes, broader upload formats, and a size cap.
+June was a heavy platform month. The customer-side review surfaces (Findings page, Question Evaluation) open the month; the Vendor Database — the first search-first browse over the vendor catalog — lands mid-month, alongside SSO V1, RBAC V0.1 with custom roles and an Auditor role, and Dashboards V0.1. Risk Scoring moved to Methodology V1: one 0–10 scale, six bands, higher = more risk.
 
-## Week of Jun 1
+## Week of Jun 29
 
 ### New
-- Findings page V0.1 — a central view for risk findings surfaced from vendor assessments
-- Customer Question Evaluation V0.1 — reviewers see each vendor answer alongside an AI-proposed ideal answer and a list of missing points, with edits saved back to the assessment
-- Vendor Portal V0.5 — vendors can request a new access code on demand; uploads now accept JPEG and XLS; per-file size cap of 5 MB
+- Dashboard export — export chart and table data from any dashboard
+- Additional dashboard filters and a Findings dashboard
 
 ### Improved
-- "Vendor Questionnaire" renamed to "Vendor Assessments" across the product
-- Document delete is now soft delete across the board — failed and rejected documents included. Reuploading a previously deleted document restores its prior analysis instead of re-running it
-- Vendor inputs are blocked once an assessment is closed
-- Excel questionnaire templates support up to 300 questions
+- Question evaluation is more resilient: a cross-verification LLM pass now checks that scoring results map to the questions they came from, and repairs any mismatches
 
 ### Fixed
-- Duplicate vendor-assessment IDs that could appear after an old entry was deleted
+- Contract file re-upload after delete/reject no longer blocked by a stale checksum
+
+## Week of Jun 22
+
+### New
+- Downloads on the Vendor Portal — evidence and questionnaire download from the portal
+- Second-pass document classification: after the classifier picks a document type, a separate LLM review scores whether that choice is justified by the document and flags misclassifications
+
+### Fixed
+- Assessment score recomputes when a text-only "additional evidence" is added (previously only re-scored when files were attached)
+
+## Week of Jun 15
+
+### New
+- Vendor Database V0.1 — a top-level search-first surface over the vendor catalog. Type-ahead search with auto-suggest surfaces vendors already in the database and opens their profile
+- Vendor Database → Intake integration V0.1 — Intake pulls vendor metadata from the database when the vendor is already known
+- SSO V1 — single sign-on for customer users
+- Manager Assignment in Admin — assign a reporting manager to each user; RBAC uses this for auditor scope
+- Assessment lifecycle: assessments can be marked complete, and expired assessments can be extended
+- Vendor Portal can resend access codes even after the assessment has been submitted
+- Larger PDF/DOCX uploads accepted from vendors; architecture-diagram uploads V0.2
+
+### Improved
+- Findings page: subheader added under the table header, AI search box repositioned below the header with filter aligned right, stats cards show totals across all findings rather than the filtered subset
+- Questionnaires page: filter, add-question, and add-category buttons stay visible on empty templates; questions and answers minimize to 100 chars with click-to-expand
+- Sidebar collapses when you click into any page
+- Vendor Requirements and Customer Contract Template pages restructured with sub-page navigation, inline edit/delete on hover, cleaner tables
+- Overall risk analysis reprocesses automatically when a VAPT or Questionnaire document is reprocessed
+- Vendors can only submit an assessment once all questions are answered
+
+### Fixed
+- Intake soft-delete: deleted intake records are recoverable and no longer collide with new submissions
+- Dropbox integration OAuth-return flow landed on the wrong step
+- Findings type-mismatch bug
+
+## Week of Jun 8
+
+### New
+- Findings Detail page V0.1 — click into any finding to see full context; add a finding manually
+- RBAC V0.1 — custom role support with granular permissions; Auditor role included
+- Team Assignments V0.1 — assign vendors, assessments, and findings to specific teammates
+- Risk Scoring Methodology V1 — one 0–10 scale, six bands, higher = more risk (previously grade-based, mixed scales)
+- Dashboards V0.1 — the first cut of a dashboards surface
+- Intake form: "Risk Score" renamed to "Assessment Tier" to align with the new methodology
+
+### Improved
+- Risk coverage displayed as points-vs-band rather than a letter grade
+
+### Fixed
+- Delete buttons on vendor rows no longer trigger the row-open action
+- Integrations tab reopens correctly after connector OAuth redirect
+- Dropbox "Edit Configuration" closes the dialog instead of editing — fixed
+- Intake URLs use the numeric intake_id, not request_ref

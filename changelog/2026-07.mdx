@@ -1,0 +1,26 @@
+---
+title: "July 2026"
+description: "Tenant provisioning, assessment delegation, India DC, and Vendor Research V1"
+---
+July starts on onboarding and multi-region infrastructure. Tenant provisioning and a first-time user experience land the first week. Vendors can delegate assessments to teammates from the portal instead of sharing credentials. India-region data-center support ships with a dedicated S3 bucket, inbound email moves onto AWS SES, and Vendor Research V1 lets users add net-new vendors to the database on demand.
+
+## Week of Jul 6
+
+### New
+- Tenant Provisioning and first-time user experience — new customer tenants can be provisioned end-to-end with a guided initial setup
+- Assessment delegation from the Vendor Portal — the primary vendor contact can hand an assessment off to a teammate without sharing credentials
+- India data-center support — dedicated S3 bucket for tenants provisioned in the India region (Google Vertex support to follow)
+- Vendor Research V1 — add net-new vendors to the Vendor Database on demand from the search page
+- Inbound email via AWS SES — replaces Brevo for inbound; SNS webhook + adapter, header-based webhook auth
+- Findings enhancements — additional fields, filters, and status transitions on the Findings page
+
+### Improved
+- Vendor Portal accepts additional document types (images, markdown) for evidence uploads; architecture-diagram uploads now accept .md
+- Questionnaire download in the customer-side assessment view
+- Question ordering preserved on download and in the detail view; detail-view filtering follows the selection from the previous page
+- Assessment reopen retains its previous state; the approval-notes textbox captures notes correctly
+- Email reliability: mock fallback disabled in prod, header webhook auth, delivery-delay metrics
+
+### Fixed
+- Intake research failing on some vendors
+- Image uploads allowed for threat-model architecture diagrams
