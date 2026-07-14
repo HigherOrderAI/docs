@@ -5,6 +5,10 @@ description: "Multi-step intake wizard that computes an Assessment Tier live, pr
 
 A four-step wizard for business teams that need a new vendor or product. As the requester fills out exposure details — data types, deployment model, AI usage, integrations — the platform computes a preliminary **Assessment Tier** in real time and shows which review path the request will take. Requests are then routed to configured Reviewers and Approvers who move each one through the workflow.
 
+<Frame>
+  <img src="/images/screenshots/vendor-intake.png" alt="Vendor Intake requests page" />
+</Frame>
+
 ## What it does
 
 - Walks the requester through four steps: **Scenario**, **Context**, **Exposure**, **Review & Submit**.
@@ -69,6 +73,10 @@ Every user sees their own submitted requests in **My Requests**. Admins addition
 ## Intake Configuration
 
 **Vendor Intake → Intake Configuration** (`/vendor-intake/settings`) is where admins wire up the workflow:
+
+<Frame caption="Intake Configuration — Reviewers and Approvers">
+  <img src="/images/screenshots/intake-configuration.png" alt="Intake Configuration page" />
+</Frame>
 
 - **Intake Reviewers** — users who can move a request into review. Assigned via the Permissions system (`intake.review` permission).
 - **Intake Approvers** — users who can approve, reject, or conditionally approve a request (`intake.approve` permission).

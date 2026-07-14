@@ -5,6 +5,10 @@ description: "Catalog of third-party vendors with risk bands, contract metadata,
 
 The vendor inventory is the central list of every third-party vendor in your tenant. Each row shows the current risk band, tier, contract value, renewal date, and last assessment date. Clicking a vendor opens that vendor's profile — the canonical drill-down with full risk detail, per-analyzer breakdowns, threat model, recommended controls, and downloadable risk report.
 
+<Frame>
+  <img src="/images/screenshots/vendor-inventory.png" alt="Vendor Inventory list" />
+</Frame>
+
 ## What it does
 
 - Lists every vendor in the tenant, filterable by tier, status, risk band, or free-text search across name, category, and description.
@@ -56,7 +60,13 @@ For each vendor, the inventory shows:
 
 ### Vendor profile
 
-Clicking a vendor name opens that vendor's profile. Tabs:
+Clicking a vendor name opens that vendor's profile.
+
+<Frame caption="Vendor profile — overview tab">
+  <img src="/images/screenshots/vendor-profile-vymo.png" alt="Vendor profile drill-down" />
+</Frame>
+
+Tabs:
 
 - **Overview** — validated risk band + coverage, per-analyzer contribution (SOC 2, ISO 27001, VAPT, Privacy Policy, Questionnaire, Contract), summary chips.
 - **Documents** — every document uploaded or auto-fetched for this vendor. Documents sourced from a public Trust Center carry a shield icon. Failed or rejected documents can be reprocessed or soft-deleted; reuploading a previously deleted document restores its prior analysis.
