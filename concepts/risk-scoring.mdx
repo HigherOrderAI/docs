@@ -1,0 +1,60 @@
+---
+title: "Risk Scoring Methodology"
+description: "The single 0–100 scale and six bands that every risk surface uses; distinct from the intake-time Assessment Tier"
+---
+
+Every risk score in HigherOrder — per-document, per-vendor, portfolio — is expressed on the same 0–100 scale, mapped to one of six named bands, where **higher means more risk**. This is a deliberate change from letter grades and mixed scales. The band is the authoritative label; the numeric score is shown alongside it.
+
+<Note>
+**Assessment Tier is a different concept.** Assessment Tier is the intake-time depth-of-review label (Low / Medium / High / Critical) computed from the requester's declared use case. It sets *how the vendor is reviewed*, not the outcome of the review. The Risk Band replaces the tier once a formal assessment produces validated evidence.
+</Note>
+
+## The six bands
+
+| Band | Score range | Meaning |
+|---|---|---|
+| **Minimal** | 0–20 | Little to no material risk |
+| **Low** | 21–40 | Acceptable with standard controls |
+| **Moderate** | 41–60 | Warrants attention; may require mitigations |
+| **High** | 61–75 | Significant exposure; controls required |
+| **Very High** | 76–90 | Immediate attention warranted |
+| **Critical** | 91–100 | Do not proceed without mitigations or executive sign-off |
+
+Every risk surface — vendor inventory row, vendor profile risk overview, per-document analysis (SOC 2, ISO 27001, VAPT, Privacy Policy), contract gap risk — resolves to one of these six bands. Colors and labels are consistent across surfaces.
+
+## What the score represents
+
+The score is composed by the platform from the evidence available for the vendor:
+
+- **Document analyses.** Each analyzer (SOC 2, ISO 27001, VAPT, Privacy Policy, Questionnaire, Contract) produces a category score. Missing or expired evidence contributes to a higher score.
+- **Threat model.** STRIDE output on any uploaded architecture diagram or system description.
+- **Contract gaps.** Where a vendor commitment is weaker than what you have promised your own customers (see [Customer Golden Standards](/customer-risk/golden-standards)).
+- **Ecosystem signals.** From connected IdP / SSPM (Okta, Google Workspace, Entra ID) — undisclosed OAuth grants, undisclosed new SKUs. See Drift Center.
+
+The **overall risk band** is a synthesis across these inputs, weighted by the assessment tier. The synthesis is regenerated when new evidence lands, when a document is reprocessed, or on explicit request.
+
+## Assessment Tier — the intake-only label
+
+Assessment Tier is set during Vendor Intake based on the requester's declared exposure — data types (health, financial, source code, PII), scale of rollout, AI usage, integrations. It routes the request to the right review depth:
+
+| Tier | Review path | SLA |
+|---|---|---|
+| **Low** | Automated brief, no analyst review | Immediate |
+| **Medium** | Analyst review with targeted output package | 2 weeks |
+| **High** | Full assessment with document collection, legal + security sync | 4 weeks |
+| **Critical** | Executive sign-off required, full dossier, security leadership flagged | Same-day escalation |
+
+Assessment Tier is **declared risk**, not validated risk. It is displayed on the intake detail during review. Once the vendor is linked to a formal assessment and the platform has processed evidence, the **validated Risk Band** appears alongside it. Where they disagree, the Risk Band is authoritative.
+
+## Risk Coverage
+
+Risk Coverage is the completeness of the evidence base behind the score, expressed as points (out of the maximum coverage points achievable for a given assessment). A vendor with 45 / 60 coverage points has less confident scoring than one with 58 / 60, even if both land in the same band. Coverage is shown alongside the band on the vendor profile.
+
+## Where you'll see this
+
+- **Vendor Inventory** — the risk grade column now shows band + score (e.g., `High · 65`) rather than a letter grade
+- **Vendor Profile** — Validated Risk section shows the band first, then coverage
+- **Per-document analysis** — each document's contribution is scored on the same scale
+- **Reports** — the downloadable vendor risk report leads with the band and coverage
+- **Contract Coverage** — gap risk uses the same band scale
+- **Findings** — severity of an individual finding is Critical / High / Medium / Low (four levels, not six) — this is a per-finding attribute distinct from the vendor-level band

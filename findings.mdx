@@ -1,0 +1,91 @@
+---
+title: "Findings"
+description: "Central register of open and historical risk findings from vendor assessments, controls, VAPT, OSS, domain security, and manual entry"
+---
+
+The single register of every risk finding across your program. Findings come from the analyzers automatically (control gaps, VAPT results, OSS threats, domain-security signals, assessment-question gaps) and from analysts manually. The page is a filterable list with global stat cards, natural-language search, and per-finding detail with a full audit trail.
+
+## What it does
+
+- Lists every finding for the tenant with severity, status, source, vendor, control, due date, and assignee.
+- Global stat cards summarise the state of the program: total, open, critical, long-running (open 30+ days), vendors affected. Cards are filter-independent and clickable — clicking "Open" filters the list to any non-closed status.
+- **Natural-language search.** Ask questions like *"critical findings assigned to Priya"* or *"open findings on Salesforce due this week."* The query is parsed to structured filters.
+- Column and dropdown filters on source, severity, status, framework, category, vendor, assignee, date ranges.
+- Per-finding detail page with inline editing, lifecycle actions (request approval, escalate, update remediation, close), and a comments thread.
+
+## Inputs
+
+### Filters (on the list)
+
+- **Source** — Control implementation gap, OSS threat, VAPT finding, Audit work item, Manual, Domain security, Vendor assessment gap
+- **Severity** — Critical / High / Medium / Low
+- **Status** — Open, In Progress, Awaiting Vendor Action, Awaiting Client Approval, In Remediation, Escalated, Closed
+- **Framework** and **Category** — set by the analyzer that produced the finding
+- **Vendor** — filter to findings on a specific entity
+- **Assignee** — filter to findings assigned to a specific user
+- **Created** and **Due** date ranges
+
+### Add finding dialog
+
+Manual entry. Required fields:
+
+- **Description**
+- **Vendor** (from your inventory)
+- **Severity** (Critical / High / Medium / Low)
+- **Status** (defaults to Open)
+- **Source** (Manual is the default; a small subset of sources allow manual creation)
+- **Control ID** (optional; defaults to `MANUAL`)
+- **Remediation Due Date**
+
+## Outputs
+
+### List view
+
+Columns: `#N` (clickable finding ID), Severity, Status, Vendor, Control, Due Date, Assignee. Default sort is a composite priority (Open status floats to the top, then Critical → Low).
+
+### Detail view
+
+Sections:
+
+- **Header** — finding ID, status (inline-editable badge), severity (inline-editable), assignee (dropdown), back button.
+- **Overview** — description (inline-editable), control ID and name, framework, category, timestamps.
+- **Source Context** — source-specific metadata (CVE for OSS threats, work item ID for audit findings, subdomain for domain-security signals, question snapshot + expected vs submitted answer for assessment gaps).
+- **Remediation** — due date (inline-editable), progress percentage, notes; **Update Remediation** button opens a dialog to log progress.
+- **Approvals** — history of approval requests (Extension / Waiver / Risk Acceptance) with type, status, dates, justification; **Request Approval** button.
+- **Escalations** — history of escalations with reason and status; **Escalate** button.
+- **Activity Feed** — full audit log: who changed which field, from what value to what value, and when.
+- **Comments** — threaded comments (add, edit, delete).
+
+### Close finding
+
+The **Close** action requires selecting a close reason and adding a justification note. Closed findings remain visible via the Status filter.
+
+## Where findings come from
+
+| Source | What generates it |
+|---|---|
+| `control_implementation_gap` | Control readiness assessment finds an ungrounded or under-evidenced control |
+| `vapt_finding` | VAPT analyzer surfaces a finding from a penetration test report |
+| `oss_threat` | OSS threat scanner flags a CVE or malicious package |
+| `domain_security` | Continuous domain security monitoring detects a change |
+| `vendor_assessment_gap` | A vendor's questionnaire answer falls short of the expected answer |
+| `audit_work_item` | Import from an external audit system (e.g., ServiceNow) |
+| `manual` | Analyst-created via the Add Finding dialog |
+
+Auto-generated findings inherit their control ID, framework, category, and additional context from the source analyzer. Manual findings carry only what the analyst enters.
+
+## Lifecycle actions
+
+- **Request Approval** — request an Extension, Waiver, or Risk Acceptance. Requires a justification. Moves the finding to "Awaiting Client Approval."
+- **Escalate** — escalate to a stakeholder with a reason. Moves the finding to "Escalated."
+- **Update Remediation** — log progress percentage and notes.
+- **Assign** — reassign the finding to another user (inline in the header).
+- **Close** — final state. Requires a close reason and note.
+
+Every action lands in the Activity Feed with actor, timestamp, and field-level diff.
+
+## Limitations
+
+- Bulk actions are not yet supported — assignment and status changes are per-finding.
+- Findings from external audit systems (`audit_work_item`) are imported one-way; changes made in HigherOrder do not sync back.
+- Long-running is a fixed threshold (open 30+ days). This is not currently configurable per tenant.

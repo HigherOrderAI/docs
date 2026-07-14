@@ -1,0 +1,59 @@
+---
+title: "Single Sign-On"
+description: "Configure OIDC-based SSO with Okta, Entra ID, Google Workspace, or a generic provider; JIT user provisioning"
+---
+
+Single sign-on lets users log in with your identity provider instead of a HigherOrder password. HigherOrder speaks OpenID Connect (OIDC) and has been tested against Okta, Microsoft Entra ID, and Google Workspace. Any conformant OIDC provider will also work.
+
+## What it does
+
+- Authenticates HigherOrder users against your IdP via OIDC.
+- Just-in-time provisions users on first login — a new account is created if the email is not yet in the tenant.
+- Syncs display name and email from IdP claims on every login.
+- Coexists with password authentication; you can enable SSO for the tenant while leaving break-glass admin accounts on password login.
+
+## Inputs
+
+Configure SSO in **Administration → Integrations → SSO**. Each provider has:
+
+- **Provider type** (Okta, Entra ID, Google Workspace, or Generic OIDC)
+- **Display name** shown on the login page (e.g., "Log in with Acme SSO")
+- **Client ID** and **Client Secret** from your IdP
+- **Discovery / issuer URL** (auto-filled for Okta / Entra / Google when the provider type is selected)
+- **Scopes** (defaults to `openid profile email`; extend if your IdP requires additional scopes)
+
+Your IdP requires the HigherOrder **Redirect URI**, which the SSO dialog displays after you save the provider.
+
+## Outputs
+
+- End users see a "Log in with [display name]" button on the HigherOrder login page.
+- Successful login lands the user on their default dashboard.
+- First-time SSO login creates a HigherOrder user with the **User** role; an Admin then assigns the appropriate role in User Management.
+
+## How to configure
+
+<Steps>
+  <Step title="Register HigherOrder in your IdP">
+    Create a new OIDC application in your IdP. Set the sign-in redirect URI to the value shown in the HigherOrder SSO dialog.
+  </Step>
+  <Step title="Copy the client credentials">
+    Copy the Client ID and Client Secret from your IdP.
+  </Step>
+  <Step title="Create the SSO provider in HigherOrder">
+    Administration → Integrations → SSO → **New Provider**. Pick the provider type, paste credentials, set the display name.
+  </Step>
+  <Step title="Test the flow">
+    Log out and click the "Log in with [display name]" button on the login page. On success, the user lands on their default dashboard.
+  </Step>
+  <Step title="Set roles for provisioned users">
+    Admin visits User Management and assigns the appropriate role to any JIT-provisioned user.
+  </Step>
+</Steps>
+
+## Limitations
+
+- No SCIM. Users are created on first login (JIT) or manually in User Management — there is no push provisioning from the IdP.
+- No IdP group → role mapping. Roles are assigned inside HigherOrder even when users authenticate via SSO.
+- SAML is not supported. OIDC only.
+- Front-channel logout only. Logging out of HigherOrder does not propagate a logout to the IdP; users close the SSO session at the IdP separately.
+- SSO is per-tenant. Each tenant configures its own provider; users cannot cross tenants via a single SSO session.

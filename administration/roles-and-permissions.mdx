@@ -1,0 +1,88 @@
+---
+title: "Roles & Permissions"
+description: "Built-in and custom roles, the permission catalog, and how manager assignment scopes access"
+---
+
+Role-based access control governs who can see and change what inside your tenant. Every user has one role. A role is a bundle of permissions drawn from a fixed catalog. Built-in roles cover the common personas; custom roles let admins tailor exactly the permissions a team needs.
+
+## Built-in roles
+
+| Role | Purpose |
+|---|---|
+| **User** | Base persona. Read access to most surfaces, no configuration or approval actions. |
+| **Manager** | User + team-scoping. Sees data owned by their direct reports; can assign work within their team. |
+| **Admin** | Full access to configuration, user management, and RBAC administration. |
+| **Auditor** | Read-only cross-tenant access. Sees all vendors, assessments, contracts, findings — cannot modify. Intended for internal auditors and compliance reviewers. |
+| **Intake Reviewer** | System role. Reviews incoming intake requests. |
+| **Intake Approver** | System role. Final approve/reject on intake requests. |
+
+System roles (Intake Reviewer, Intake Approver) are immutable. All other roles — including the built-in User / Manager / Admin / Auditor — can be edited by an Admin, and custom roles can be created alongside them.
+
+## Custom roles
+
+Admins create custom roles in **Administration → Permissions**. Each role has:
+
+- A name (e.g., "Contract Reviewer", "SOC 2 Analyst")
+- A description
+- A set of granted permissions (checkboxes grouped by module)
+- The users assigned to it (managed from User Management)
+
+Custom roles can grant any subset of the permissions catalog below. A user's effective permissions are exactly the union of the permissions on their assigned role.
+
+## Permission catalog
+
+Permissions are organized by module. The catalog below is illustrative — the full, current list is displayed in the Permissions tab when creating or editing a role.
+
+| Module | Example permissions |
+|---|---|
+| **Intake** | `intake.review`, `intake.approve` |
+| **Vendors** | `vendor.delete`, `vendor.assign` |
+| **Assessments** | `assessment.assign`, `assessment.delete` |
+| **Team** | `team.set_manager` |
+| **Contracts** | `golden_contract.modify`, `questionnaire.modify` |
+| **Administration** | `admin.users.modify`, `admin.audit.read`, `admin.rbac.modify` |
+| **Cross-tenant** | `tenant.read.all` — bypass team scoping and read all tenant data (Auditor role) |
+
+Permissions are enforced server-side on every API call, not just in the UI. A hidden button in the UI does not grant hidden permission at the API layer.
+
+## Manager assignment and team scoping
+
+Every non-Admin user can be assigned a **reporting manager** via User Management. Manager assignment does two things:
+
+1. **Team hierarchy.** A user's team is defined transitively — a Manager's team is everyone who reports to them, directly or via chained managers.
+2. **Team-scoped visibility.** Users with team-scoped roles see only the vendors, assessments, and findings owned by or assigned to someone on their team.
+
+Assignment of a manager to a user requires the `team.set_manager` permission (granted to Admins and Managers by default).
+
+## Team assignments on records
+
+Vendors, assessments, and intake requests carry two ownership fields:
+
+- **Created by** — who added the record
+- **Assigned to** — who is currently responsible
+
+Team scoping filters what users see using these fields. Assigning a vendor or assessment to a user does not automatically grant them additional permissions; it moves the record into their team's view.
+
+## How to add a custom role
+
+<Steps>
+  <Step title="Open Permissions">
+    Go to **Administration → Permissions**. The left panel lists all roles (system and custom); the right panel is the role detail view.
+  </Step>
+  <Step title="Create the role">
+    Click **New Role**. Enter a name and description.
+  </Step>
+  <Step title="Grant permissions">
+    Tick the permissions this role should have, grouped by module. Save.
+  </Step>
+  <Step title="Assign users">
+    Go to **Administration → User Management**. Edit a user, set their role to the new custom role, save. The change takes effect on their next request.
+  </Step>
+</Steps>
+
+## Limitations
+
+- A user can hold exactly one role at a time. Overlap between two personas requires a custom role that unions the permissions.
+- IdP group → role mapping (from SSO) is a v2 feature; today, roles are assigned in User Management even when users authenticate via SSO.
+- Team-scoped Auditor variants (auditor sees only one manager's team) are not yet available — the built-in Auditor role sees the full tenant.
+- Deleting a custom role that still has users assigned is blocked; reassign the users first.

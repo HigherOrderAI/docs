@@ -34,6 +34,10 @@
             "pages": ["introduction"]
           },
           {
+            "group": "Concepts",
+            "pages": ["concepts/risk-scoring"]
+          },
+          {
             "group": "AI Assistant",
             "pages": ["ai-assistant"]
           },
@@ -44,6 +48,14 @@
               "vendor-risk/contract-standards",
               "vendor-risk/questionnaire-templates"
             ]
+          },
+          {
+            "group": "Vendor Database",
+            "pages": ["vendor-database"]
+          },
+          {
+            "group": "Findings",
+            "pages": ["findings"]
           },
           {
             "group": "Customer Risk",
@@ -61,8 +73,16 @@
             "pages": ["vendor-intake"]
           },
           {
+            "group": "Vendor Portal",
+            "pages": ["vendor-portal"]
+          },
+          {
             "group": "Administration",
-            "pages": ["administration"]
+            "pages": [
+              "administration",
+              "administration/roles-and-permissions",
+              "administration/sso"
+            ]
           }
         ]
       },

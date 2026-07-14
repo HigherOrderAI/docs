@@ -7,28 +7,45 @@ description: "End-to-end vendor risk management — automated, continuous, and g
 
 If you work in vendor risk, the workflow is familiar. A team requests a new vendor. You read the SOC 2 until your eyes blur, dig through the ISO 27001 SoA, send the security questionnaire, wait two weeks for the response, scan the contract for SLAs and indemnities, file the assessment, move on. The next renewal cycle, you do most of it again. The vendors you can actually assess deeply are the handful you have time for; the rest get a tier and a checkbox.
 
-HigherOrder runs that workflow on every vendor, end to end. Documents come in — SOC 2, ISO 27001, VAPT reports, security questionnaires, privacy policies, DPAs, signed contracts, architecture diagrams — and the platform extracts evidence, builds a threat model based on how the vendor will be used, identifies the controls that need to be in place, generates follow-up questions for the gaps, and produces a risk grade with a downloadable report. It happens in hours, not weeks, and it stays current as new evidence arrives.
+HigherOrder runs that workflow on every vendor, end to end. Documents come in — SOC 2, ISO 27001, VAPT reports, security questionnaires, privacy policies, DPAs, signed contracts, architecture diagrams — and the platform extracts evidence, builds a threat model based on how the vendor will be used, identifies the controls that need to be in place, generates follow-up questions for the gaps, and produces a risk band with a downloadable report. It happens in hours, not weeks, and it stays current as new evidence arrives.
 
 ## Where to start
 
 <CardGroup cols={2}>
   <Card title="Vendor Inventory" icon="shield" href="/vendor-risk/inventory">
-    The catalog of every third party in your tenant — risk grade, tier, contract value, renewal date, and the per-vendor profile drill-down with full risk scoring detail.
+    The catalog of every third party in your tenant — risk band, tier, contract value, renewal date, and per-vendor profile with threat model, controls, and downloadable risk report.
   </Card>
   <Card title="Vendor Intake" icon="clipboard" href="/vendor-intake">
     A four-step wizard that scores new vendor requests in real time and routes them by tier — automated brief, analyst review, full assessment, or executive sign-off.
+  </Card>
+  <Card title="Vendor Database" icon="database" href="/vendor-database">
+    Search a shared catalog of pre-researched vendor profiles — facts, products, security posture, breaches. Compare up to three side by side. Add net-new vendors on demand.
+  </Card>
+  <Card title="Findings" icon="flag" href="/findings">
+    The single register of every open and historical finding — from control gaps, VAPT, OSS threats, domain security, assessment gaps, or manual entry.
+  </Card>
+  <Card title="Vendor Portal" icon="user-check" href="/vendor-portal">
+    The vendor-side surface. Vendors log in with an access code, answer questions inline, upload evidence, and delegate to teammates.
   </Card>
   <Card title="AI Assistant (Vera)" icon="message-square" href="/ai-assistant">
     Ask portfolio-level questions in natural language. Vera answers from your contracts, vendors, and standards data — with cited sources and downloadable reports.
   </Card>
   <Card title="Customer & Vendor Contracts" icon="file-text" href="/contracts/customer-contracts">
-    Upload signed contracts to extract obligations, SLA metrics, penalties, and communication requirements. Coverage analysis flags where you've promised customers more than your vendors have promised you.
+    Upload signed contracts to extract obligations, SLA metrics, penalties, and contacts. Coverage analysis flags where you've promised customers more than your vendors have promised you.
   </Card>
   <Card title="Golden Standards" icon="check" href="/customer-risk/golden-standards">
     Define the contract terms you expect on the customer side and the vendor side. Active contracts are auto-compared, and deviations are flagged.
   </Card>
-  <Card title="Questionnaire Templates" icon="list-checks" href="/vendor-risk/questionnaire-templates">
-    A library of tier-tagged security questionnaires, used to score vendor responses against your expectations.
+</CardGroup>
+
+## Core concepts
+
+<CardGroup cols={2}>
+  <Card title="Risk Scoring Methodology" icon="gauge" href="/concepts/risk-scoring">
+    One 0–100 scale, six bands (Minimal → Critical), higher = more risk. Distinct from the intake-time Assessment Tier.
+  </Card>
+  <Card title="Roles & Permissions" icon="shield-check" href="/administration/roles-and-permissions">
+    Built-in roles (User / Manager / Admin / Auditor), custom roles, and how manager assignment scopes team visibility.
   </Card>
 </CardGroup>
 
@@ -38,12 +55,12 @@ HigherOrder runs that workflow on every vendor, end to end. Documents come in �
 
 **Threat-model-driven, not questionnaire-driven.** A generic security questionnaire treats every vendor the same. HigherOrder builds a STRIDE threat model per vendor based on how the vendor will actually be used in your environment, then identifies the controls that need to be in place for that specific risk profile. This is the kind of analysis that historically required an in-house security architect; the platform produces it for every vendor automatically.
 
-**Multi-modal evidence.** SOC 2 reports, ISO 27001 certificates and Statements of Applicability, VAPT reports, security questionnaires, privacy policies, DPAs, signed contracts, and architecture diagrams all feed the same assessment. Risk grades reflect the full evidence picture, not whichever artifact happened to land in the questionnaire response.
+**Multi-modal evidence.** SOC 2 reports, ISO 27001 certificates and Statements of Applicability, VAPT reports, security questionnaires, privacy policies, DPAs, signed contracts, and architecture diagrams all feed the same assessment. Risk bands reflect the full evidence picture, not whichever artifact happened to land in the questionnaire response.
 
 **Contractual obligation extraction.** Most vendor risk tools stop at security artifacts. HigherOrder extracts obligations, SLA metrics, penalties, and contacts directly from your signed contracts — and cross-references them against the commitments you've made to your own customers, so vendor coverage gaps surface automatically.
 
-**Continuous, not point-in-time.** Assessments don't expire on a yearly cadence. As new evidence arrives — a renewed SOC 2, an updated DPA, a fresh VAPT — the platform re-evaluates the vendor and updates the grade. The portfolio you saw last quarter isn't the portfolio you have today.
+**Continuous, not point-in-time.** Assessments don't expire on a yearly cadence. As new evidence arrives — a renewed SOC 2, an updated DPA, a fresh VAPT — the platform re-evaluates the vendor and updates the band. The portfolio you saw last quarter isn't the portfolio you have today.
 
 ## Recent releases
 
-See the [Changelog](/changelog/2026-04) for monthly release notes covering January through April 2026.
+See the [Changelog](/changelog/2026-07) for monthly release notes.

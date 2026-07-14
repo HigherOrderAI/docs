@@ -1,0 +1,91 @@
+---
+title: "Vendor Portal"
+description: "The vendor-side surface where third parties log in, answer assessment questions, upload evidence, and hand work off to teammates"
+---
+
+The Vendor Portal is where your third-party vendors respond to the assessments you send them. Vendors log in with an emailed access code, see the exact questionnaire you assigned, answer inline with text and evidence uploads, and submit. Vendors can hand assessments off to teammates without sharing credentials, request a fresh access code any time, and download their own submissions.
+
+## What it does
+
+- Presents each assessment as a guided overview + question list with completion progress.
+- Accepts responses per question — answer text, evidence upload, "I'll provide this later" with an ETA, or "Doesn't apply" with a reason.
+- Auto-verifies evidence: the AI evaluator re-scores each answered question when new evidence lands.
+- Enforces that every question is answered (or marked N/A or given an ETA) before the vendor can submit.
+- Lets the primary contact delegate the assessment to teammates.
+- Allows access-code resend on demand and after submission.
+- Supports customer reopens: if the reviewer flags a question, the vendor returns to edit mode with previous state retained.
+
+## Inputs
+
+### Login
+
+Vendors visit **`/vendor-portal`** and enter:
+
+- **Email address**
+- **Assessment ID** (pre-filled if the vendor clicked the emailed link)
+- **Access code** — an 8-digit numeric code emailed to the vendor when the assessment was created
+
+Access codes can be reissued via the **Get a new access code** link. Requesting a new code invalidates the previous one immediately.
+
+### Answering a question
+
+Each question offers three response modes:
+
+- **Add Evidence** — enter text and optionally upload a supporting file. On submit, the AI evaluator scores the answer against the required evidence.
+- **I'll Provide This Later** — pick an ETA date and add an optional note. The question stays "Awaiting Vendor Action" until the ETA arrives.
+- **Doesn't Apply to Us** — mark as N/A with a required reason. The reviewer decides whether to accept the N/A.
+
+Accepted file formats: **PDF, DOC, DOCX, XLSX, XLS, PNG, JPG, JPEG**. One file per upload, up to **5 MB**.
+
+### Additional documents
+
+The Overview screen lists required document types (SOC 2, ISO 27001, VAPT report, etc.). Each can be uploaded once and replaced later. Uploaded documents are processed in the background and cross-referenced against the questionnaire.
+
+### Delegation
+
+The primary vendor contact can delegate an assessment to a teammate from the **Team** tab. The teammate receives their own access code by email and works on the same assessment without seeing the primary contact's credentials.
+
+## Outputs
+
+### Overview
+
+- Reference ID and current status
+- Progress bar with a four-way breakdown: Verified, Partial, Need Input, Pending
+- Documents required, with per-document status (queued / processing / done)
+- Countdown to the assessment deadline (amber under 14 days, red under 7)
+- Submit Assessment button (disabled until every question is answered)
+
+### Questions
+
+- Left rail — category tree with completion counts; sub-filters for All / Partial / Need Input
+- Center — question list with status and criticality badges, category, current score, and evidence snippet preview
+- Right rail — response panel with actions (Add Evidence / I'll Provide Later / Doesn't Apply) plus a conversation and activity timeline
+- Header tabs — Show All / Gaps (default) / Needs ETA / N/A / Verified / Approved / Flagged, each with a badge count
+
+### Downloads
+
+Vendors can download:
+
+- Their own uploaded evidence files
+- The questionnaire structure and their submitted answers
+
+### Submission
+
+The **Submit Assessment** button unlocks once every question is answered (or marked N/A / given an ETA). A confirmation dialog fires: *"Submit this assessment? You can continue updating until the deadline."*
+
+After submit, the status moves to Submitted → Under Review. Vendors can still upload additional documents. If the customer flags any question, the vendor returns to edit mode with previous state retained; the flagged questions are highlighted.
+
+## Access-code lifecycle
+
+- Codes are exactly 8 digits (numeric).
+- Requesting a new code immediately invalidates the previous one.
+- Resend is available both before and after submission.
+- Session tokens are stored in `sessionStorage` and cleared when the tab closes.
+
+## Limitations
+
+- One file per upload; multi-file uploads must be split.
+- 5 MB per file. Larger files should be summarized or split.
+- No "save draft" button — text stays in the response box until submit, but is not auto-saved across sessions.
+- Delegation is per-assessment; delegates cannot see the vendor's other assessments unless separately invited.
+- The portal has no self-service account creation. All access is code-based; codes are issued by the customer creating the assessment.

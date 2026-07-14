@@ -1,28 +1,42 @@
 ---
 title: "Administration"
-description: "Manage users and review the platform audit trail"
+description: "Manage users, roles, integrations, SSO, and the platform audit trail"
 ---
 
-The administration page hosts tenant configuration. Today, two tabs are documented: **User Management** and **Audit Log**. Visible to administrators; the link sits at the bottom of the sidebar.
+The administration surface hosts everything that configures the tenant — users and their managers, custom roles and permissions, single sign-on, third-party integrations, and the audit trail. Visible to Admins only.
 
-## What it does
+## Tabs
 
-- **User Management.** Add, edit, and assign role and status to users in the tenant.
-- **Audit Log.** Search and filter the platform audit trail.
+<CardGroup cols={2}>
+  <Card title="User Management" icon="users" href="#user-management">
+    Add and edit users, assign role and reporting manager, deactivate accounts.
+  </Card>
+  <Card title="Permissions" icon="shield-check" href="/administration/roles-and-permissions">
+    Create custom roles, grant permissions, review role assignments.
+  </Card>
+  <Card title="Integrations" icon="plug" href="#integrations">
+    Configure SSO, IdP / SSPM connectors (Okta, Google Workspace, Entra ID), and productivity tools (Dropbox, Freshdesk, Jira).
+  </Card>
+  <Card title="SSO" icon="key" href="/administration/sso">
+    Configure OIDC-based single sign-on.
+  </Card>
+  <Card title="Audit Log" icon="list" href="#audit-log">
+    Search and filter every action taken in the tenant.
+  </Card>
+</CardGroup>
 
-## Inputs
+## User Management
 
-### User Management
+Add, edit, and manage users in the tenant.
 
-Email, First Name, Last Name, Role (User / Manager / Admin), Status (Active / Inactive / Pending), set in the **Add User** and **Edit User** dialogs. Email is read-only on edit.
+### Inputs
 
-### Audit Log
+- **User attributes.** Email, First Name, Last Name, Role, Reporting Manager, Status (Active / Inactive / Pending). Email is read-only on edit.
+- **Role** — one of the built-in roles (User / Manager / Admin / Auditor) or any custom role defined in [Roles & Permissions](/administration/roles-and-permissions).
+- **Reporting Manager** — another user in the tenant. Manager assignment determines team-scoping for team-scoped roles.
+- **Last logged in** — surfaced on the user row.
 
-Filter selections and search terms.
-
-## Outputs
-
-### User Management
+### Outputs
 
 Stats cards: **Total Users**, **Active Users**, **Admin Users**.
 
@@ -31,23 +45,59 @@ User table:
 | Column | Meaning |
 | --- | --- |
 | User | Name and email |
-| Role | User / Manager / Admin |
+| Role | Assigned role (built-in or custom) |
+| Manager | Reporting manager (if assigned) |
 | Status | Active / Inactive / Pending |
 | Last Login | Date of last sign-in |
 | Created | Date the user was added |
 | Actions | Edit |
 
-### Audit Log
+## Permissions
+
+Custom-role creation and permission grants are covered in [Roles & Permissions](/administration/roles-and-permissions). A tenant can define any number of custom roles beyond the built-ins.
+
+## Integrations
+
+The Integrations tab is where SSO and third-party connectors live. Two categories:
+
+### Identity and posture connectors
+
+Connect an IdP or SSPM to receive continuous behavioral telemetry — users, apps, OAuth grants, session events. Wired into Exposure Drift Detection.
+
+- **Okta** (OAuth)
+- **Google Workspace** (OAuth)
+- **Microsoft Entra ID** (OAuth)
+
+For each, the connector uses OAuth to authorise, stores credentials in KMS, and runs on a scheduled sync. Connector health is visible in the Drift Center strip.
+
+### Productivity connectors
+
+- **Dropbox** — pull evidence documents from a shared folder
+- **Freshdesk** — ingest support tickets referencing vendors
+- **Jira** — link findings to Jira issues
+
+### SSO
+
+OIDC SSO providers (Okta, Entra ID, Google Workspace, or generic OIDC) are configured here. See [Single Sign-On](/administration/sso) for the full setup.
+
+## Audit Log
+
+Every action taken in the tenant lands here.
+
+### Inputs
+
+- Filter selections (date range, user, action type, status)
+- Free-text search
+
+### Outputs
 
 Stats cards: **Total Actions**, **Failed Actions**, **Unique Users**.
 
-Audit table: **Timestamp**, **User**, **Action**, **Details**, **Status** (success / failed).
-
-## How it works
-
-Each tab loads its data independently and saves through authenticated, tenant-scoped API calls.
+Audit table: **Timestamp**, **User**, **Action**, **Object type**, **Object ID**, **Details**, **Status** (success / failed).
 
 ## Limitations
 
-- **User delete is not yet implemented.** The delete action is disabled in the User Management table.
-- The Audit Log derives **Status** from the event type. There is no separate severity column.
+- **User delete is not yet implemented.** The delete action is disabled in the User Management table; deactivate the user via the Status field instead.
+- SCIM provisioning is not available — SSO users are provisioned just-in-time on first login.
+- IdP group → HigherOrder role mapping is a v2 feature.
+- Deleting a custom role that still has users assigned is blocked; reassign the users first.

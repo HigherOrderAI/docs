@@ -1,0 +1,61 @@
+---
+title: "Vendor Database"
+description: "Search a shared, pre-built catalog of vendor intelligence; add net-new vendors on demand; compare up to three side by side"
+---
+
+A shared catalog of pre-researched vendor profiles — company facts, product lines, security posture, breach history, news, and threats & controls. Two tabs: **Search a vendor** (type-ahead to a vendor profile) and **Compare vendors** (up to three side by side). If a vendor is not in the catalog, requesting research adds them; the catalog is tenant-agnostic so every customer benefits.
+
+## What it does
+
+- Type-ahead search over the shared vendor catalog. As you type, matches surface with name and category.
+- Clicking a match opens that vendor's profile — a tabbed intelligence view.
+- Comparing vendors: pick up to three, click **Compare**, see the same profile fields aligned side by side.
+- Vendor Research V1: if no match exists, a **Research this vendor** action opens a dialog and submits a research job. The job's progress is tracked in a jobs list on the page.
+- Feeds Vendor Intake — when a request references a known vendor, intake pre-fills metadata from the catalog and links the intake to the profile.
+
+## Inputs
+
+### Search a vendor
+
+- **Search text** in the type-ahead input, placeholder "Search by vendor name…"
+- Or click **Research this vendor** on an empty result to add a new one. Enter the vendor's name (pre-filled from your search) and submit.
+
+### Compare vendors
+
+- **Up to three vendors** picked via numbered slots (1, 2, 3). Each slot uses the same type-ahead as the search tab. Click the X on a filled slot to remove it. **Compare {N} vendors →** activates when two or more are selected.
+
+## Outputs
+
+### Vendor profile (`/vendor-database/{vendor_id}`)
+
+A hero strip with the vendor logo, name, and category, followed by tabs:
+
+- **Overview** — company description, founded year, headquarters, industry, employees
+- **Products** — product lines with categories
+- **Breaches** — breach history table (date, severity, affected records)
+- **News & Resources** — recent news items and links
+- **Security Posture** — compliance frameworks (ISO 27001, SOC 2, etc.) and current status indicators
+- **Threats & Controls** — vendor-category threat model and recommended controls (when available)
+
+### Comparison view
+
+The same fields aligned in columns per vendor, with row-level differences highlighted.
+
+### Research jobs list
+
+Any research submitted from this tenant appears as a job row with status. Completed jobs link to the newly created vendor profile.
+
+## How research works
+
+Submitting a research request enqueues a background job that assembles a fresh profile for the vendor from public sources. When it finishes, the vendor appears in the catalog for everyone. Turnaround is asynchronous — expected within hours, not seconds. You can leave the page and come back; the jobs list surfaces completion status the next time you visit.
+
+## How it feeds Intake
+
+When a new Vendor Intake request references a vendor already in the database, the intake detail page shows a **VendorIntelligence** side-panel drawn from the profile. This means the analyst reviewing the intake doesn't need to duplicate research — the vendor's known posture is in-context. See [Vendor Intake](/vendor-intake).
+
+## Limitations
+
+- The catalog is **shared** across all tenants. Requesting research on a vendor makes that profile visible to everyone; do not include tenant-private context in a research request.
+- Research jobs are best-effort and rate-limited. If a job returns without a complete profile, resubmit.
+- The catalog is not the same as your **Vendor Inventory**. Adding a vendor to your inventory (from the inventory page or via intake) is a separate action; the database is a research surface, the inventory is your operational list.
+- Breach and news data reflect the last research run for that vendor — refresh a profile by resubmitting research if the vendor has had a recent event.
