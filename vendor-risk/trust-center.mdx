@@ -1,0 +1,86 @@
+---
+title: "Trust Center Extraction"
+description: "Pull vendor evidence directly from public Trust Centers; handle NDA-gated documents through a one-time email forwarding setup"
+---
+
+Trust Center Extraction pulls a vendor's public security evidence — SOC 2, ISO 27001, VAPT, Privacy Policy, DPA, sub-processor lists — straight from their Trust Center portal, without waiting for a questionnaire response. Native support ships for SafeBase and Conveyor; other portals (Vanta, Drata, OneTrust, Whistic) are detected and scraped via a fallback anchor extractor. NDA-gated documents are surfaced with an email-based unlock flow.
+
+## What it does
+
+- Discovers a vendor's Trust Center portal automatically when the vendor is added.
+- Extracts public documents into the vendor's Documents tab, tagged with a shield icon indicating the Trust Center origin.
+- Recognizes document types and routes them through the same analyzers that handle uploaded evidence (SOC 2, ISO 27001, VAPT, Privacy Policy).
+- Handles NDA-gated documents through a one-time tenant setup — sign the NDA once on the vendor's portal, forward the magic-link email, and subsequent fetches unlock automatically.
+
+## How it works
+
+<Steps>
+  <Step title="Discovery">
+    When a vendor is added (or on manual re-fetch), the discovery service probes the vendor's domain for a Trust Center portal. Six portal platforms are recognized: SafeBase, Conveyor, Vanta, Drata, OneTrust, Whistic.
+  </Step>
+  <Step title="Extraction">
+    SafeBase and Conveyor are extracted with native recipes that read the portal's structured data. Other portals fall through to an anchor extractor that harvests document links from the HTML.
+  </Step>
+  <Step title="Bucketing">
+    Extracted items are sorted into three buckets:
+    - **Public direct download** — fetchable immediately
+    - **NDA gated** — requires an NDA sign-through on the vendor's portal
+    - **Metadata only** — the portal exposes the document name but not a downloadable file
+  </Step>
+  <Step title="Processing">
+    Public downloads are queued through the standard document pipeline — classifier picks the type, then the appropriate analyzer runs. The document appears in the vendor's Documents tab with a shield icon.
+  </Step>
+  <Step title="NDA unlock (one time)">
+    For NDA-gated documents, an admin completes the one-time email-forwarding setup for the tenant (see below). After that, the platform automatically triggers the NDA sign-through on the vendor's portal, the magic-link email is forwarded, and the document unlocks and enters the pipeline.
+  </Step>
+</Steps>
+
+## Recognized document types
+
+The anchor extractor and classifier route documents into these categories:
+
+- SOC 2 (Type I and Type II)
+- SOC 3
+- PCI DSS
+- ISO 27001 (and variants 27017, 27018, 9001, 42001 — surfaced but only 27001 has a dedicated analyzer)
+- Privacy Policy
+- DPA (Data Processing Agreement)
+- Sub-processors list
+- Penetration Test / VAPT report
+- GDPR-related documents
+- Terms of Service
+
+Non-analyzable items (SOC bridge letters, marketing whitepapers, ISO variants without dedicated analyzers) are skipped before processing to avoid noise.
+
+## NDA-gated documents
+
+NDA-gated documents are not downloaded automatically. Instead they appear as **metadata only** in the Documents tab with a badge indicating an NDA is required.
+
+### One-time setup
+
+<Steps>
+  <Step title="Open Trust Center Setup">
+    From a vendor with NDA-gated documents pending, open the Trust Center Setup dialog.
+  </Step>
+  <Step title="Sign the NDA and forward the email">
+    Sign the NDA on the vendor's portal using the tenant's Trust Center email address. When the magic-link unlock email arrives in that mailbox, forward it to the HigherOrder inbound alias shown in the dialog.
+  </Step>
+  <Step title="Verified">
+    The setup dialog confirms with a **Verified** badge. From this point forward, the platform can auto-trigger relogin for any NDA-gated document at this vendor's portal and unlock new documents without another manual forward.
+  </Step>
+</Steps>
+
+After setup, NDA-gated documents that were previously **metadata only** move into the processing queue on the next fetch cycle.
+
+## Where you see it in the product
+
+- **Vendor Profile → Documents tab.** Trust Center-sourced documents carry a shield icon next to the filename. Everything else about them (reprocess, delete, download) behaves the same as an uploaded document.
+- **Vendor Risk Report.** Trust-Center evidence feeds the vendor's risk band exactly like uploaded evidence — the source affects the badge, not the weight.
+- **Trust Center Setup dialog.** Per-tenant, one-time setup for the NDA email flow.
+
+## Limitations
+
+- Native extraction is only fully reliable for **SafeBase** and **Conveyor**. Other portals (Vanta, Drata, OneTrust, Whistic) fall through to the generic anchor extractor — results vary by portal implementation.
+- The NDA email-forwarding flow assumes the vendor's portal uses magic-link authentication. Portals with SSO, MFA, or account-based login are not supported by the auto-relogin flow.
+- No customer-facing job-status UI. Extraction runs in the background; documents appear in the Documents tab asynchronously.
+- Documents that require signed NDAs the tenant does not want to sign remain **metadata only** — there is no way to force a public download of an NDA-gated document.

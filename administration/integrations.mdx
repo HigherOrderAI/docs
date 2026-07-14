@@ -1,0 +1,109 @@
+---
+title: "Integrations"
+description: "Connect Dropbox, Jira, and Freshdesk to pull evidence, tickets, and metrics; IdP/SSPM connectors are configured separately under Exposure"
+---
+
+The Integrations tab in Administration wires HigherOrder into productivity and support tools that produce evidence or metrics for vendor risk. Configuration lives at **Administration → Integrations**. Each integration is a per-tenant setup with its own auth, sync schedule, and status.
+
+<Note>
+**Where IdP / SSPM connectors live.** Okta, Google Workspace, and Microsoft Entra ID are configured under **Exposure → Connectors**, not in the Integrations tab. They feed the Drift Center. See [SSO](/administration/sso) for authentication configuration for those same IdPs on the login side.
+</Note>
+
+## What it does
+
+Three integrations are wired end to end:
+
+| Integration | Auth | Purpose |
+|---|---|---|
+| **Dropbox** | OAuth 2.0 (PKCE) | Scan Dropbox for contract files matching configured keywords and file types; index them into the Contracts inventory |
+| **Jira** | OAuth 2.0 (PKCE) | Sync selected Jira projects; calculate SLA compliance, ticket velocity, and other vendor-related metrics |
+| **Freshdesk** | API Key | Monitor selected Freshdesk support groups; track group-level SLA compliance and ticket metrics |
+
+Each integration has a per-connector status card showing the current health, last sync time, and edit/disconnect controls.
+
+## Health states
+
+The connector health card can be in one of five states:
+
+| State | Meaning |
+|---|---|
+| **Healthy** | Last sync completed successfully |
+| **Pending** | Awaiting first sync |
+| **Degraded** | Sync succeeded but returned partial errors |
+| **Failed** | Sync failed completely |
+| **Disconnected** | Not configured |
+
+## Dropbox
+
+**Purpose.** Pull contract files from a Dropbox account into HigherOrder as documents. Files matching the configured keywords and file types are indexed into the Contracts inventory and become available for extraction.
+
+### Setup
+
+<Steps>
+  <Step title="Register a Dropbox app">
+    Create an OAuth app in Dropbox and copy the Client ID and Client Secret.
+  </Step>
+  <Step title="Authorize">
+    In HigherOrder → Administration → Integrations, click **Add Dropbox**, paste the Client ID and Client Secret, and complete the OAuth authorization.
+  </Step>
+  <Step title="Configure">
+    Set the **Keywords** (comma-separated — e.g., `contract, agreement, sla, msa, addendum`), tick the **File Extensions** to include (`pdf`, `docx`, `doc`, `txt`), and pick a **Sync Schedule** (Manual, Daily, or Weekly).
+  </Step>
+  <Step title="Verify">
+    Use **Test Connection** to confirm the credentials, and **Sync Now** to trigger the first scan.
+  </Step>
+</Steps>
+
+### What lands in the product
+
+Matching files appear as documents in the Contracts inventory and are queued through the standard extraction pipeline (contract analyzer, obligations, penalties, contacts).
+
+## Jira
+
+**Purpose.** Sync selected Jira projects into HigherOrder; calculate SLA compliance and ticket-velocity metrics per project. Used for vendor operational-risk signals.
+
+### Setup
+
+<Steps>
+  <Step title="Register a Jira OAuth app">
+    Create an OAuth 2.0 (3LO) app in Atlassian Developer console and copy the Client ID and Client Secret.
+  </Step>
+  <Step title="Authorize">
+    In HigherOrder, click **Add Jira**, paste the credentials, and complete the OAuth flow.
+  </Step>
+  <Step title="Configure">
+    Pick the **Projects** to sync from a checklist populated live from your Jira instance, set the **Sync Schedule** (Manual / Daily / Weekly), and toggle **SLA Tracking** on if you want per-project SLA metrics.
+  </Step>
+  <Step title="Verify">
+    **Test Connection** confirms the credentials. **Calculate Metrics** runs the metric pipeline against synced issues on demand.
+  </Step>
+</Steps>
+
+## Freshdesk
+
+**Purpose.** Monitor selected Freshdesk support groups; track ticket metrics and group-level SLA compliance for vendors whose relationships are visible in your support queue.
+
+### Setup
+
+<Steps>
+  <Step title="Get an API key">
+    Copy an API key from Freshdesk (Profile Settings → API Key).
+  </Step>
+  <Step title="Connect">
+    In HigherOrder, click **Add Freshdesk**, enter the **API Key** and your **Domain** (e.g., `acme.freshdesk.com`), and click **Connect**.
+  </Step>
+  <Step title="Configure">
+    Pick the **Groups** to monitor from a list populated live from Freshdesk, set the **Sync Schedule** (Manual / Daily / Weekly), and toggle **SLA Tracking** on if you want per-group SLA metrics.
+  </Step>
+</Steps>
+
+## Sync cadence
+
+The connector scheduler ticks every 30 seconds and dispatches any connector whose sync interval has elapsed. Daily and Weekly schedules are best-effort — sync fires on the next tick after the interval expires, not at a specific wall-clock time. Manual runs via **Sync Now** are dispatched immediately.
+
+## Limitations
+
+- Dropbox indexes files it can see with the OAuth token's scope; files outside that scope are invisible.
+- Jira and Freshdesk sync is read-only. HigherOrder does not create or modify tickets or issues.
+- Access-token refresh is automatic for OAuth connectors; if a refresh fails (revoked scope, expired grant), the connector moves to **Failed** and requires re-authorization from the setup dialog.
+- The connector catalog contains placeholders for **Salesforce** and **Vanta** — these do not yet have a working setup flow.

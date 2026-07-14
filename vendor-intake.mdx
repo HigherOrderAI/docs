@@ -1,21 +1,21 @@
 ---
 title: "Vendor Intake"
-description: "Multi-step intake wizard with live risk scoring and tier-based review routing for new vendor or product requests"
+description: "Multi-step intake wizard that computes an Assessment Tier live, pre-fills from the Vendor Database, and routes each request to Reviewers and Approvers"
 ---
 
-A four-step wizard for business teams that need a new vendor or product. As the requester fills out exposure details — data types, deployment model, AI usage, integrations — the platform computes a preliminary risk score and tier in real time, then shows which review path the request will take based on the resulting tier.
+A four-step wizard for business teams that need a new vendor or product. As the requester fills out exposure details — data types, deployment model, AI usage, integrations — the platform computes a preliminary **Assessment Tier** in real time and shows which review path the request will take. Requests are then routed to configured Reviewers and Approvers who move each one through the workflow.
 
 ## What it does
 
 - Walks the requester through four steps: **Scenario**, **Context**, **Exposure**, **Review & Submit**.
-- Computes a preliminary risk score and tier (Low / Medium / High / Critical) live as the user fills out the Exposure step, with contributing factors shown as chips.
-- Routes the request based on tier:
-  - **Low** — automated brief, no analyst review required.
-  - **Medium** — analyst review with targeted output package, 2-week SLA.
-  - **High** — full assessment with document collection, legal and security sync.
-  - **Critical** — executive sign-off required, full dossier, security leadership flagged immediately.
-- Validates each step inline (e.g., minimum 10-character description, valid email on Review).
-- Issues a Request ID (`VR-####`) on the confirmation screen.
+- Computes an **Assessment Tier** (Low / Medium / High / Critical) live during the Exposure step, with contributing factors shown as chips.
+- Pre-fills vendor metadata from the **Vendor Database** when the requester selects a known vendor.
+- Routes the submitted request to the tenant's configured Intake Reviewers and Intake Approvers for triage and decision.
+- Supports admin soft-delete of stale requests.
+
+<Note>
+**Assessment Tier is a different concept from the validated Risk Band.** Assessment Tier is a declared, intake-time label that sets the review depth. The Risk Band (six-band scale) is produced later, once a formal assessment analyzes evidence. See [Risk Scoring Methodology](/concepts/risk-scoring).
+</Note>
 
 ## Inputs
 
@@ -29,18 +29,55 @@ The wizard collects:
 - **Exposure.** Data types (Health, Financial, Source code / IP, Customer PII, Employee PII, Business data), Data scope, Deployment model, Passive capture (yes / no), AI usage, Integrations.
 - **Review.** Owner name and email.
 
+### Vendor Database pre-fill
+
+On the Scenario step, the vendor selector is backed by the [Vendor Database](/vendor-database). Picking a known vendor pre-fills the vendor name, domain, and (for existing-vendor requests) product details. The intake detail page also embeds a **Vendor Intelligence** panel drawn from the database, so a reviewer sees the vendor's known posture in context without leaving the request.
+
+If the vendor is not yet in the database, the requester can trigger a research job from the same selector — the vendor will be added to the database and linked to the intake once research completes.
+
+## Assessment Tier and routing
+
+The tier drives assessment depth and SLA:
+
+| Tier | Review path | SLA |
+|---|---|---|
+| **Low** | Automated brief, no analyst review | Immediate |
+| **Medium** | Analyst review with targeted output package | 2 weeks |
+| **High** | Full assessment with document collection, legal + security sync | 4 weeks |
+| **Critical** | Executive sign-off required, full dossier, security leadership flagged | Same-day escalation |
+
+The **Assessment Tier** badge is shown on the Review step and on the request detail page. It replaces the previous "Risk Score" label.
+
 ## Outputs
 
-After completing the wizard, the requester sees a confirmation screen with the Request ID, the vendor or product display, and the same Risk Banner showing the score, the assigned tier, and the contributing factors.
+After the requester submits, the confirmation screen shows the Request ID and the Assessment Tier. The request lands in the review workflow.
 
-The Risk Banner is the canonical output: it tells the requester (and the security or procurement team) which review path applies.
+### Request detail page
 
-## How it works
+Opens on click from any request list. The detail page shows:
 
-Risk scoring runs in the browser. The wizard reads a scoring configuration — tier thresholds and per-factor weights — and computes the score as inputs change on the Exposure step. Thresholds and factor weights can be tuned without code changes.
+- Requester and scenario summary
+- Assessment Tier with contributing factors
+- Vendor Intelligence panel pulled from the Vendor Database (if the vendor is linked)
+- Activity timeline: create → review → approve / reject / conditional approve
+- Reviewer and Approver actions available based on the current user's role
+
+### My Requests
+
+Every user sees their own submitted requests in **My Requests**. Admins additionally see a soft-delete control on each row — deleted requests are hidden from the list but can be recovered by support.
+
+## Intake Configuration
+
+**Vendor Intake → Intake Configuration** (`/vendor-intake/settings`) is where admins wire up the workflow:
+
+- **Intake Reviewers** — users who can move a request into review. Assigned via the Permissions system (`intake.review` permission).
+- **Intake Approvers** — users who can approve, reject, or conditionally approve a request (`intake.approve` permission).
+
+Each role card lists the currently assigned users with a count badge; admins add and remove users from within the card. Both roles are system roles — they exist by default and cannot be deleted, though the users assigned to them can be changed at any time.
 
 ## Limitations
 
-- **Submission persistence is in active development.** Completing the wizard generates a Request ID and the Risk Banner is accurate, but the request is not yet posted to the intake API in the current build. Backend persistence ships in an upcoming release.
-- **My Requests displays sample data.** The page surfaces a **My Requests** tab with example requests; live submissions will appear here once persistence is wired in.
-- **Risk scoring configuration is currently per-browser.** Saved values persist in local browser storage in the current build. Tenant-level persistence is in development.
+- Assessment Tier reflects **declared** exposure. Once documents are uploaded and analyzed, the validated Risk Band on the vendor profile takes precedence.
+- The Vendor Database is a shared catalog. If your vendor is missing, research is asynchronous — expect hours, not seconds, for the profile to complete.
+- Soft-deleted requests do not have a self-service restore action; restoration is a support-side operation.
+- Requests can only be reviewed by users with the `intake.review` or `intake.approve` permissions. Assigning these permissions is done via Roles & Permissions or via the Intake Configuration page.

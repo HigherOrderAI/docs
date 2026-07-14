@@ -1,0 +1,99 @@
+---
+title: "Vendor Assessments"
+description: "Create, send, and review vendor questionnaire assessments; walk each answer with AI-scored evidence, approve or flag, close or extend"
+---
+
+Vendor Assessments is the customer-side workflow for sending a questionnaire to a vendor, walking each answer as the vendor responds, and closing out the assessment when the review is complete. Each assessment has a lifecycle from **Draft** to **Completed**; each question inside an assessment carries its own AI-scored verdict, evidence mapping, and reviewer decision.
+
+For the vendor-facing surface (the portal your vendors log into to answer questions), see [Vendor Portal](/vendor-portal).
+
+## What it does
+
+- Create a new assessment by picking a vendor, a questionnaire template, and a deadline; optionally send the invite email immediately.
+- Filter template choices by the selected vendor's tier so reviewers only see appropriate questionnaires.
+- Walk every question in a right-hand panel that shows the vendor's answer, the AI's expected answer, the "what's missing" list, evidence sources with extraction snippets, conversation history, and per-question actions.
+- Approve, request more info, accept N/A, escalate to a finding, or send a message on any question.
+- Mark the whole assessment complete (locking the vendor portal), extend the deadline on expired assessments, or reopen individual questions with prior state retained.
+- See who has access on the vendor side (primary contact + delegated teammates) on a Participants tab.
+
+## Creating an assessment
+
+**New Vendor Assessment** opens a dialog:
+
+- **Vendor** (required) — from your inventory. Selecting a vendor filters the template list.
+- **Questionnaire template** (required) — shows only templates whose tier matches the selected vendor's tier, or falls back to templates tagged for all tiers if none match. If no template matches, the reviewer is prompted to create or tag one.
+- **Vendor contact name and email** (required) — the primary contact who will receive the invite. Email is validated against personal-domain patterns (gmail, yahoo, outlook, etc.); a companion **Allow other email domains** toggle controls whether the vendor can later invite teammates on domains other than their own.
+- **Deadline** (optional) — a target date the vendor sees on their portal.
+- **Send invite email now** (checkbox) — if unchecked, the assessment is created in **Draft** and can be sent later.
+
+## Assessment states
+
+| State | Meaning |
+|---|---|
+| **Draft** | Created but not yet sent |
+| **Sent** | Invite email dispatched; vendor has not started |
+| **In Progress** | Vendor has started answering |
+| **Submitted** | Vendor has clicked Submit; awaiting customer review |
+| **Under Review** | Customer is actively reviewing questions |
+| **Completed** | Customer has closed the assessment; vendor portal is locked |
+| **Expired** | Deadline has passed and status is still Sent or In Progress (derived at display time; extending the deadline clears it) |
+
+## Reviewing questions — the right panel
+
+Clicking any question opens a right-hand panel that takes about 42% of the screen. Every field the reviewer needs is on this panel; there is no separate "AI Review" modal.
+
+**What the panel shows:**
+
+- Sticky header with the question text, current status badge, criticality, and category
+- Score ring (percentage) or a checkmark for auto-verified questions
+- **AI Analysis** section (collapsible) — the AI's expected answer, its reasoning, and the "what's still needed" gaps list
+- **Evidence** card grid — the documents the AI scored (60% or higher) with page references and extracted snippets
+- **Conversation** — messages between customer and vendor, latest first
+- **Findings on this question** — findings raised from the question, if any
+- **Compose** box — send a free-form note to the vendor without changing status
+
+The AI verdict (score, gaps, reasoning) is cached after the first evaluation — clicking the question again does not re-call the LLM. Re-evaluation triggers on new evidence upload from the vendor.
+
+## Per-question actions
+
+| Action | What it does |
+|---|---|
+| **Approve** | Accepts the answer. Direct approval when score ≥ 90 or AI-verified; scores 85–89 require a written justification. |
+| **Request info** | Flags the question back to the vendor with a message; vendor sees it as "client flagged" and can respond. |
+| **Accept N/A** | Approves a vendor's not-applicable claim. |
+| **Undo** | Reverses a prior Approve / Flag / Accept, restoring the previous state. |
+| **Bookmark** | Marks the question for follow-up without changing status. |
+| **Create finding** | Raises a finding linked to this question; the vendor's answer becomes context on the finding. |
+| **Rate AI** | Thumbs up/down on the AI verdict — feedback signal, no state change. |
+
+Every action lands in the question's activity log with actor, timestamp, and the field-level change.
+
+## Completing an assessment
+
+**Complete Audit** on the assessment header locks the whole assessment. A confirmation dialog warns if there are still unapproved questions. Once completed:
+
+- The vendor portal for this assessment is locked. Vendors can no longer upload documents or update answers.
+- The assessment status becomes **Completed** and cannot be re-opened as a whole. Individual questions can still be reopened (see below).
+
+## Extending an expired deadline
+
+If an assessment's deadline passes while it is still Sent or In Progress, it displays as **Expired**. Updating the deadline via the assessment header clears the expired badge; the vendor's portal countdown updates accordingly.
+
+## Reopening a question
+
+**Undo** on an already-approved or already-flagged question puts it back in its previous state. The vendor's answer, uploaded evidence, and conversation history are all preserved — the reviewer can walk the same question again and make a different decision. Reopen is **per question**, not per assessment.
+
+## Participants — who's answering on the vendor side
+
+The **Participants** tab shows everyone the vendor has invited into the assessment (primary contact plus any delegates), each participant's email, role (owner or delegated), scope (full access or a subset of categories / questions), status, and last activity timestamp. This is a read-only view — delegation is managed by the vendor's primary contact from the [Vendor Portal](/vendor-portal). A toggle on this tab controls whether the primary contact may invite teammates on other email domains.
+
+## Resilience — cross-verification
+
+After the AI scores evidence against a question, a follow-up LLM pass checks that each score and gaps list is semantically correct for the question that was asked. When it detects a mismatch, it repairs the verdict. This runs transparently — the reviewer sees the repaired output.
+
+## Limitations
+
+- Reopening the assessment as a whole is not supported; use per-question **Undo** instead.
+- Bulk approve or bulk flag actions are not available — decisions are per question.
+- Extending a deadline updates the vendor-facing countdown, but the vendor is not automatically re-notified; if they need a reminder, use the compose box on any question.
+- Reviewers cannot edit the AI's expected answer or gaps list. Disagreement is handled by flagging the question back to the vendor or by raising a finding.

@@ -45,8 +45,10 @@
             "group": "Vendor Risk",
             "pages": [
               "vendor-risk/inventory",
+              "vendor-risk/assessments",
+              "vendor-risk/questionnaire-templates",
               "vendor-risk/contract-standards",
-              "vendor-risk/questionnaire-templates"
+              "vendor-risk/trust-center"
             ]
           },
           {
@@ -81,7 +83,8 @@
             "pages": [
               "administration",
               "administration/roles-and-permissions",
-              "administration/sso"
+              "administration/sso",
+              "administration/integrations"
             ]
           }
         ]

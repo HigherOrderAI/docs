@@ -1,39 +1,56 @@
 ---
 title: "AI Assistant"
-description: "Vera, the HigherOrder AI copilot for asking questions about contracts, vendors, and risk posture"
+description: "Vera, the HigherOrder AI copilot on the web and in Slack — for questions about contracts, vendors, coverage, and for launching intake requests"
 ---
 
-The web and Slack copilot named **Vera**. Ask questions about your customer contracts, vendor risk, SLAs, and coverage in natural language. Vera answers with formatted text, optional follow-up suggestions, source citations, and inline PDF downloads for any reports it generates.
+The web and Slack copilot named **Vera**. Ask questions about your customer contracts, vendor risk, SLAs, and coverage in natural language. Attach files for ad-hoc analysis. Launch a Vendor Intake request from a conversation. Vera answers with formatted text, follow-up suggestions, source citations, and inline PDF downloads for any reports it generates.
 
 ## What it does
 
-- Answers questions about contracts, vendors, SLAs, and coverage in a full-page web chat (default landing page) and via Slack.
+- Answers questions about contracts, vendors, SLAs, and coverage in a full-page web chat and via Slack.
 - Accepts file attachments for ad-hoc analysis directly inside the chat.
-- Returns formatted answers with optional follow-up suggestion chips, source expanders, and downloadable PDF reports inline.
-- Supports a parallel Slack surface with slash commands `/analyze`, `/help`, `/vendor-intake`, and `/vendor-status`, plus file uploads and message handling.
+- Launches a **Vendor Intake** modal from either surface — the intake form opens pre-filled with vendor name and use case when Vera detects the intent.
 - Provides an **Ask Assistant** side panel on the contract detail page for quick contextual Q&A about a specific contract.
+- Returns formatted answers with follow-up suggestion chips, source expanders, and downloadable PDF reports inline.
 
 ## Inputs
 
-- **Free-text questions** in the chat input (placeholder "Message Vera...").
-- **File attachments** via the paperclip icon. Supported types: PDF, DOCX, DOC, TXT, XLSX, XLS. Up to 10 MB per file, 16 MB total per request.
+### Web chat
+
+- **Free-text questions** in the chat input.
+- **File attachments** via the paperclip icon. Supported types: **PDF, DOCX, DOC, TXT, XLSX, XLS**. Up to **10 MB per file**, **16 MB total** per request. Uploaded files appear as chips below the input with size and a remove button.
 - **Suggested-question chips.** Tap a canned prompt to send it as a message.
 - **Consent buttons.** When Vera asks for permission to proceed (for example, before generating a long report), an amber bubble offers explicit option buttons.
+- **Intake form modal.** When Vera detects an "I want to submit a vendor intake" intent, the intake form opens inside the chat, pre-filled from the conversation.
+
+### Slack
+
+Vera exposes the same behavior in Slack with:
+
+- **Slash commands.** `/analyze`, `/help`, `/vendor-intake`, `/vendor-status`.
+- **DMs and mentions.** Message or mention `@Vera` in any channel where the app is installed.
+- **File uploads.** Attach documents in the same message you ask a question.
+- **Intake actions.** On intake-related messages, Slack action buttons (`Start Review`, `Approve`, `Reject`, `Request Info`, `View Full`) route to the real backend.
+
+### Ask Assistant side panel
+
+On any contract detail page, an **Ask Assistant** side panel is available for questions scoped to that specific contract. Same Vera; narrower context.
 
 ## Outputs
 
 - **AI message bubbles** with HTML-rendered answers — headings, bold, lists, paragraphs.
 - **Follow-up suggestion pills** under each AI answer.
-- **Sources (N) expander** that reveals the source citations the answer is grounded in.
+- **Sources (N) expander** revealing the source citations the answer is grounded in.
 - **Inline Download button** for any PDF Vera generates (for example, a vendor risk report).
 - **Timestamps** on every message and a typing indicator while Vera works.
 
 ## How it works
 
-The web client opens an authenticated WebSocket session to the chat backend, which routes user messages and uploaded files through Vera. Responses come back as discrete message types — answers, consent requests, file downloads, errors. The same backend powers the Slack agent, so the experience is consistent across surfaces. Vera draws on your tenant's contract, vendor, and Golden Standards data to ground answers; see [Customer Contracts](/contracts/customer-contracts), [Vendor Contracts](/contracts/vendor-contracts), and [Customer Golden Standards](/customer-risk/golden-standards) for the underlying data.
+The web client opens an authenticated WebSocket session to the chat backend, which routes user messages and uploaded files through Vera. Responses come back as discrete message types — answers, consent requests, intake-form modals, file downloads, errors. The Slack integration bridges into the same backend, so the experience is consistent across surfaces. Vera draws on your tenant's contract, vendor, and Golden Standards data to ground answers; see [Customer Contracts](/contracts/customer-contracts), [Vendor Contracts](/contracts/vendor-contracts), and [Customer Golden Standards](/customer-risk/golden-standards) for the underlying data.
 
 ## Limitations
 
 - **No token-by-token streaming.** Messages arrive as complete bubbles after a typing indicator, not as streamed tokens.
 - **Citations expander shows raw JSON** rather than formatted, clickable source links.
 - **Conversation history is per-browser-tab.** There is no persistent multi-session history UI in the web app — no chat archive, no rename, no cross-device continuity.
+- **Attachment types are fixed** to the list above. Markdown and image attachments in the main chat are not currently accepted (a separate flow accepts images and markdown for architecture-diagram uploads on threat-modeling pages).
