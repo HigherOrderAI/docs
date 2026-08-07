@@ -1,0 +1,207 @@
+---
+title: "Engagements"
+description: "The end-to-end workflow for one vendor relationship — start it at intake, then move it through profiling, classification, assessments, observations, and sign-off"
+---
+
+An **Engagement** is one vendor-and-product relationship, tracked end to end as a single object. It is the connective tissue that ties an intake request to the assessments it triggers, the observations those assessments produce, the findings that get remediated, and the sign-offs that close the review out. One vendor can have many engagements — one per product or service you consume from them — each with its own risk profile, assessment set, and lifecycle.
+
+Where [Vendor Intake](/vendor-intake) is the front door, an Engagement is the workflow that runs behind it: it replaces the older one-shot intake request with a durable record that stays open across the full onboarding and continues into periodic reassessment.
+
+<Frame>
+  <img src="/images/screenshots/engagements-list.jpg" alt="Vendor Engagements list with per-engagement current state and disposition" />
+</Frame>
+
+## The stages at a glance
+
+Every engagement moves through the same sequence. The chain is configurable per tenant; the default shape is:
+
+<Steps>
+  <Step title="Intake — start the engagement">
+    A business user submits the request: vendor, product/service, use case, and which parts of your own organization will consume it. An AI copilot assists as they type. → [Start an engagement](#stage-1-start-an-engagement)
+  </Step>
+  <Step title="Service Risk Profile (SRP) — describe the risk">
+    The business and risk teams jointly complete an internal form describing the service and its exposure, with drafts and AI-suggested answers. → [Complete the SRP](#stage-2-complete-the-service-risk-profile)
+  </Step>
+  <Step title="Classification — the platform tiers it">
+    The platform reads the SRP answers and derives the engagement's category, service risk tier, and review flags. Automatic. → [Classification](#stage-3-classification)
+  </Step>
+  <Step title="Assessments — send the questionnaires">
+    Based on the classification, one or more questionnaires launch in parallel against the vendor, each on its own track. → [Run the assessments](#stage-4-run-the-assessments)
+  </Step>
+  <Step title="Observations & findings — review what came back">
+    Each returned assessment produces an AI-drafted observations report; the reviewer curates it and approves it into findings. → [Review observations](#stage-5-review-observations-and-create-findings)
+  </Step>
+  <Step title="Completion — close it out">
+    Once every assessment is confirmed and every finding is closed, the engagement completes and its next reassessment date is set. → [Complete the engagement](#stage-6-complete-the-engagement)
+  </Step>
+</Steps>
+
+Two things move independently. **State** is where the engagement sits in the chain above. **Disposition** is the business outcome — *In Progress*, *Onboarded*, *On Hold*, or *Dropped* — and can be set at any point. Putting an engagement on hold or dropping it does not require walking the rest of the chain; dropping the last active engagement for a vendor deactivates the vendor.
+
+## Finding your next step
+
+You never have to guess what to do next. On every engagement's detail page:
+
+- A **guided next-action banner** at the top names the one thing the engagement is waiting on — "Complete the Service Risk Profile," "Launch the planned assessments," "Review observations," "Awaiting vendor response" — and links straight to it.
+- The **state-chain progress bar** shows which stage the engagement is in and which are done.
+- The **track matrix** shows one row per assessment, so mid-flow you can see which questionnaires are out with the vendor, which have come back, and which are in remediation.
+
+<Frame caption="An engagement's detail header: the state-chain progress bar and the track matrix, with one assessment complete and one still in remediation.">
+  <img src="/images/screenshots/engagement-detail.jpg" alt="Engagement detail showing state-chain progress and the per-assessment track matrix" />
+</Frame>
+
+Open an engagement from **Engagements** in the sidebar. The list has three tabs — **Not yet onboarded**, **Onboarded**, and **All** — so you can see everything still in flight separately from what's live.
+
+<Note>
+Each stage below ends with a **Your next step** line. That is exactly what the guided banner will prompt you to do when the engagement reaches that stage.
+</Note>
+
+## Stage 1: Start an engagement
+
+**Who:** any user with engagement *manage* permission. **Where:** **Engagements → New engagement**.
+
+Starting an engagement is a single form:
+
+- **Vendor** and domain — matched to the [Vendor Database](/vendor-database) as you type, or created on the spot if net-new.
+- **Product or service** and the **use case**.
+- **Business owner** — the person accountable for the relationship.
+- **Consuming entities** — which of your own legal entities will use the service.
+
+As you fill it in, the **AI intake copilot** works alongside you. It never blocks submission, but it surfaces:
+
+- **Vendor autofill** — identifies the vendor from name and domain and pre-fills known details (security contact, headquarters, a use-case-aware summary), and shows the vendor's existing engagements.
+- **Same-vendor overlap** — checks your use case against this vendor's other engagements and labels it *duplicate*, *overlaps*, *complementary*, or *unrelated*, so you don't open a redundant review.
+- **Cross-vendor similarity** — flags when the same use case already runs with a *different* vendor.
+- **Research on miss** — when the vendor isn't in the database yet, offers to kick off a background research job to build its profile.
+
+The copilot's analysis is saved with the engagement, so anyone who opens it later sees the same overlap and duplicate warnings you saw.
+
+Click **Submit** to create the engagement. The vendor and contacts are recorded and the engagement advances to the Service Risk Profile.
+
+<Info>
+Only the **business contact** is mandatory. A vendor contact is not required to start the engagement or to submit the SRP — it can be added later when a questionnaire actually needs to go out.
+</Info>
+
+**Your next step:** complete the Service Risk Profile.
+
+## Stage 2: Complete the Service Risk Profile
+
+The **Service Risk Profile (SRP)** is an internal form — the vendor never sees it. It is filled jointly by the **business** team (who own the relationship) and the **risk / TPRM** team (who own the review). Open the **SRP** tab on the engagement.
+
+<Frame caption="The SRP tab: the per-domain risk profile across the top, and the form organized by domain with completion progress.">
+  <img src="/images/screenshots/engagement-srp.jpg" alt="Service Risk Profile tab showing per-domain ratings and the questionnaire form" />
+</Frame>
+
+**Who:** business and risk users with engagement *manage* permission. Sections are labelled by owning team, but both teams can edit the whole form.
+
+While filling it in:
+
+- **Save draft.** Either team can save a draft at any time without advancing the workflow. If both teams edit the same draft, the platform detects the collision and offers to load the other team's latest version rather than silently overwriting it — you'll see a "draft changed elsewhere" prompt.
+- **Suggest with AI.** Runs one pass over the vendor's analyzed evidence — public documents, trust-center material, uploaded files, and the intake context — and proposes answers, each with a confidence score and a source citation. Nothing is applied automatically; **Apply all unanswered** fills only blank questions and never overwrites what a person typed.
+- **Upload vendor docs.** Attach documents from the SRP step; they feed the same evidence pipeline (website crawl, trust-center fetch, document analysis) that a vendor assessment uses, and become sources the AI can suggest from.
+
+When the form is complete, click **Submit**. Submitting pins the form version and the answers as a numbered revision and advances the engagement to classification. (Resubmitting later creates a new revision; prior revisions are retained.)
+
+**Your next step:** nothing — classification runs automatically on submit.
+
+## Stage 3: Classification
+
+Classification is automatic. On SRP submit, the platform reads the answers and derives the structured attributes that drive the rest of the workflow. The classifier is configured per tenant; a typical classification produces:
+
+- a **category** — the review depth the engagement warrants,
+- a **service risk tier** (Low / Medium / High), computed deterministically from weighted per-domain answers,
+- per-domain **risk ratings** (e.g. information security, data privacy, business continuity),
+- and **review flags** — enhanced due diligence, specific report requirements (SOC 1 / SOC 2), regulatory determinations, and the reassessment cadence.
+
+The result appears on the engagement's overview. There is nothing to approve here — classification decides which assessments the next stage will launch.
+
+<Note>
+Classification uses the **declared** answers in the SRP. It is distinct from the validated [Risk Band](/concepts/risk-scoring) produced later, once the assessments analyze the vendor's actual evidence.
+</Note>
+
+**Your next step:** launch the planned assessments.
+
+## Stage 4: Run the assessments
+
+An engagement can run several assessments at once, each as an independent **track**. Which questionnaires apply is decided by the classification.
+
+<Frame caption="The Questionnaire tab: switch between assessment tracks, launch new ones, and act on each — send invite, approve AI-verified answers, or export.">
+  <img src="/images/screenshots/engagement-questionnaire.jpg" alt="Questionnaire tab with per-assessment track switcher and launch/review actions" />
+</Frame>
+
+**How they launch:**
+
+- **Higher-category engagements** launch their mandatory questionnaires automatically.
+- **Lower-category engagements** show the planned questionnaires and require a reviewer to launch them with **Launch assessment** (or **Send the pre-onboarding questionnaire**) — for questionnaires outside the automatic set, launching asks for a short justification.
+
+Each track:
+
+- sends its own invitation to the vendor's [Vendor Portal](/vendor-portal),
+- follows the normal [assessment](/vendor-risk/assessments) lifecycle (sent → received → under review → confirmed),
+- and reports its own status on the **track matrix**, so you can see at a glance which questionnaires are out, which are back, and which are in remediation.
+
+Mandatory tracks block completion until they finish. Beyond pre-onboarding, a vendor-level **Risk Assessment** can be launched at any time with **Start Post-Onboarding Assessment**; it is shared across all of that vendor's engagements and visible read-only from each of them.
+
+**Your next step:** when a track comes back, review its observations.
+
+## Stage 5: Review observations and create findings
+
+When an assessment track comes back, the platform AI-drafts a **TPRM Observations** report for it — a summary plus a set of observation rows, each anchored to the assessment question it came from and split into the deficiency, the assessor's comment, and a recommendation. Open the **TPRM Observations** tab.
+
+<Frame caption="A confirmed observations report: the AI-drafted summary, then each observation split into observation, assessor comment, and recommendation — this one already converted to a finding in remediation.">
+  <img src="/images/screenshots/engagement-observations.jpg" alt="TPRM Observations report with observation, assessor comment, recommendation, and a linked finding" />
+</Frame>
+
+**Who:** risk / TPRM reviewers with engagement *manage* permission.
+
+**How to review and approve:**
+
+1. **Curate the draft.** Edit the summary, add or remove observations, set each one's severity and category, and **Regenerate** if you want a fresh draft.
+2. **Select** the observations you want to carry forward.
+3. Click **Approve**. Each selected observation converts directly into a [Finding](/findings) with a remediation due date assigned automatically from its severity (more severe → sooner). The report is marked confirmed.
+
+From there, findings enter the normal remediation lifecycle and go to the vendor to fix.
+
+**Your next step:** track the findings to closure — and handle any extension requests (below).
+
+## Approving extensions and accepting risk
+
+When a vendor asks for more time on a finding, the request runs a **two-stage business approval** so that the person who *sponsors* the vendor is not the same person who *accepts residual risk*:
+
+<Steps>
+  <Step title="Business Owner endorses">
+    A business contact on the engagement (with *endorse extension* permission) reviews the request and either endorses it onward or rejects it. The Business Owner **cannot** move a remediation date themselves.
+  </Step>
+  <Step title="Business Head accepts the risk">
+    The engagement's accountable Business Head (with *risk acceptance* permission) is the only role that can grant the risk acceptance and move the remediation date — and only after the Business Owner has endorsed.
+  </Step>
+</Steps>
+
+Both actions are on the finding, surfaced from the engagement's **Business Owner Review** and **Business Head Review** tabs. A stage-two approval before a stage-one endorsement is rejected.
+
+## Stage 6: Complete the engagement
+
+An engagement completes **automatically** once every non-cancelled assessment track is confirmed, every mandatory questionnaire has finished, and **every finding is closed**. There is no separate manual go-live gate — closing out remediation is the last thing standing between the engagement and completion.
+
+On completion the engagement records its **next reassessment date**, derived from the service risk tier (higher tier → sooner). Post-onboarding Risk Assessments then continue for the life of the vendor relationship; the due date surfaces as a hint on the engagement, and you launch the reassessment deliberately when you're ready.
+
+## Permissions
+
+Engagement access is governed by dedicated permissions (assigned via [Roles & Permissions](/administration/roles-and-permissions)):
+
+| Permission | Grants |
+|---|---|
+| **View** | Read engagement list, detail, history, forms, and classification |
+| **Manage** | Submit intake, fill forms, launch assessments, record sign-offs, change disposition, and all observation actions |
+| **Admin** | Configure the state chain and edit form definitions |
+| **Endorse extension** | Stage-one (Business Owner) endorsement of a vendor extension request |
+| **Risk acceptance** | Stage-two (Business Head) risk acceptance and remediation-date changes |
+
+List visibility follows the same team scoping as the rest of the platform — users see engagements they created or are named on, managers see their team's, and users granted tenant-wide read see all engagements. Business contacts named on an engagement can see it even if they didn't create it.
+
+## Limitations
+
+- Classification reflects **declared** SRP answers, not analyzed evidence. The validated Risk Band on the vendor profile takes precedence once assessments complete.
+- The state chain, SRP form, and classifier are tenant-configured. A tenant that hasn't configured them sees the default chain and no classification step.
+- Periodic reassessment dates are surfaced as a due hint; the Risk Assessment is launched deliberately, not fired automatically on the due date.
+- An engagement will not complete while any finding remains open — closing out remediation is a prerequisite, not a parallel task.

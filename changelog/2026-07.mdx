@@ -1,8 +1,68 @@
 ---
 title: "July 2026"
-description: "Tenant provisioning, assessment delegation, India DC, and Vendor Research V1"
+description: "Engagements — the end-to-end vendor workflow — plus parallel assessments, typed questionnaires, custom dashboards, and vendor-report ingestion"
 ---
-July starts on onboarding and multi-region infrastructure. Tenant provisioning and a first-time user experience land the first week. Vendors can delegate assessments to teammates from the portal instead of sharing credentials. India-region data-center support ships with a dedicated S3 bucket, inbound email moves onto AWS SES, and Vendor Research V1 lets users add net-new vendors to the database on demand.
+July's throughline is **Engagements** — a new end-to-end workflow object that ties one vendor-and-product relationship together from intake to sign-off. See [Engagements](/engagements). The month opens on onboarding and multi-region infrastructure (tenant provisioning, India data-center support, Vendor Research V1), then builds out the engagement lifecycle: an AI intake copilot, an internal Service Risk Profile filled by the business and risk teams, a configurable classifier, and assessments that fan out into parallel tracks and feed post-assessment observations straight into findings. Alongside it: typed and hierarchical questionnaires, natural-language custom dashboards, and a new engine for ingesting third-party risk reports.
+
+## Week of Jul 27
+
+### New
+- Vendor Offboarding V1.1 — an offboarding workflow on the engagement, with offboarding actions surfaced on the engagement hero and state chain
+- Merged Questionnaires V0.1–V0.2 — assemble a single assessment from more than one questionnaire template, or from category subsets of several, with a record of which subset was added, why, and by whom
+- Tenant Settings Admin V1 — a schema-driven admin tab for tenant-level configuration (sender email addresses, display label)
+- Vendor-report analysis engine — ingest a third-party vendor risk report (e.g. Rubix), extract it per page, normalize it deterministically, run a blind review and narrative synthesis, and produce a tenant-configurable risk quantification; async API with persistence and deterministic re-evaluation
+- Documents for an assessment now collect in one consolidated place per assessment
+
+### Improved
+- Service Risk Profile save-as-draft — either team can save an SRP draft without advancing the workflow; concurrent edits are detected and offered as "load theirs" rather than silently overwritten
+- Intake form reworked into a guided journey
+- AI approval accuracy — multi-answer questions handled correctly, and a SOC 2 is now treated as a report during evidence evaluation
+- Evidence export includes the originating question snippet alongside each answer
+
+### Fixed
+- Questions already answered are no longer reprocessed when an assessment re-runs
+
+## Week of Jul 20
+
+### New
+- Parallel assessments — an engagement fans out into multiple concurrent assessment tracks, each with its own questionnaire, timeline, observation report, and sign-off; questionnaire templates get stable per-tenant slugs
+- Risk Assessment (post-onboarding) — a vendor-level assessment shared across all of a vendor's engagements; triggered on engagement completion and visible read-only from sibling engagements
+- Intake tiering — intake now computes a tier and can trigger the matching assessments directly from the intake answers
+- SRP AI answer suggestions — "Suggest with AI" proposes SRP answers from the vendor's analyzed evidence, each with a confidence score and source citation; suggestions never overwrite typed answers and fill only blank questions
+- Questionnaire hierarchy — sub-questions nest one level under a parent, appear only when the parent's answer matches a condition, and are scored with the parent's question-and-answer as context
+- Questionnaire archival — templates can be archived instead of deleted; archived templates drop out of the active list and tier resolution but keep existing assessments working, and can be restored
+- Two-stage business approval for finding extensions — a Business Owner endorses a vendor's extension request; only the Business Head can then grant risk acceptance and move a remediation date
+
+### Improved
+- Large questionnaire workbooks import reliably — Excel extraction now runs one call per sheet (with per-sheet retry and row-splitting for oversized sheets), so 450-plus-question workbooks that previously exceeded the model's output limit now import atomically
+- Post-assessment analysis quality — review-quality tooling and observation recommendations improved
+- Vendor documents are now optional at portal submission
+- Findings link directly to the observations they came from; the terminal engagement state is "Completed" (was "Onboarded")
+- Longer model timeout for questionnaire uploads
+
+### Fixed
+- Dead session refresh — `/api/auth/refresh` is reachable again and no longer wipes the refresh cookie
+
+## Week of Jul 13
+
+### New
+- **Engagements V1** — a durable, end-to-end workflow object for each vendor-and-product relationship, replacing one-shot intake requests. A configurable state chain runs intake → Service Risk Profile → classification → assessments → completion. See [Engagements](/engagements)
+- Engagement intake copilot — AI vendor autofill, same-vendor overlap detection, cross-vendor similarity ("do we already run this with a different vendor?"), and research-on-miss for net-new vendors; advisory, never blocking
+- Engagement classifier — reads the Service Risk Profile answers and derives the engagement's category, service risk tier, per-domain ratings, and review flags, which decide which assessments launch
+- TPRM Observations — on assessment return, an AI-drafted post-assessment report the analyst curates; approving it converts each accepted observation into a Finding with a severity-based remediation due date
+- Custom Dashboards V0.1 — build a dashboard from a natural-language prompt; the request compiles to a saved, deterministic chart spec that doesn't re-run the model on each view
+- Questionnaire typed answers — text, yes/no, single-select, and multi-select answer types; a questionnaire can be scored on answers alone (attestation mode) without requiring evidence for every question, with a post-submission cross-question consistency sweep
+- Vendor edit audit — ARR, renewal date, and category are inline-editable on the vendor profile, with a per-vendor change-history drawer and entries surfaced in the overall audit log
+
+### Improved
+- Vendor Research domain probe — research now fetches the vendor's own site directly (sitemap, /trust-center, /security, security.txt) to catch bot-gated trust and compliance pages that web search misses, feeding confirmed disclosures and confirmed absences into the profile
+- Evidence processing stability — a reliability pass on the evidence pipeline
+- Model fallback for evidence evaluation — when the primary model hits a max-tokens loop or recitation filter, the batch escalates to a second model whose decoder won't reproduce the failure
+- Portal assessments — multiple contact emails on the vendor and business side, completion blocked until all items are closed, and bulk auto-approval
+
+### Fixed
+- SOC-file evaluation no longer traps in a retry loop
+- Unfenced model responses parsed correctly
 
 ## Week of Jul 6
 

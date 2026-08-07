@@ -75,6 +75,10 @@
             "pages": ["vendor-intake"]
           },
           {
+            "group": "Engagements",
+            "pages": ["engagements"]
+          },
+          {
             "group": "Vendor Portal",
             "pages": ["vendor-portal"]
           },
