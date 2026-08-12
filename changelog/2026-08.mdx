@@ -1,0 +1,42 @@
+---
+title: "August 2026"
+description: "Vendor Portal redesign, SharePoint integration, Risk Scoring V0.5, outbound Jira ticketing, and third-party risk report ingestion"
+---
+August centers on the vendor-facing experience and on connecting HigherOrder to the systems your teams already use. The Vendor Portal is rebuilt on a lighter, clearer design; SharePoint Online joins the integrations for document ingestion; and outbound ticketing pushes engagement events into your own Jira. Risk Scoring reaches V0.5 with per-option scores and a normalized 0–100 rating, admins get user-level role management and email branding, and the platform can now ingest third-party risk reports such as Rubix.
+
+## Week of Aug 10
+
+### New
+- Adjust assessment scope after launch — withdraw domains or individual questions from an in-flight assessment
+- Observation grouping — group related observations within a TPRM report
+
+### Improved
+- Vendor Portal bulk submission — answer and submit groups of questions at once
+- Questionnaire domains listed in a left-hand panel for quicker navigation across questionnaires
+- The engagement header now shows the Material chip alongside Category and Outsourcing
+
+## Week of Aug 3
+
+### New
+- Vendor Portal redesign — the vendor-facing surface rebuilt on a lighter theme, with a redesigned customer review page, questions grouped hierarchically by domain, each finding's latest status shown inline, and a clearer progress bar; "AI Review" is now "AI Analysis"
+- SharePoint Online integration — connect a SharePoint Online site or folder via app-only credentials (no OAuth redirect) and sync documents into HigherOrder, including `.xlsx` and `.csv`; folder-scoped sync with a folder picker. See [Integrations](/administration/integrations)
+- Risk Scoring V0.5 — assign a numeric score to each answer option; on assessment completion the platform computes a normalized 0–100 risk score and a banded rating. See [Risk Scoring Methodology](/concepts/risk-scoring)
+- Outbound ticketing V1 (Jira) — create tickets in your own Jira on engagement workflow events, with comments posted back as statuses change; a connector-agnostic pipeline, Jira first
+- Third-party risk report ingestion — ingest an outsourcing / vendor risk report (such as Rubix) and surface it on a dedicated Outsourcing tab, enabled by tenant config, with standardized display names
+- User Role Management — assign and remove roles on users directly from the admin user table; a "View all engagements" permission for business users
+- AI-suggested tab (Vendor Portal) — a lens showing every question for which document analysis has proposed an answer from uploaded evidence
+- Engagement activity log — a read-only activity log on each engagement
+- Email branding — brand-color settings in Tenant Settings for outbound email
+- Doc links V1.0 — in-app links to methodology documentation (e.g. the outsourcing methodology)
+
+### Improved
+- Customer review controls — customers see only submitted or N/A answers (a vendor can override an N/A with a manual input); customer queries are surfaced prominently; select options lay out vertically; partial matches show an excerpt, and an answer that scores above 90 without a defined or met expectation is marked **partial** and held out of bulk auto-approval
+- Vendor Portal shows document upload and analysis progress
+- Assessment emails to the business contact work with or without a vendor contact on file
+- Question numbering in questionnaire templates; keyboard navigation (←/→) through questions on the portal
+- Classification gains Privacy and AppSec applicable flags
+
+### Fixed
+- Wrong banner shown after closing a Risk Assessment
+- Next action shown incorrectly when a Risk Assessment is in progress on a parallel engagement
+- Question ID shown twice per row; sidebar overlaying popups
