@@ -1,8 +1,8 @@
 ---
 title: "August 2026"
-description: "Vendor Portal redesign, SharePoint integration, questionnaire import, Risk Scoring V0.5, outbound Jira ticketing, and report ingestion"
+description: "Vendor Portal redesign, SharePoint integration, questionnaire import, Risk Scoring V0.5, and third-party risk report ingestion"
 ---
-August centers on the vendor-facing experience and on connecting HigherOrder to the systems your teams already use. The Vendor Portal is rebuilt on a lighter, clearer design; SharePoint Online joins the integrations for document ingestion; and outbound ticketing pushes engagement events into your own Jira. Risk Scoring reaches V0.5 with per-option scores and a normalized 0–100 rating, admins get user-level role management and email branding, and the platform can now ingest third-party risk reports such as Rubix. Mid-month, questionnaire import closes the loop for vendors who answer by email: an uploaded workbook becomes a standard assessment rather than a read-only analysis.
+August centers on the vendor-facing experience and on connecting HigherOrder to the systems your teams already use. The Vendor Portal is rebuilt on a lighter, clearer design, and SharePoint Online joins the integrations for document ingestion. Risk Scoring reaches V0.5 with per-option scores and a normalized 0–100 rating, admins get user-level role management and email branding, and the platform can now ingest third-party risk reports such as Rubix. Mid-month, questionnaire import closes the loop for vendors who answer by email: an uploaded workbook becomes a standard assessment rather than a read-only analysis.
 
 ## Week of Aug 10
 
@@ -30,11 +30,9 @@ August centers on the vendor-facing experience and on connecting HigherOrder to 
 - Vendor Portal redesign — the vendor-facing surface rebuilt on a lighter theme, with a redesigned customer review page, questions grouped hierarchically by domain, each finding's latest status shown inline, and a clearer progress bar; "AI Review" is now "AI Analysis"
 - SharePoint Online integration — connect a SharePoint Online site or folder via app-only credentials (no OAuth redirect) and sync documents into HigherOrder, including `.xlsx` and `.csv`; folder-scoped sync with a folder picker. See [Integrations](/administration/integrations)
 - Risk Scoring V0.5 — assign a numeric score to each answer option; on assessment completion the platform computes a normalized 0–100 risk score and a banded rating. See [Risk Scoring Methodology](/concepts/risk-scoring)
-- Outbound ticketing V1 (Jira) — create tickets in your own Jira on engagement workflow events, with comments posted back as statuses change; a connector-agnostic pipeline, Jira first
 - Third-party risk report ingestion — ingest an outsourcing / vendor risk report (such as Rubix) and surface it on a dedicated Outsourcing tab, enabled by tenant config, with standardized display names
 - User Role Management — assign and remove roles on users directly from the admin user table; a "View all engagements" permission for business users
 - AI-suggested tab (Vendor Portal) — a lens showing every question for which document analysis has proposed an answer from uploaded evidence
-- Engagement activity log — a read-only activity log on each engagement
 - Email branding — brand-color settings in Tenant Settings for outbound email
 - Doc links V1.0 — in-app links to methodology documentation (e.g. the outsourcing methodology)
 
