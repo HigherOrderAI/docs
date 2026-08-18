@@ -1,11 +1,11 @@
 ---
 title: "Vendor Assessments"
-description: "Create, send, and review vendor questionnaire assessments; walk each answer with AI-scored evidence, approve or flag, close or extend"
+description: "Send, review, and close vendor assessments in the review workbench; import emailed questionnaires; adjust scope in flight"
 ---
 
-Vendor Assessments is the customer-side workflow for sending a questionnaire to a vendor, walking each answer as the vendor responds, and closing out the assessment when the review is complete. Each assessment has a lifecycle from **Draft** to **Completed**; each question inside an assessment carries its own AI-scored verdict, evidence mapping, and reviewer decision.
+Vendor Assessments is the customer-side workflow for sending a questionnaire to a vendor, reviewing each answer as it comes back, and closing the assessment when every question is decided. Reviews run in a **review workbench** built for volume: a domain rail with live progress, one-click approve/reject with pre-composed notes, bulk approval of AI-verified answers, and a risk score that updates as the vendor answers. A vendor who replies by email instead of the portal is covered too — an uploaded workbook imports into the same assessment machinery.
 
-For the vendor-facing surface (the portal your vendors log into to answer questions), see [Vendor Portal](/vendor-portal).
+For the vendor-facing surface, see [Vendor Portal](/vendor-portal). For how assessments launch from an engagement, see [Engagements](/engagements).
 
 <Frame>
   <img src="/images/screenshots/vendor-assessments.png" alt="Vendor Assessments list" />
@@ -13,22 +13,25 @@ For the vendor-facing surface (the portal your vendors log into to answer questi
 
 ## What it does
 
-- Create a new assessment by picking a vendor, a questionnaire template, and a deadline; optionally send the invite email immediately.
-- Filter template choices by the selected vendor's tier so reviewers only see appropriate questionnaires.
-- Walk every question in a right-hand panel that shows the vendor's answer, the AI's expected answer, the "what's missing" list, evidence sources with extraction snippets, conversation history, and per-question actions.
-- Approve, request more info, accept N/A, escalate to a finding, or send a message on any question.
-- Mark the whole assessment complete (locking the vendor portal), extend the deadline on expired assessments, or reopen individual questions with prior state retained.
-- See who has access on the vendor side (primary contact + delegated teammates) on a Participants tab.
+- Create an assessment by picking a vendor, a questionnaire template, and a deadline; or let an engagement launch assessments automatically from its plan.
+- Review every answer in the workbench — approve or reject in one click, with the note composed before the click and recorded on the question.
+- Bulk-approve AI-verified answers — per domain, per selection, or across the current view — behind a review dialog with per-question editable notes.
+- Run several assessment tracks in parallel on one engagement, or merge several questionnaires into one assessment.
+- Adjust scope after launch: add questionnaires or domains, or withdraw domains with a justification the vendor sees.
+- Import a vendor's completed Excel questionnaire; imported answers land in the same statuses and review queues as portal answers.
+- Close the assessment once every asked question is decided.
 
 ## Creating an assessment
 
 **New Vendor Assessment** opens a dialog:
 
 - **Vendor** (required) — from your inventory. Selecting a vendor filters the template list.
-- **Questionnaire template** (required) — shows only templates whose tier matches the selected vendor's tier, or falls back to templates tagged for all tiers if none match. If no template matches, the reviewer is prompted to create or tag one.
-- **Vendor contact name and email** (required) — the primary contact who will receive the invite. Email is validated against personal-domain patterns (gmail, yahoo, outlook, etc.); a companion **Allow other email domains** toggle controls whether the vendor can later invite teammates on domains other than their own.
+- **Questionnaire template** (required) — shows only templates whose tier matches the selected vendor's tier, or falls back to templates tagged for all tiers if none match.
+- **Vendor contact name and email** (required) — the primary contact who will receive the invite. Email is validated against personal-domain patterns; a companion **Allow other email domains** toggle controls whether the vendor can later invite teammates on other domains.
 - **Deadline** (optional) — a target date the vendor sees on their portal.
 - **Send invite email now** (checkbox) — if unchecked, the assessment is created in **Draft** and can be sent later.
+
+Assessments launched from an [engagement](/engagements) skip this dialog — the engagement's classifier selects the questionnaires and the launch mode (parallel tracks or merged) from the plan.
 
 ## Assessment states
 
@@ -40,64 +43,111 @@ For the vendor-facing surface (the portal your vendors log into to answer questi
 | **Submitted** | Vendor has clicked Submit; awaiting customer review |
 | **Under Review** | Customer is actively reviewing questions |
 | **Completed** | Customer has closed the assessment; vendor portal is locked |
-| **Expired** | Deadline has passed and status is still Sent or In Progress (derived at display time; extending the deadline clears it) |
+| **Expired** | Deadline has passed and status is still Sent or In Progress; extending the deadline returns it to In Progress |
 
-## Reviewing questions — the right panel
+## The review workbench
 
-Clicking any question opens a right-hand panel that takes about 42% of the screen. Every field the reviewer needs is on this panel; there is no separate "AI Review" modal.
+The Questions tab is a three-column layout: a **domain rail**, the **question list**, and a **detail pane**. Both side panels collapse (and start collapsed, so questions get full width); layout preferences persist per reviewer.
 
-**What the panel shows:**
+### Domain rail
 
-- Sticky header with the question text, current status badge, criticality, and category
-- Score ring (percentage) or a checkmark for auto-verified questions
-- **AI Analysis** section (collapsible) — the AI's expected answer, its reasoning, and the "what's still needed" gaps list
-- **Evidence** card grid — the documents the AI scored (60% or higher) with page references and extracted snippets
-- **Conversation** — messages between customer and vendor, latest first
-- **Findings on this question** — findings raised from the question, if any
-- **Compose** box — send a free-form note to the vendor without changing status
+- Domains in template order, each with a two-track progress bar — pale for *vendor answered*, solid for *reviewer decided* — and stacked `answered/total` and `decided/total` counts. A domain turns green when fully decided.
+- Sub-domains nest under the selected domain.
+- A **Sort by: least answered** toggle turns the rail into a chase list of what's outstanding.
+- A live **risk-score chip** shows the current [assessment risk score](/concepts/risk-scoring) — marked as in-flight until the assessment closes, when the score is stamped final.
 
-The AI verdict (score, gaps, reasoning) is cached after the first evaluation — clicking the question again does not re-call the LLM. Re-evaluation triggers on new evidence upload from the vendor.
+### The question list
 
-## Per-question actions
+Questions group into domain › sub-domain sections. Each row carries one status chip and three fixed actions: **decide with note**, **Reject**, and **Approve** — the note is composed and visible *before* the click, so approving is genuinely one click. A decided row's primary action becomes **Undo**. On an N/A claim the same buttons record accept-N/A / reject-N/A.
 
-| Action | What it does |
-|---|---|
-| **Approve** | Accepts the answer. Direct approval when score ≥ 90 or AI-verified; scores 85–89 require a written justification. |
-| **Request info** | Flags the question back to the vendor with a message; vendor sees it as "client flagged" and can respond. |
-| **Accept N/A** | Approves a vendor's not-applicable claim. |
-| **Undo** | Reverses a prior Approve / Flag / Accept, restoring the previous state. |
-| **Bookmark** | Marks the question for follow-up without changing status. |
-| **Create finding** | Raises a finding linked to this question; the vendor's answer becomes context on the finding. |
-| **Rate AI** | Thumbs up/down on the AI verdict — feedback signal, no state change. |
+The toolbar filters the list with **bucket pills** — All, Ready to Approve, Review, ETA Extensions, N/A Claims, Waiting on Vendor, Approved, Rejected, Bookmarked — plus search, a questionnaire filter on merged assessments, and a density switch. A `?` legend defines every bucket in place.
 
-Every action lands in the question's activity log with actor, timestamp, and the field-level change.
+### What the reviewer sees — and when
 
-## Completing an assessment
+Until the vendor actually submits an answer, an N/A claim, or an ETA on a question, the reviewer sees **nothing AI-generated for it** — no score, no gaps, no suggested answer. Evidence uploads alone don't count as a submission. This keeps the review honest: decisions are made on what the vendor said, not on what the platform guessed they might say.
 
-**Complete Audit** on the assessment header locks the whole assessment. A confirmation dialog warns if there are still unapproved questions. Once completed:
+### Attention items — gaps and contradictions
 
-- The vendor portal for this assessment is locked. Vendors can no longer upload documents or update answers.
-- The assessment status becomes **Completed** and cannot be re-opened as a whole. Individual questions can still be reopened (see below).
+Each answered question carries a consolidated attention list, in severity order: **gaps** (what's still missing), **contradictions** (conflicts with another answer, from the post-submission consistency sweep), **expected options left unticked**, and **no supporting evidence**. The scope header counts how many questions "need a second look," and any of these marks a question unsafe for bulk approval.
 
-## Extending an expired deadline
+An answer that scores high without actually meeting the defined expectation is held at **partial** — it is excluded from Ready to Approve and from bulk approval, and must be walked one by one.
 
-If an assessment's deadline passes while it is still Sent or In Progress, it displays as **Expired**. Updating the deadline via the assessment header clears the expired badge; the vendor's portal countdown updates accordingly.
+### The detail pane
 
-## Reopening a question
+Opening a question shows three tabs — **Analysis** (expected answer, verdict, matched documents with passages, and what was searched without a match), **Conversation**, and **Activity** — plus the question's family (parent and sub-questions), findings raised from it, bookmark, and **Create finding**. A message composer posts to the vendor without changing status. Decisions stay on the row — the pane is for reading, not deciding.
 
-**Undo** on an already-approved or already-flagged question puts it back in its previous state. The vendor's answer, uploaded evidence, and conversation history are all preserved — the reviewer can walk the same question again and make a different decision. Reopen is **per question**, not per assessment.
+## Bulk approval
+
+Bulk approve exists in three scopes, all funneling through one review dialog:
+
+- **Approve N ready** on the scope header — everything auto-approvable in the current view
+- **Approve N ready** on a domain section — the same, scoped to that section
+- **Approve N** on the selection bar — whatever the reviewer ticked
+
+"Ready" means AI-verified **and** bulk-safe: no gap, no contradiction, no unticked expected options, no missing evidence. Ticking rows by hand can include cautioned questions — that's explicit consent, and the selection bar says how many carry a caution. The dialog lists every question with the expected answer, the vendor's answer, and an **editable note** per row; any row can be unticked before submitting. Batches are capped at 200 per submit; anything the server refuses (already decided, not answered) is named and stays selected. Every bulk approval writes the same per-question record as a manual one, so **Undo** still works question by question.
+
+There is no bulk reject.
+
+## Parallel assessment tracks
+
+An engagement can fan out into multiple concurrent assessments — for example a privacy questionnaire and a security questionnaire on separate tracks — each with its own questionnaire, timeline, observation report, risk score, and sign-off:
+
+- The engagement hero shows a **track matrix**: one row per track across a shared seven-step chain (Sent → Received → TPRM Observations → Findings → Business Owner Review → Head Approval → Closed), with each track's next action.
+- Every assessment-scoped tab carries a **track switcher**; the selection follows you across tabs.
+- A vendor-level Risk Assessment shared across engagements appears as its own (read-only from sibling engagements) lane.
+- The engagement completes only when **every** track is confirmed and every finding is closed.
+
+## Merged questionnaires
+
+Alternatively, one assessment can be assembled from **several questionnaire templates — or category subsets of them**. A scope picker records which template and which categories each block came from, why, and by whom; one questionnaire is **primary** and its document checklist and evidence policy govern the assessment.
+
+On a merged assessment, a chip strip names each questionnaire with its own risk rating (each scores against its own template's bands; the assessment score is their average). With two or more questionnaires, each can carry an **assignee** — a soft assignment that routes the work without locking anyone out. Clicking a chip filters the question list to that questionnaire.
+
+## Adjusting scope after launch
+
+**Edit scope** on an in-flight assessment adds questionnaires or domains, or withdraws domains and sub-domains — the unit is always the domain, never an individual question. The flow:
+
+- The dialog opens on the live scope; untick domains to withdraw, tick to add, and add whole questionnaires from the catalogue. Plan-mandated questionnaires are locked.
+- A pinned diff footer states exactly what will change, and a **justification is mandatory** — it is emailed to the vendor and quoted on their portal.
+- Withdrawals get a second confirmation pass listing everything to be removed.
+
+Withdrawn questions are never deleted: answers and decisions are kept but stop counting toward progress, completion, and the risk score. Findings already raised from a withdrawn question keep running. The rail shows a dashed **Withdrawn** section whose contents are read-only, with the recorded reason quoted. Re-adding a withdrawn domain revives the same questions — with their answers — rather than starting over.
+
+## Importing an emailed questionnaire
+
+Some vendors never touch the portal — they email back a filled Excel workbook. **Upload questionnaire** (on the assessment menu, or on the vendor profile's Questionnaires tab when no assessment exists yet) imports it into a standard assessment:
+
+<Steps>
+  <Step title="Upload and confirm columns">
+    The platform proposes each sheet's question, answer, and comment columns; the reviewer confirms or overrides them. Sample rows show what was detected — including embedded reviewer comments.
+  </Step>
+  <Step title="Match a questionnaire">
+    From the vendor profile, the import ranks your templates by how many workbook questions each one covers — up to five candidates, each offering either "adds to the assessment already open" or "opens a new assessment." A workbook that matches nothing is refused, not force-fitted.
+  </Step>
+  <Step title="Check the dry run">
+    Before anything lands, the dialog shows *Questions in file / Answered / Will import*, and a downloadable dry-run workbook lists every row with whether it will import, the matching rule in plain words, and a "Needs attention" sheet you can forward to the vendor. The preview is computed by the same code as the import, so the number on screen is the number that lands.
+  </Step>
+  <Step title="Import runs in the background">
+    Rows that deterministic matching can't place go to a batched model adjudication with a strict confidence floor — anything below it is skipped, not guessed. Comments come in as the vendor's additional context and are read by the evaluation. A progress banner tracks the run; large questionnaires take minutes because every answer is evaluated on arrival.
+  </Step>
+</Steps>
+
+Imported answers are stored exactly as portal answers and run the same evaluation ladder — auto-verified, partial, or needs-input — so bulk approval and the review queues work on them unchanged. An import never overwrites a vendor's own portal answer or an approved question; re-uploading a corrected workbook is expected and safe.
+
+## Closing, reopening, extending
+
+- **Close assessment** locks the assessment once every asked question is decided. The vendor portal locks with it. Closing is one-way — there is no assessment-level reopen.
+- **Undo** on any question restores its previous state — the vendor's answer, evidence, and conversation are preserved — and works even after the assessment is closed, for corrections.
+- An **expired** assessment can be extended; updating the deadline returns it to In Progress. The vendor is not automatically re-notified — send a message if they need a nudge.
 
 ## Participants — who's answering on the vendor side
 
-The **Participants** tab shows everyone the vendor has invited into the assessment (primary contact plus any delegates), each participant's email, role (owner or delegated), scope (full access or a subset of categories / questions), status, and last activity timestamp. This is a read-only view — delegation is managed by the vendor's primary contact from the [Vendor Portal](/vendor-portal). A toggle on this tab controls whether the primary contact may invite teammates on other email domains.
-
-## Resilience — cross-verification
-
-After the AI scores evidence against a question, a follow-up LLM pass checks that each score and gaps list is semantically correct for the question that was asked. When it detects a mismatch, it repairs the verdict. This runs transparently — the reviewer sees the repaired output.
+The **Participants** tab shows everyone the vendor has invited into the assessment (primary contact plus delegates), each participant's email, role, scope (full access or a subset of domains/questions), status, and last activity. Delegation itself is managed by the vendor's primary contact from the [Vendor Portal](/vendor-portal).
 
 ## Limitations
 
-- Reopening the assessment as a whole is not supported; use per-question **Undo** instead.
-- Bulk approve or bulk flag actions are not available — decisions are per question.
-- Extending a deadline updates the vendor-facing countdown, but the vendor is not automatically re-notified; if they need a reminder, use the compose box on any question.
-- Reviewers cannot edit the AI's expected answer or gaps list. Disagreement is handled by flagging the question back to the vendor or by raising a finding.
+- Bulk approval covers approvals only; rejections are per question.
+- Scope withdrawal works at the domain/sub-domain level — individual questions cannot be withdrawn, since a half-removed domain would keep full scoring weight while being judged on a fragment.
+- Reviewers cannot edit the AI's expected answer or gaps list. Disagreement is handled by messaging the vendor or raising a finding.
+- Extending a deadline updates the vendor-facing countdown but does not re-send the invite email.
+- Questionnaire import requires the workbook to contain at least one answer; a blank questionnaire is rejected without touching the assessment.

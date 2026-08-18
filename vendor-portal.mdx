@@ -1,19 +1,19 @@
 ---
 title: "Vendor Portal"
-description: "The vendor-side surface where third parties log in, answer assessment questions, upload evidence, and hand work off to teammates"
+description: "The vendor-side surface where third parties answer assessments inline, review AI-suggested answers, respond to findings, and submit"
 ---
 
-The Vendor Portal is where your third-party vendors respond to the assessments you send them. Vendors log in with an emailed access code, see the exact questionnaire you assigned, answer inline with text and evidence uploads, and submit. Vendors can hand assessments off to teammates without sharing credentials, request a fresh access code any time, and download their own submissions.
+The Vendor Portal is where your third-party vendors respond to the assessments you send them. Vendors log in with an emailed access code, answer questions inline on a single sheet — grouped by questionnaire, domain, and sub-domain — accept answers the platform drafted from their uploaded documents, submit in bulk, and respond to findings the reviewer raises. Rebuilt in August 2026 on a lighter design carrying your brand colors and wordmark.
 
 ## What it does
 
-- Presents each assessment as a guided overview + question list with completion progress.
-- Accepts responses per question — answer text, evidence upload, "I'll provide this later" with an ETA, or "Doesn't apply" with a reason.
-- Auto-verifies evidence: the AI evaluator re-scores each answered question when new evidence lands.
-- Enforces that every question is answered (or marked N/A or given an ETA) before the vendor can submit.
-- Lets the primary contact delegate the assessment to teammates.
-- Allows access-code resend on demand and after submission.
-- Supports customer reopens: if the reviewer flags a question, the vendor returns to edit mode with previous state retained.
+- Presents the assessment as a three-step journey: upload documents (optional, recommended), answer questions, review and submit.
+- Analyzes uploaded documents against the questionnaire and proposes answers — each with the source document and a confidence score — which the vendor can accept individually or sweep-accept in bulk.
+- Lets vendors answer directly in the question list; answers stage locally and submit in batches, so a vendor can work through dozens of questions and submit once.
+- Shows each question's reviewer findings, customer queries, and AI analysis inline; flags contradictions between answers.
+- Lets the primary contact delegate all or part of the assessment to teammates, each with their own access code and scope.
+- Lets vendors respond to findings — post an update with evidence, or request a remediation-date extension (up to 30 days, with justification).
+- Enforces that every visible question is answered, marked N/A, or given an ETA before submission. Documents are **not** required to submit.
 
 ## Inputs
 
@@ -25,67 +25,77 @@ Vendors visit **`/vendor-portal`** and enter:
 - **Assessment ID** (pre-filled if the vendor clicked the emailed link)
 - **Access code** — an 8-digit numeric code emailed to the vendor when the assessment was created
 
-Access codes can be reissued via the **Get a new access code** link. Requesting a new code invalidates the previous one immediately.
+Access codes can be reissued via **Get a new access code**. Requesting a new code invalidates the previous one immediately.
 
 ### Answering a question
 
-Each question offers three response modes:
+Most questions are answered **inline in the list**: pick an option or type the answer, optionally add context, and move on. Each answered row stages locally — a bottom bar counts "*N answered, not submitted*" and a single **Submit N** sends the batch. Rows the server refuses (locked by customer approval, out of scope, already answered) stay staged with a plain-English reason.
 
-- **Add Evidence** — enter text and optionally upload a supporting file. On submit, the AI evaluator scores the answer against the required evidence.
-- **I'll Provide This Later** — pick an ETA date and add an optional note. The question stays "Awaiting Vendor Action" until the ETA arrives.
-- **Doesn't Apply to Us** — mark as N/A with a required reason. The reviewer decides whether to accept the N/A.
+Opening a question's detail view adds the full response options:
 
-Accepted file formats: **PDF, DOC, DOCX, XLSX, XLS, PNG, JPG, JPEG**. One file per upload, up to **5 MB**.
+- **Answer with evidence** — attach a supporting file; the AI evaluator scores the answer against the required evidence.
+- **Need more time?** — propose an ETA date with an optional note.
+- **Doesn't apply to us** — mark as N/A with a required reason. The reviewer decides whether to accept it.
 
-### Additional documents
+Accepted file formats: **PDF, DOC, DOCX, XLSX, XLS, PNG, JPG, JPEG**. One file per upload, up to **50 MB**.
 
-The Overview screen lists required document types (SOC 2, ISO 27001, VAPT report, etc.). Each can be uploaded once and replaced later. Uploaded documents are processed in the background and cross-referenced against the questionnaire.
+Questions can nest: answering a parent question reveals its conditional follow-ups immediately, and not-yet-asked follow-ups appear as read-only previews so vendors can see what's coming.
+
+### AI-suggested answers
+
+When a vendor uploads documents, the platform analyzes them against the questionnaire in the background — a progress banner shows which file is being analyzed, how many questions have been checked, and a time estimate; the vendor can close the page and the analysis keeps running. Where the analysis finds an answer, the question shows a suggestion strip with the proposed value, the source document, and a confidence percentage:
+
+- **Use this** accepts the suggestion; **Answer myself** dismisses it.
+- An **AI suggested** tab collects every open suggestion in one place.
+- **Review all** stages every high-confidence suggestion in one click; weaker suggestions must be reviewed one at a time.
 
 ### Delegation
 
-The primary vendor contact can delegate an assessment to a teammate from the **Team** tab. The teammate receives their own access code by email and works on the same assessment without seeing the primary contact's credentials.
+The primary vendor contact can delegate from the **Team** tab — the whole assessment, specific domains, or specific questions. Each teammate receives their own access code by email; the owner can re-scope, resend, or revoke access at any time.
+
+### Findings
+
+The **Findings** screen lists findings the reviewer has raised, split into open and all. On each, the vendor can post a remediation update with evidence, or request an extension of the remediation date — a new date up to 30 days out, with a justification and an explicit acknowledgment of the launch impact. One extension request is allowed per finding; its review status (pending, under final review, approved, declined) is visible on the finding card. Findings also appear inline on the question they came from.
 
 ## Outputs
 
 ### Overview
 
-- Reference ID and current status
-- Progress bar with a four-way breakdown: Verified, Partial, Need Input, Pending
-- Documents required, with per-document status (queued / processing / done)
-- Countdown to the assessment deadline (amber under 14 days, red under 7)
-- Submit Assessment button (disabled until every question is answered)
+- The three-step journey with per-step status
+- A single progress bar: "*X of Y answered · N%*", with a pace nudge if the vendor is behind schedule and a deadline countdown (amber under 7 days, red when overdue)
+- Uploaded documents with per-file analysis status (queued / analyzing with question count / analyzed / failed with retry)
+- Submit for review (disabled until every question is closed out)
 
 ### Questions
 
-- Left rail — category tree with completion counts; sub-filters for All / Partial / Need Input
-- Center — question list with status and criticality badges, category, current score, and evidence snippet preview
-- Right rail — response panel with actions (Add Evidence / I'll Provide Later / Doesn't Apply) plus a conversation and activity timeline
-- Header tabs — Show All / Gaps (default) / Needs ETA / N/A / Verified / Approved / Flagged, each with a badge count
+- **Left rail** — a tree of questionnaire → domain → sub-domain, each row showing answered counts; a "Next unanswered" jump; uploaded documents double as filters ("show the questions this file answered")
+- **Center** — the question sheet with sticky section headers, question numbers, inline answering, and status chips (Answered, Not submitted, Approved — locked, Not applicable, Date proposed)
+- **Tabs** — All / Answered / Unanswered, plus two lenses: **AI suggested** and **Customer asked** (questions where the reviewer wrote back)
+- **Detail view** — the full question with customer guidance, reviewer findings, and a right rail with **AI Analysis**, **Messages**, and **Activity** tabs. Contradictions with other answers surface as a "Conflicts with another answer" card.
+- **Keyboard navigation** — `←`/`→` step between questions in the detail view (`⌘←`/`⌘→` inside text fields); `⌘↵` sends a message
+
+If the customer adjusts the assessment's scope mid-flight — adding or withdrawing domains or questions — a banner tells the vendor what changed.
 
 ### Downloads
 
-Vendors can download:
-
-- Their own uploaded evidence files
-- The questionnaire structure and their submitted answers
+Vendors can download their own uploaded evidence files and an Excel export of the questions with their submitted answers and latest status.
 
 ### Submission
 
-The **Submit Assessment** button unlocks once every question is answered (or marked N/A / given an ETA). A confirmation dialog fires: *"Submit this assessment? You can continue updating until the deadline."*
-
-After submit, the status moves to Submitted → Under Review. Vendors can still upload additional documents. If the customer flags any question, the vendor returns to edit mode with previous state retained; the flagged questions are highlighted.
+**Submit for review** unlocks once every question is answered, marked N/A, or given an ETA — and is held while staged answers are unsubmitted or background evaluation is still running. After submission the assessment moves to Under Review; vendors can still upload documents. If the reviewer flags a question, the vendor returns to edit mode with previous state retained.
 
 ## Access-code lifecycle
 
 - Codes are exactly 8 digits (numeric).
 - Requesting a new code immediately invalidates the previous one.
 - Resend is available both before and after submission.
-- Session tokens are stored in `sessionStorage` and cleared when the tab closes.
+- Session tokens are stored in `sessionStorage` and cleared when the tab closes; the vendor's place in the portal is restored after a refresh.
 
 ## Limitations
 
-- One file per upload; multi-file uploads must be split.
-- 5 MB per file. Larger files should be summarized or split.
-- No "save draft" button — text stays in the response box until submit, but is not auto-saved across sessions.
+- One file per upload; multi-file uploads must be split. 50 MB per file.
+- Evidence cannot ride along in a batch submit — attaching evidence opens the question's detail view.
+- AI analysis reasoning and gap lists are shown only on free-text questions. Choice questions deliberately show none, since listing gaps would telegraph the expected answer.
+- No "save draft" across sessions — staged answers live in the browser tab until submitted.
 - Delegation is per-assessment; delegates cannot see the vendor's other assessments unless separately invited.
 - The portal has no self-service account creation. All access is code-based; codes are issued by the customer creating the assessment.

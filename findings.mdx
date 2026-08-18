@@ -72,11 +72,27 @@ The **Close** action requires selecting a close reason and adding a justificatio
 | `vapt_finding` | VAPT analyzer surfaces a finding from a penetration test report |
 | `oss_threat` | OSS threat scanner flags a CVE or malicious package |
 | `domain_security` | Continuous domain security monitoring detects a change |
-| `vendor_assessment_gap` | A vendor's questionnaire answer falls short of the expected answer |
+| `vendor_assessment_gap` | A vendor's questionnaire answer falls short of the expected answer, or a question is approved while its evidence is still pending — the finding's due date is the vendor's committed ETA (30 days if none was given) |
+| `engagement_observation` | A TPRM observation approved on a post-assessment report converts into a finding (see below) |
 | `audit_work_item` | Import from an external audit system (e.g., ServiceNow) |
 | `manual` | Analyst-created via the Add Finding dialog |
 
 Auto-generated findings inherit their control ID, framework, category, and additional context from the source analyzer. Manual findings carry only what the analyst enters.
+
+### Observation-derived findings
+
+When an analyst approves a TPRM observation report on an assessment (see [Engagements](/engagements)), each accepted observation becomes a finding: the observation text and recommendation become the description, the anchoring assessment question becomes the source context, and the finding links back to the observation it came from. The engagement's Findings tab badges each finding's origin — **From Observation**, **Assessment**, or **Manual**.
+
+The remediation due date is set from the observation's severity, counted from the approval date:
+
+| Severity | Due window |
+|---|---|
+| Critical | 30 days |
+| High | 30 days |
+| Medium | 60 days |
+| Low | 90 days |
+
+Critical intentionally shares High's 30-day window — the finding keeps its Critical severity; only the clock is shared. The windows are tenant-configurable.
 
 ## Lifecycle actions
 
@@ -87,6 +103,24 @@ Auto-generated findings inherit their control ID, framework, category, and addit
 - **Close** — final state. Requires a close reason and note.
 
 Every action lands in the Activity Feed with actor, timestamp, and field-level diff.
+
+## Vendor extension requests — two-stage business approval
+
+A vendor can ask for more time on a finding directly from the Vendor Portal. Because moving a remediation date is a risk-acceptance decision, the request passes through two business approvers in sequence — neither the vendor nor the TPRM team can move the date alone.
+
+<Steps>
+  <Step title="The vendor requests">
+    From the portal, the vendor proposes a new date with a justification and must explicitly acknowledge the launch impact. The new date can be at most **30 days** beyond the current due date, and each finding allows **one request, ever**. The finding moves to "Awaiting Client Approval."
+  </Step>
+  <Step title="The Business Owner endorses">
+    A business contact on the engagement reviews the request — alongside an AI-drafted business-impact brief — and endorses or rejects it. Endorsing does **not** move the date; it forwards the request to the Business Head. Rejection is final. The vendor is not notified of an endorsement, only of a decision.
+  </Step>
+  <Step title="The Business Head decides">
+    The engagement's Business Head — the only role with risk-acceptance authority — approves with a justification or rejects. Approval moves the remediation due date to the requested date; rejection leaves it untouched. Either way the finding returns to "In Remediation," and all parties (TPRM, Business Owner, Business Head, vendor) are notified.
+  </Step>
+</Steps>
+
+The finding shows which stage a pending request is at ("Extension — awaiting Business Owner" / "awaiting Business Head"), and the request card records the endorsement note and endorser alongside the final decision.
 
 ## Limitations
 

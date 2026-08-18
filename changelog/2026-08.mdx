@@ -1,19 +1,28 @@
 ---
 title: "August 2026"
-description: "Vendor Portal redesign, SharePoint integration, Risk Scoring V0.5, outbound Jira ticketing, and third-party risk report ingestion"
+description: "Vendor Portal redesign, SharePoint integration, questionnaire import, Risk Scoring V0.5, outbound Jira ticketing, and report ingestion"
 ---
-August centers on the vendor-facing experience and on connecting HigherOrder to the systems your teams already use. The Vendor Portal is rebuilt on a lighter, clearer design; SharePoint Online joins the integrations for document ingestion; and outbound ticketing pushes engagement events into your own Jira. Risk Scoring reaches V0.5 with per-option scores and a normalized 0–100 rating, admins get user-level role management and email branding, and the platform can now ingest third-party risk reports such as Rubix.
+August centers on the vendor-facing experience and on connecting HigherOrder to the systems your teams already use. The Vendor Portal is rebuilt on a lighter, clearer design; SharePoint Online joins the integrations for document ingestion; and outbound ticketing pushes engagement events into your own Jira. Risk Scoring reaches V0.5 with per-option scores and a normalized 0–100 rating, admins get user-level role management and email branding, and the platform can now ingest third-party risk reports such as Rubix. Mid-month, questionnaire import closes the loop for vendors who answer by email: an uploaded workbook becomes a standard assessment rather than a read-only analysis.
 
 ## Week of Aug 10
 
 ### New
-- Adjust assessment scope after launch — withdraw domains or individual questions from an in-flight assessment
+- Questionnaire Import V1.0 — upload a vendor's completed Excel questionnaire and it becomes a standard assessment: imported answers run through the same evaluation, review, findings, and evidence pipeline as answers submitted through the Vendor Portal. The import matches the workbook against your existing questionnaire templates — every matching template is shown, and a match is reused rather than duplicated — with ambiguous question matches adjudicated by the model, and reviewer comments embedded in the workbook carried in as answer context
+- Adjust assessment scope after launch — add questionnaires or domains to an in-flight assessment, or withdraw domains and sub-domains, with a mandatory justification the vendor sees; withdrawn answers are kept but stop counting toward progress and the risk score
 - Observation grouping — group related observations within a TPRM report
 
 ### Improved
 - Vendor Portal bulk submission — answer and submit groups of questions at once
+- Review workbench navigation — the domain panel shows vendor-answered counts per domain, selection works at the sub-domain level, and contradictions are listed alongside gaps
+- Review workbench rows and the question detail pane show additional answer context
 - Questionnaire domains listed in a left-hand panel for quicker navigation across questionnaires
+- Third-party risk report analysis adds an outsourcing compliance rating, with statutory and screening checks
+- The assessment risk score is now also computed when the vendor submits, not only at completion
+- Vendor inventory keeps the selected tab when you navigate back, and assessment and questionnaire tabs share a unified status
 - The engagement header now shows the Material chip alongside Category and Outsourcing
+
+### Fixed
+- Evidence evaluation guardrails — oversized inputs are no longer sent to the model
 
 ## Week of Aug 3
 

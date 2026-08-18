@@ -1,9 +1,9 @@
 ---
 title: "Integrations"
-description: "Connect Dropbox, Jira, and Freshdesk to pull evidence, tickets, and metrics; IdP/SSPM connectors are configured separately under Exposure"
+description: "Connect SharePoint Online, Dropbox, Jira, and Freshdesk to pull documents, evidence, and metrics; IdP/SSPM connectors live under Exposure"
 ---
 
-The Integrations tab in Administration wires HigherOrder into productivity and support tools that produce evidence or metrics for vendor risk. Configuration lives at **Administration → Integrations**. Each integration is a per-tenant setup with its own auth, sync schedule, and status.
+The Integrations tab in Administration wires HigherOrder into the document stores and support tools that produce evidence or metrics for vendor risk. Configuration lives at **Administration → Integrations**. Each integration is a per-tenant setup with its own auth, sync behavior, and status.
 
 <Note>
 **Where IdP / SSPM connectors live.** Okta, Google Workspace, and Microsoft Entra ID are configured under **Exposure → Connectors**, not in the Integrations tab. They feed the Drift Center. See [SSO](/administration/sso) for authentication configuration for those same IdPs on the login side.
@@ -15,10 +15,11 @@ The Integrations tab in Administration wires HigherOrder into productivity and s
 
 ## What it does
 
-Three integrations are wired end to end:
+Four integrations are wired end to end:
 
 | Integration | Auth | Purpose |
 |---|---|---|
+| **SharePoint Online** | App-only (Entra ID app + client secret) | Sync vendor documents from a SharePoint site — optionally scoped to specific folders — into the standard document analysis pipeline |
 | **Dropbox** | OAuth 2.0 (PKCE) | Scan Dropbox for contract files matching configured keywords and file types; index them into the Contracts inventory |
 | **Jira** | OAuth 2.0 (PKCE) | Sync selected Jira projects; calculate SLA compliance, ticket velocity, and other vendor-related metrics |
 | **Freshdesk** | API Key | Monitor selected Freshdesk support groups; track group-level SLA compliance and ticket metrics |
@@ -36,6 +37,38 @@ The connector health card can be in one of five states:
 | **Degraded** | Sync succeeded but returned partial errors |
 | **Failed** | Sync failed completely |
 | **Disconnected** | Not configured |
+
+## SharePoint Online
+
+**Purpose.** Sync vendor documents from a SharePoint Online site into HigherOrder. Synced files run through the standard document pipeline — each file is classified, matched to a vendor, added to the inventory, and analyzed.
+
+Unlike the OAuth connectors, SharePoint uses **app-only credentials**: a Microsoft 365 admin registers an Entra ID application with the Microsoft Graph `Sites.Selected` permission and grants it read access to one specific site. There is no user sign-in and no redirect — HigherOrder can read only the site(s) explicitly granted, and access is revocable at any time by deleting the client secret or the site grant. The full admin walkthrough (including the per-site grant, which is a separate step from admin consent) is in the SharePoint Integration Setup Guide.
+
+<Frame caption="Administration → Integrations: the connected SharePoint integration">
+  <img src="/images/screenshots/sharepoint/01_management.png" alt="SharePoint integration management view" />
+</Frame>
+
+### Setup
+
+<Steps>
+  <Step title="Register an Entra ID app">
+    A Microsoft 365 admin registers a single-tenant app, adds **Microsoft Graph → Sites.Selected** (Application) with admin consent, creates a client secret, and grants the app **Read** on the specific SharePoint site (via Graph Explorer or PnP PowerShell).
+  </Step>
+  <Step title="Connect">
+    In HigherOrder → Administration → Integrations, open **SharePoint Online** and enter the **Directory (tenant) ID**, **Application (client) ID**, **Client secret** (with its expiry date, so HigherOrder can warn before it lapses), and the **site URL**. Use **Test connection** to verify.
+  </Step>
+  <Step title="Scope and sync">
+    By default the whole site syncs. To narrow it, open **Edit configuration** and tick folders in the live folder browser — a ticked parent covers everything beneath it, and deep paths can be added by URL. Then **Sync now**.
+  </Step>
+</Steps>
+
+### Sync behavior
+
+- **File types**: PDF, Word (`.doc`, `.docx`), Excel (`.xls`, `.xlsx`), and CSV by default; plain text available as an option. Up to 50 MB per file, 250 files per run.
+- **Manual sync** — runs on **Sync now**; there is no scheduler for SharePoint yet.
+- **Change detection** — unchanged files are skipped on re-sync; an edited file re-ingests as a new revision.
+- **Sync report** — each run reports per-folder counts (found, new, unchanged, skipped) and names any selected folder that no longer exists. A single failed file is recorded and skipped; it never fails the run.
+- **Secret handling** — the client secret is encrypted at rest and never displayed after entry (shown only as a masked hint). Rotate it any time from Edit configuration.
 
 ## Dropbox
 
@@ -103,10 +136,11 @@ Matching files appear as documents in the Contracts inventory and are queued thr
 
 ## Sync cadence
 
-The connector scheduler ticks every 30 seconds and dispatches any connector whose sync interval has elapsed. Daily and Weekly schedules are best-effort — sync fires on the next tick after the interval expires, not at a specific wall-clock time. Manual runs via **Sync Now** are dispatched immediately.
+For Dropbox, Jira, and Freshdesk, the connector scheduler ticks every 30 seconds and dispatches any connector whose sync interval has elapsed. Daily and Weekly schedules are best-effort — sync fires on the next tick after the interval expires, not at a specific wall-clock time. Manual runs via **Sync Now** are dispatched immediately. SharePoint is manual-sync only (see above).
 
 ## Limitations
 
+- SharePoint folder selection is a filter within one granted site collection; a folder from a different site collection needs its own site grant and connection. The folder browser is available only after the connection is saved.
 - Dropbox indexes files it can see with the OAuth token's scope; files outside that scope are invisible.
 - Jira and Freshdesk sync is read-only. HigherOrder does not create or modify tickets or issues.
 - Access-token refresh is automatic for OAuth connectors; if a refresh fails (revoked scope, expired grant), the connector moves to **Failed** and requires re-authorization from the setup dialog.

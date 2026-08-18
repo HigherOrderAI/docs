@@ -3,22 +3,25 @@ title: "Administration"
 description: "Manage users, roles, integrations, SSO, and the platform audit trail"
 ---
 
-The administration surface hosts everything that configures the tenant — users and their managers, custom roles and permissions, single sign-on, third-party integrations, and the audit trail. Visible to Admins only.
+The administration surface hosts everything that configures the tenant — users and their roles, custom permissions, single sign-on, third-party integrations, tenant-level settings and branding, and the audit trail. Visible to Admins only.
 
 ## Tabs
 
 <CardGroup cols={2}>
   <Card title="User Management" icon="users" href="#user-management">
-    Add and edit users, assign role and reporting manager, deactivate accounts.
+    Add and edit users, set access level and additional roles, assign reporting manager, deactivate accounts.
   </Card>
   <Card title="Permissions" icon="shield-check" href="/administration/roles-and-permissions">
     Create custom roles, grant permissions, review role assignments.
   </Card>
   <Card title="Integrations" icon="plug" href="#integrations">
-    Configure SSO, IdP / SSPM connectors (Okta, Google Workspace, Entra ID), and productivity tools (Dropbox, Freshdesk, Jira).
+    Configure SSO, IdP / SSPM connectors (Okta, Google Workspace, Entra ID), document storage (SharePoint Online, Dropbox), and support tools (Freshdesk, Jira).
   </Card>
   <Card title="SSO" icon="key" href="/administration/sso">
     Configure OIDC-based single sign-on.
+  </Card>
+  <Card title="Tenant Settings" icon="sliders" href="#tenant-settings">
+    Tenant-level configuration — launch mode, portal domains, notification teams, email branding, legal entities.
   </Card>
   <Card title="Audit Log" icon="list" href="#audit-log">
     Search and filter every action taken in the tenant.
@@ -33,12 +36,16 @@ Add, edit, and manage users in the tenant.
   <img src="/images/screenshots/administration-user-management.png" alt="Administration — User Management tab" />
 </Frame>
 
+A user carries two distinct things:
+
+- **Access level** — User, Manager, Admin, or Auditor. Single-valued, edited in the Edit User dialog. This sets the base scope: Admin sees the full workspace, Manager sees their team's records, User sees their own.
+- **Additional roles** — any number of system or tenant custom roles (defined in [Roles & Permissions](/administration/roles-and-permissions)), granted and revoked from a **Manage roles** action directly on the user row. This is how business users get roles like Business Owner or Business Head.
+
 ### Inputs
 
-- **User attributes.** Email, First Name, Last Name, Role, Reporting Manager, Status (Active / Inactive / Pending). Email is read-only on edit.
-- **Role** — one of the built-in roles (User / Manager / Admin / Auditor) or any custom role defined in [Roles & Permissions](/administration/roles-and-permissions).
+- **User attributes.** Email, First Name, Last Name, Access level, Reporting Manager, Status (Active / Inactive / Pending). Email is read-only on edit.
+- **Additional roles** — the checkbox list in Manage roles; saving replaces the user's role set.
 - **Reporting Manager** — another user in the tenant. Manager assignment determines team-scoping for team-scoped roles.
-- **Last logged in** — surfaced on the user row.
 
 ### Outputs
 
@@ -49,16 +56,19 @@ User table:
 | Column | Meaning |
 | --- | --- |
 | User | Name and email |
-| Role | Assigned role (built-in or custom) |
+| Role | Access level (User / Manager / Admin / Auditor) |
+| Additional Roles | The user's custom/system roles |
 | Manager | Reporting manager (if assigned) |
 | Status | Active / Inactive / Pending |
 | Last Login | Date of last sign-in |
 | Created | Date the user was added |
-| Actions | Edit |
+| Actions | Edit · Manage roles |
 
 ## Permissions
 
 Custom-role creation and permission grants are covered in [Roles & Permissions](/administration/roles-and-permissions). A tenant can define any number of custom roles beyond the built-ins.
+
+One permission worth knowing for business users: **Read All Engagements (Cross-Team)** lifts the team-scope filter on the engagements list and detail — read-only, writes stay team-scoped. Grant it to oversight roles (Business Owner, Business Head) whose holders need to see engagements across teams without being able to act on them.
 
 ## Integrations
 
@@ -74,15 +84,37 @@ Connect an IdP or SSPM to receive continuous behavioral telemetry — users, app
 
 For each, the connector uses OAuth to authorise, stores credentials in KMS, and runs on a scheduled sync. Connector health is visible in the Drift Center strip.
 
-### Productivity connectors
+### Document storage and productivity connectors
 
+- **SharePoint Online** — sync vendor documents from a SharePoint site, optionally folder-scoped, via app-only credentials
 - **Dropbox** — pull evidence documents from a shared folder
 - **Freshdesk** — ingest support tickets referencing vendors
-- **Jira** — link findings to Jira issues
+- **Jira** — sync selected projects for vendor operational metrics
+
+See [Integrations](/administration/integrations) for setup and sync behavior.
 
 ### SSO
 
 OIDC SSO providers (Okta, Entra ID, Google Workspace, or generic OIDC) are configured here. See [Single Sign-On](/administration/sso) for the full setup.
+
+## Tenant Settings
+
+A schema-driven tab for tenant-level configuration. Each setting renders as its own card, saves independently, can be reset to its default, and every change lands in the audit log. Settings include:
+
+- **Assessment launch mode** — whether an engagement's matched questionnaires run as parallel assessment tracks or merge into one assessment (see [Vendor Assessments](/vendor-risk/assessments))
+- **Portal allowed domains** — the business email domains permitted for portal contacts and viewer invites; personal email providers are always blocked
+- **Notification teams** — named recipient groups (team key → email list) that notification rules resolve to
+- **Branding** — the tenant's identity on outbound email and the Vendor Portal (below)
+- **Customer legal entities** — the entity list offered on the intake form
+- **Outsourcing profile** and **external due-diligence provider** — configuration for outsourcing-report analysis
+
+Access is gated by a dedicated tenant-settings permission; Admins hold it by default and it can be granted to a custom role.
+
+### Email and portal branding
+
+The **Branding** setting carries five fields: a **wordmark** and **tagline** (rendered as live text), a **primary color** and **accent color** (hex), and a **sender name** (the From display name on outbound email). One setting drives both the notification-email header band and the Vendor Portal identity bar.
+
+Branding is entirely optional — unset means plain email, with no fallback to HigherOrder's own colors. The branded header band appears only when both a primary color and a wordmark are set. There is deliberately no logo image: inboxes block remote images, so identity is color plus text. Severity colors on urgent mail are fixed and cannot be overridden.
 
 ## Audit Log
 
