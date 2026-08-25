@@ -1,6 +1,6 @@
 ---
 title: "Integrations"
-description: "Connect SharePoint Online, Dropbox, Jira, and Freshdesk to pull documents, evidence, and metrics; IdP/SSPM connectors live under Exposure"
+description: "Connect SharePoint, OneDrive, Dropbox, Jira, and Freshdesk to pull documents, evidence, and metrics; IdP/SSPM connectors live under Exposure"
 ---
 
 The Integrations tab in Administration wires HigherOrder into the document stores and support tools that produce evidence or metrics for vendor risk. Configuration lives at **Administration → Integrations**. Each integration is a per-tenant setup with its own auth, sync behavior, and status.
@@ -15,11 +15,12 @@ The Integrations tab in Administration wires HigherOrder into the document store
 
 ## What it does
 
-Four integrations are wired end to end:
+Five integrations are wired end to end:
 
 | Integration | Auth | Purpose |
 |---|---|---|
 | **SharePoint Online** | App-only (Entra ID app + client secret) | Sync vendor documents from a SharePoint site — optionally scoped to specific folders — into the standard document analysis pipeline |
+| **OneDrive for Business** | App-only (shares the Microsoft 365 connection) | Sync vendor documents from specific users' OneDrive accounts — per-account grants, optionally scoped to folders — into the same pipeline |
 | **Dropbox** | OAuth 2.0 (PKCE) | Scan Dropbox for contract files matching configured keywords and file types; index them into the Contracts inventory |
 | **Jira** | OAuth 2.0 (PKCE) | Sync selected Jira projects; calculate SLA compliance, ticket velocity, and other vendor-related metrics |
 | **Freshdesk** | API Key | Monitor selected Freshdesk support groups; track group-level SLA compliance and ticket metrics |
@@ -52,13 +53,13 @@ Unlike the OAuth connectors, SharePoint uses **app-only credentials**: a Microso
 
 <Steps>
   <Step title="Register an Entra ID app">
-    A Microsoft 365 admin registers a single-tenant app, adds **Microsoft Graph → Sites.Selected** (Application) with admin consent, creates a client secret, and grants the app **Read** on the specific SharePoint site (via Graph Explorer or PnP PowerShell).
+    A Microsoft 365 admin registers a single-tenant app, adds **Microsoft Graph → Sites.Selected** (Application) with admin consent, creates a client secret, and grants the app **Read** on the specific SharePoint site. Once the site URL is entered in the wizard, the grant panel shows two ready-to-paste **Graph Explorer** steps — fetch the site ID, then post the read permission — derived from the site-collection root, so the commands are correct even when the pasted URL points at a subsite or folder.
   </Step>
   <Step title="Connect">
     In HigherOrder → Administration → Integrations, open **SharePoint Online** and enter the **Directory (tenant) ID**, **Application (client) ID**, **Client secret** (with its expiry date, so HigherOrder can warn before it lapses), and the **site URL**. Use **Test connection** to verify.
   </Step>
   <Step title="Scope and sync">
-    By default the whole site syncs. To narrow it, open **Edit configuration** and tick folders in the live folder browser — a ticked parent covers everything beneath it, and deep paths can be added by URL. Then **Sync now**.
+    By default the whole site syncs. To narrow it, open **Edit configuration** and tick folders in the live folder browser — a ticked parent covers everything beneath it, and deep paths can be added by URL. The picker echoes the resolved site ("Connected to …") and where access was granted, and warns if the URL matched only the tenant root site — so a mis-typed subsite URL is caught at setup, not after a wrong-site sync. Then **Sync now**.
   </Step>
 </Steps>
 
@@ -69,6 +70,43 @@ Unlike the OAuth connectors, SharePoint uses **app-only credentials**: a Microso
 - **Change detection** — unchanged files are skipped on re-sync; an edited file re-ingests as a new revision.
 - **Sync report** — each run reports per-folder counts (found, new, unchanged, skipped) and names any selected folder that no longer exists. A single failed file is recorded and skipped; it never fails the run.
 - **Secret handling** — the client secret is encrypted at rest and never displayed after entry (shown only as a masked hint). Rotate it any time from Edit configuration.
+
+## OneDrive for Business
+
+**Purpose.** Sync vendor documents from specific users' OneDrive for Business accounts into HigherOrder — for teams whose vendor evidence lives in individual drives rather than a shared SharePoint site. Synced files run through the same document pipeline as SharePoint: classified, matched to a vendor, added to the inventory, and analyzed.
+
+OneDrive **shares the Microsoft 365 connection with SharePoint**. If SharePoint is already connected, the OneDrive setup shows "Using your existing Microsoft 365 connection" — no new app registration, no new permission, no new admin consent. The only OneDrive-specific step is granting the app read access to each OneDrive account you want in scope, because every OneDrive for Business is technically its own SharePoint personal site and the `Sites.Selected` permission is deny-by-default: the app can read **only** the accounts you explicitly grant, never the whole tenant.
+
+<Frame caption="Administration → Integrations: the connected OneDrive integration, with one verified account and its latest sync">
+  <img src="/images/screenshots/onedrive/01_management.png" alt="OneDrive for Business management view" />
+</Frame>
+
+### Setup
+
+<Steps>
+  <Step title="Connect">
+    Open **OneDrive for Business** under Document Storage. Reuse the existing Microsoft 365 connection, or enter app-only credentials (Directory ID, Application ID, client secret) for a single-tenant Entra ID app with the **Microsoft Graph → Sites.Selected** application permission — the same registration the SharePoint integration uses. Pick the file types to sync and click **Connect OneDrive**.
+  </Step>
+  <Step title="Add accounts and grant access">
+    In the management view, add each OneDrive account by the user's email (UPN) or by pasting their OneDrive URL. For every pending account, the **Grant read access** card shows two ready-to-run Graph Explorer steps (run by a Microsoft 365 admin, once per account). Then click **Verify** on each account — or **Verify all**. Each account shows its grant state: *Grant pending*, *Access verified*, or *Access failed*.
+  </Step>
+  <Step title="Scope and fetch">
+    By default each verified account syncs its entire OneDrive. To narrow it, open **Edit configuration** and tick folders in the folder browser — the tree is rooted at the granted accounts, a ticked parent covers everything beneath it, and deep paths can be added by URL. Then **Fetch now**.
+  </Step>
+</Steps>
+
+<Frame caption="Edit configuration: the folder browser rooted at granted accounts, with per-account folder scope">
+  <img src="/images/screenshots/onedrive/02_folder_picker.png" alt="OneDrive folder picker with account-rooted folder tree" />
+</Frame>
+
+### Sync behavior
+
+- **Scope is per account** — an account with folders ticked syncs only those folders; an account with nothing ticked syncs its entire OneDrive.
+- **File types**: PDF, Word (`.doc`, `.docx`), Excel (`.xls`, `.xlsx`), and CSV by default; plain text available as an option. Up to 50 MB per file, 250 files per run — a capped run continues where it left off on the next fetch.
+- **Manual sync only** — runs on **Fetch now**; there is no scheduler. Sync is strictly read-only: the platform never writes to OneDrive.
+- **Change detection** — unchanged files are skipped on re-fetch, so a second run is cheap.
+- **Sync report** — each run reports per-account-and-folder counts, vendors added, and files skipped (with reasons), and flags vendors created from a single document as worth a duplicate check.
+- **Removing an account** removes its folders from scope but keeps already-synced documents. **Disconnecting** removes the connector and its account list; the shared Microsoft 365 credentials are deleted only when the last connector using them is removed.
 
 ## Dropbox
 
@@ -136,11 +174,12 @@ Matching files appear as documents in the Contracts inventory and are queued thr
 
 ## Sync cadence
 
-For Dropbox, Jira, and Freshdesk, the connector scheduler ticks every 30 seconds and dispatches any connector whose sync interval has elapsed. Daily and Weekly schedules are best-effort — sync fires on the next tick after the interval expires, not at a specific wall-clock time. Manual runs via **Sync Now** are dispatched immediately. SharePoint is manual-sync only (see above).
+For Dropbox, Jira, and Freshdesk, the connector scheduler ticks every 30 seconds and dispatches any connector whose sync interval has elapsed. Daily and Weekly schedules are best-effort — sync fires on the next tick after the interval expires, not at a specific wall-clock time. Manual runs via **Sync Now** are dispatched immediately. SharePoint and OneDrive are manual-sync only (see above).
 
 ## Limitations
 
 - SharePoint folder selection is a filter within one granted site collection; a folder from a different site collection needs its own site grant and connection. The folder browser is available only after the connection is saved.
+- OneDrive covers OneDrive for Business only — consumer OneDrive (`onedrive.live.com`) is out of scope. Each account needs its own one-time read grant, and a OneDrive that the user has never opened may not exist yet (OneDrive is provisioned on first use).
 - Dropbox indexes files it can see with the OAuth token's scope; files outside that scope are invisible.
 - Jira and Freshdesk sync is read-only. HigherOrder does not create or modify tickets or issues.
 - Access-token refresh is automatic for OAuth connectors; if a refresh fails (revoked scope, expired grant), the connector moves to **Failed** and requires re-authorization from the setup dialog.

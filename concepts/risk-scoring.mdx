@@ -21,7 +21,7 @@ Every vendor-level risk surface — vendor inventory row, vendor profile risk ov
 The score is composed by the platform from the evidence available for the vendor:
 
 - **Document analyses.** Each analyzer (SOC 2, ISO 27001, VAPT, Privacy Policy, Questionnaire, Contract) produces a category score. Missing or expired evidence contributes to a higher score.
-- **Threat model.** STRIDE output on any uploaded architecture diagram or system description.
+- **Threat model.** The entity-level threat assessment built from all of the vendor's documents (an uploaded architecture diagram enriches it but is not required).
 - **Contract gaps.** Where a vendor commitment is weaker than what you have promised your own customers (see [Customer Golden Standards](/customer-risk/golden-standards)).
 - **Ecosystem signals.** From connected IdP / SSPM (Okta, Google Workspace, Entra ID) — undisclosed OAuth grants, undisclosed new SKUs. See Drift Center.
 
@@ -38,7 +38,7 @@ Each vendor assessment carries its own 0–100 risk score computed **entirely fr
     Each answer option on a yes/no, single-select, or multi-select question carries a numeric score, set on the questionnaire template. Each question declares a scoring range and a direction — whether a higher option value means more risk or less.
   </Step>
   <Step title="Questions normalize and weight">
-    An answer is normalized within its question's range, then weighted. Question weights default from criticality (Critical 2.0, High 1.5, Medium 1.0, Low 0.5) and can be set explicitly.
+    An answer is normalized within its question's range, then weighted. Question weights are set on the template's Scoring page, which is the single owner of the weights the score uses.
   </Step>
   <Step title="Sections roll up to 0–100">
     Weighted question scores average within each sub-category; sub-category weights combine into a 0–100 score per top-level section. Sections average into the questionnaire score, and — for a merged assessment — questionnaire scores average into the assessment score.
@@ -54,7 +54,7 @@ The assessment rating vocabulary (**Very Low → High**, four values, per-templa
 
 ### When it's computed
 
-- **During the assessment** the score is computed live, on demand, and marked non-final. It is suppressed until answered questions cover at least 40% of the questionnaire's scorable weight — a thin early score is worse than none.
+- **During the assessment** the score is computed live, on demand, and marked non-final. It is suppressed until answered questions cover at least 40% of the questionnaire's scorable weight — a thin early score is worse than none. Per-domain scores are the exception: each domain's chip in the review workbench rail appears from that domain's first scored answer, since a domain score only claims to describe its own domain.
 - **At completion** the score and per-section breakdown are stamped onto the assessment and never recomputed, so the screen and the exported report can never disagree.
 
 **Coverage** is reported alongside the score: the share of scorable question *weight* that has been answered — so an unanswered Critical question moves coverage more than an unanswered Low one.
@@ -65,7 +65,7 @@ Only yes/no, single-select, and multi-select questions with fully scored options
 
 ### Where you'll see it
 
-- **Review workbench** — a live score chip in the domain rail while the review is in flight
+- **Review workbench** — a live score chip in the domain rail while the review is in flight, plus a per-domain score chip on each domain that moves as the vendor answers and is stamped final at completion
 - **Assessment and engagement views** — the rating badge on each questionnaire, with a per-section **Score Breakdown** panel after completion
 - **Template Scoring page** — where admins set option scores, ranges, directions, weights, and band ranges, with a preview simulator that shows the best-case and worst-case score for the configuration
 

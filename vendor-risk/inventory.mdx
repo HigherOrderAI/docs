@@ -27,7 +27,7 @@ Vendors enter the inventory through the **Add Vendor** action, which opens a two
     Select an existing vendor from the combobox or enter a new vendor name. Selecting an existing vendor attaches the uploaded documents to that vendor; a new name creates a new vendor record.
   </Step>
   <Step title="Upload supporting documents">
-    Drag-and-drop one or more files, or browse to attach them. Supported types: PDF, DOCX, TXT, XLSX. Password-protected files are accepted with a password field.
+    Drag-and-drop one or more files, or browse to attach them. Supported types: PDF, DOCX, TXT, XLSX, up to 10 MB per file. Password-protected files are accepted with a password field.
   </Step>
 </Steps>
 
@@ -42,6 +42,8 @@ Typical documents uploaded at intake:
 - Architecture diagrams (drives threat modeling)
 
 The dialog closes immediately on submit. The new vendor appears in the inventory in the `Processing` state while extraction runs in the background.
+
+A PDF that wraps other files — a cover letter carrying a trust package of embedded reports and spreadsheets — is unpacked automatically: each embedded file is extracted and registered as a document of its own, classified and analyzed independently. One portfolio upload lands as the wrapper plus every attachment on the vendor's Documents tab. This applies on every ingestion path (upload dialogs, vendor portal, trust center, SharePoint, OneDrive, Dropbox).
 
 ## Outputs
 
@@ -70,9 +72,19 @@ Tabs:
 
 - **Overview** — validated risk band + coverage, per-analyzer contribution (SOC 2, ISO 27001, VAPT, Privacy Policy, Questionnaire, Contract), summary chips.
 - **Documents** — every document uploaded or auto-fetched for this vendor. Documents sourced from a public Trust Center carry a shield icon. Failed or rejected documents can be reprocessed or soft-deleted; reuploading a previously deleted document restores its prior analysis.
-- **Risk Report** — per-analyzer detail pages (SOC 2 Summary, ISO 27001 Summary, VAPT Findings & OWASP matrix, Privacy Policy Metrics, Overall Risk Report). Downloadable as a single vendor risk report.
-- **Threat Modeling** — STRIDE and DREAD output when an architecture diagram or system description has been uploaded, with test cases and improvement suggestions.
-- **Controls** — recommended controls at Critical / High / Medium tiers, plus follow-up vendor questions, synthesized across the vendor's evidence.
+- **Risk Report** — per-analyzer detail pages (SOC 2 Summary, ISO 27001 Summary, VAPT Findings & OWASP matrix, Privacy Policy Metrics, Overall Risk Report). Downloadable as a single vendor risk report. A document uploaded as a VAPT report that turns out not to be one — a program summary, a policy, an attestation letter — gets an explanatory verdict card stating what it is and which signals of a real test report are missing, with upload and regenerate actions, rather than an empty analysis.
+- **Threat Model** — the vendor's threats ranked by computed risk band, each expanding in place to its DREAD dimension detail and provenance. Since August 2026 this comes from the entity-level threat assessment: one assessment built from **all** of the vendor's documents, run automatically when the vendor is created and as documents arrive — an architecture diagram is no longer required.
+- **Controls** — recommended controls in three lists: **buyer-side** controls (each with a "check via" verification pointer and the threats it addresses), **vendor-side** controls, and **SOC 2 complementary user-entity controls**.
+- **Vendor Questions** — the open questions and claims needing evidence that the assessment could not establish, each showing which threat scores currently assume an answer.
+- **Evidence** — the security fact sheet: every fact pulled from the vendor's documents, grouped by subject, each with an evidence-grade chip and its source document. Searchable.
+
+<Frame caption="The Threat Model tab: threats ranked by risk, with the STRIDE categories each one maps to and the answers each score depends on.">
+  <img src="/images/screenshots/vendor-profile-threat-model.png" alt="Vendor profile Threat Model tab with ranked threats" />
+</Frame>
+
+<Frame caption="The Evidence tab: the vendor's security fact sheet, graded by what actually establishes each fact — independently tested, auditor attested, vendor claimed, or not yet established.">
+  <img src="/images/screenshots/vendor-profile-evidence.png" alt="Vendor profile Evidence tab with graded facts" />
+</Frame>
 - **4th Parties** — sub-processors declared by the vendor (behind feature flag).
 - **Findings** — findings raised on this vendor (link to the [Findings](/findings) page).
 
@@ -90,6 +102,6 @@ Documents can also enter the inventory automatically via **Trust Center extracti
 
 - Risk Band and Last Assessed are blank until at least one risk-bearing document has been processed for the vendor.
 - Annual Value and Renewal Date populate from contract documents. If no contract has been uploaded, or the contract did not contain those fields, those columns remain empty.
-- Threat Modeling requires an architecture diagram or system description — it is not generated from category priors alone.
+- A full threat assessment takes up to an hour or so after documents land; the Threat Model, Controls, Vendor Questions, and Evidence tabs show an in-progress notice and fill in without a reload. A vendor with no documents gets no assessment.
 - 4th-Party sub-processor visibility is behind a feature flag; enable per tenant.
 - Vendor deletion is irreversible and removes all attached documents. There is no soft-delete or restore for vendors (individual documents do support soft delete).

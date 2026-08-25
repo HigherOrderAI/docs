@@ -1,8 +1,54 @@
 ---
 title: "August 2026"
-description: "Vendor Portal redesign, SharePoint integration, questionnaire import, Risk Scoring V0.5, and third-party risk report ingestion"
+description: "Vendor Portal redesign, SharePoint and OneDrive integrations, questionnaire import, threat assessment v2, and the Risk Assessment report"
 ---
-August centers on the vendor-facing experience and on connecting HigherOrder to the systems your teams already use. The Vendor Portal is rebuilt on a lighter, clearer design, and SharePoint Online joins the integrations for document ingestion. Risk Scoring reaches V0.5 with per-option scores and a normalized 0–100 rating, admins get user-level role management and email branding, and the platform can now ingest third-party risk reports such as Rubix. Mid-month, questionnaire import closes the loop for vendors who answer by email: an uploaded workbook becomes a standard assessment rather than a read-only analysis.
+August centers on the vendor-facing experience and on connecting HigherOrder to the systems your teams already use. The Vendor Portal is rebuilt on a lighter, clearer design, and SharePoint Online — followed by OneDrive for Business — joins the integrations for document ingestion. Risk Scoring reaches V0.5 with per-option scores and a normalized 0–100 rating, and questionnaire import closes the loop for vendors who answer by email. In the back half of the month, the entity-level threat assessment becomes the default for every vendor, the Service Risk Profile gains a pre-submit consistency check, and a completed Risk Assessment exports as a controls-format report.
+
+## Week of Aug 24
+
+### New
+- OneDrive for Business integration — sync vendor documents from specific users' OneDrive accounts into the standard document pipeline. OneDrive shares the Microsoft 365 connection with SharePoint (no new app registration or admin consent); access is granted per account with two ready-to-run Graph Explorer steps, scope is per account (whole drive or selected folders), and each fetch produces a per-account sync report. See [Integrations](/administration/integrations)
+- Risk Assessment report V0.1 — download a completed Risk Assessment as a controls-format PDF from the **Report** button on the engagement header: one row per scored question with its control objective, domain, and Compliant / Non-Compliant / Not Applicable status. A dropdown on the button lists every completed RA cycle, newest first
+- Engagement intake editing — the intake-captured fields (name, product/service, use case, consuming entities, notes) are editable from the engagement's Overview tab, with every change in the audit trail. The vendor record can be renamed — the dialog states how many engagements and assessments the rename touches — or the engagement repointed to a different vendor record while no assessment or SRP submission exists yet
+- Post-onboarding tracker — the engagement's progress strip now continues past onboarding, with one node per periodic assessment cycle (Pending / Triggered / Ongoing / Completed, year-qualified once there are several) and hover detail showing the questionnaire, dates, and risk rating
+
+### Improved
+- Closed-form answers (yes/no, single- and multi-select) with a defined expected answer are now judged deterministically in audited-reports-sufficient mode — a matching selection auto-verifies with no model call; a shortfall is held for a reviewer with the unticked options listed as gaps
+- Domain scores appear in the review workbench rail from the vendor's first scored answer — per-domain chips no longer wait for the overall score's coverage threshold
+- TPRM observation contradictions now cite every question involved — number, section, full untruncated text, and the vendor's answer — with a deep link into the review workbench
+- Question numbers in questionnaire templates are stable: reordering, re-categorizing, nesting, or deleting questions no longer renumbers the rest, so numbers quoted to vendors or matched to an incumbent system stay put
+- SRP consistency findings show each cited question's full text and answer, not just its code
+- Choice questions can no longer be saved with an expected answer that matches none of their options
+
+### Fixed
+- A closed-form answer with no configured expected answer no longer self-approves into the bulk-approval bucket — it is held for a human decision
+- Returning from an engagement detail page restores the correct list tab
+
+## Week of Aug 17
+
+### New
+- Threat assessment v2 is now the default for every vendor — a single entity-level assessment built from all of a vendor's documents, run automatically on vendor creation and document ingestion (no architecture diagram required). The vendor profile shows threats ranked by risk band with expandable DREAD detail, a Controls tab split into buyer, vendor, and SOC 2 complementary user-entity controls, a Vendor Questions tab tied to the scores that depend on each answer, and a new **Evidence** tab — the security fact sheet, every fact graded and linked to its source document
+- SRP consistency check V1 — submitting the Service Risk Profile now runs a cross-answer contradiction check (deterministic rules plus a model fallback). Each conflict is resolved by revisiting the answers or keeping them with a note that is stored with the submission; conflicts acknowledged on an earlier submit stay suppressed while the cited answers are unchanged. The check advises — it never blocks a submit
+- Scoped assessment launches — an engagement plan can launch selected domains or sub-domains of a standard questionnaire instead of a separately maintained mini-template; narrow scopes (e.g. staffing-only or privacy-only reviews) now send a familiar questionnaire showing just the relevant domains
+
+### Improved
+- Unsuitable VAPT uploads — a program summary, policy, or attestation letter uploaded as a pen-test report now gets an explanatory verdict card: what the document actually is, which signals of a real test report are missing, and upload/regenerate actions — instead of an empty analysis
+- Engagement Findings tab — a status triage bar (In Remediation / Open / Closed), closing findings in place with an AI-drafted resolution note composed from the vendor's own updates, and downloadable attachments on vendor updates
+- Vendor Portal findings — submitting an update confirms the status change and offers a jump to the next open finding; due-date chips turn amber 14 days out and red only when overdue
+- SharePoint setup — the folder picker echoes the resolved site ("Connected to …") and warns when the URL matched only the tenant root; the grant panel shows two ready-to-paste Graph Explorer steps, derived server-side from the site-collection root, and appears only once a site URL is entered
+- Criticality and per-question weights are gone from questionnaire authoring — the template's Scoring page is the single owner of the weights risk scoring uses
+- A PDF that wraps embedded attachments (a cover letter carrying a trust package) now ingests as N+1 documents — each embedded file is extracted, classified, and analyzed in its own right, on every ingestion path
+- Long audited reports are evaluated in full — the per-document text budget for evidence evaluation rose from 250K to 400K characters, covering full-length SOC 2 Type 2 reports including the test-results matrix
+- Evidence quoted from several documents keeps its verified snippets even when one quote fails verification, instead of the whole answer collapsing to "no evidence found"
+- Vendor document uploads (Add Vendor dialog and the Documents tab) share a consistent 10 MB per-file cap with matching messages
+- Data Localization, Outsourcing, and DPSC ride-along questionnaires launch only on Category 1 risk assessments — a Category 2 engagement receives exactly its configured scope
+
+### Fixed
+- SharePoint site resolution honors the full pasted URL — a subsite under the root site collection no longer falls back silently to the tenant root, and an unresolvable URL fails visibly at Test connection instead of syncing the whole site
+- Sub-question answers are evaluated with their parent's answer as context
+- Evidence text containing special characters is no longer skipped during evaluation
+- OCR text extraction fixes for scanned documents
+- Stale questionnaire status badges on assessment lists
 
 ## Week of Aug 10
 
@@ -10,6 +56,7 @@ August centers on the vendor-facing experience and on connecting HigherOrder to 
 - Questionnaire Import V1.0 — upload a vendor's completed Excel questionnaire and it becomes a standard assessment: imported answers run through the same evaluation, review, findings, and evidence pipeline as answers submitted through the Vendor Portal. The import matches the workbook against your existing questionnaire templates — every matching template is shown, and a match is reused rather than duplicated — with ambiguous question matches adjudicated by the model, and reviewer comments embedded in the workbook carried in as answer context
 - Adjust assessment scope after launch — add questionnaires or domains to an in-flight assessment, or withdraw domains and sub-domains, with a mandatory justification the vendor sees; withdrawn answers are kept but stop counting toward progress and the risk score
 - Observation grouping — group related observations within a TPRM report
+- Questionnaire assignments — on an assessment with two or more questionnaires, assign each questionnaire to a team member from its chip in the header strip; the assignee receives an email deep-linked to the review workbench pre-filtered to their questionnaire. Assignment routes the work without locking anyone out
 
 ### Improved
 - Vendor Portal bulk submission — answer and submit groups of questions at once
@@ -20,6 +67,7 @@ August centers on the vendor-facing experience and on connecting HigherOrder to 
 - The assessment risk score is now also computed when the vendor submits, not only at completion
 - Vendor inventory keeps the selected tab when you navigate back, and assessment and questionnaire tabs share a unified status
 - The engagement header now shows the Material chip alongside Category and Outsourcing
+- Vendor Portal and review workbench performance — faster list views and a workbench detail page that loads only what it needs
 
 ### Fixed
 - Evidence evaluation guardrails — oversized inputs are no longer sent to the model

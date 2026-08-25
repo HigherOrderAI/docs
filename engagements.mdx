@@ -78,6 +78,8 @@ The copilot's analysis is saved with the engagement, so anyone who opens it late
 
 Click **Submit** to create the engagement. The vendor and contacts are recorded and the engagement advances to the Service Risk Profile.
 
+Nothing entered here is locked in. The intake fields — name, product/service, use case, consuming entities, notes — stay editable from the engagement's **Overview** tab, with every change recorded in the activity log. The vendor record itself can be corrected too: **rename** it (the dialog states how many engagements and assessments the rename touches before you confirm), or **repoint** the engagement to a different vendor record — the usual fix when intake created a duplicate — which is allowed only while no assessment or SRP submission exists yet.
+
 <Info>
 Only the **business contact** is mandatory. A vendor contact is not required to start the engagement or to submit the SRP — it can be added later when a questionnaire actually needs to go out.
 </Info>
@@ -100,7 +102,9 @@ While filling it in:
 - **Suggest with AI.** Runs one pass over the vendor's analyzed evidence — public documents, trust-center material, uploaded files, and the intake context — and proposes answers, each with a confidence score and a source citation. Nothing is applied automatically; **Apply all unanswered** fills only blank questions and never overwrites what a person typed.
 - **Upload vendor docs.** Attach documents from the SRP step; they feed the same evidence pipeline (website crawl, trust-center fetch, document analysis) that a vendor assessment uses, and become sources the AI can suggest from.
 
-When the form is complete, click **Submit**. Submitting pins the form version and the answers as a numbered revision and advances the engagement to classification. (Resubmitting later creates a new revision; prior revisions are retained.)
+When the form is complete, click **Submit**. Before the submission goes through, a **consistency check** sweeps the answers for contradictions — deterministic rules over structured answer pairs, with a model pass covering the free-text tail. Each conflict names every question involved (number, full text, and the answer given) and is resolved either by revisiting the answers — flagged questions are highlighted on the form with the explanation inline — or by **keeping** them with a note that is stored with the submission for audit. The check advises; it never blocks a submit, and conflicts acknowledged on an earlier submit stay suppressed while the cited answers are unchanged.
+
+Submitting pins the form version and the answers as a numbered revision and advances the engagement to classification. (Resubmitting later creates a new revision; prior revisions are retained.)
 
 **Your next step:** nothing — classification runs automatically on submit.
 
@@ -156,6 +160,8 @@ When an assessment track comes back, the platform AI-drafts a **TPRM Observation
 
 **How to review and approve:**
 
+Where an observation is a **contradiction** between answers, it cites every question involved — number, section, the full question text, and what the vendor answered — each deep-linked into the review workbench, so both sides of the conflict are on the page.
+
 1. **Curate the draft.** Edit the summary, add or remove observations, set each one's severity and category, and **Regenerate** if you want a fresh draft.
 2. **Select** the observations you want to carry forward.
 3. Click **Approve**. Each selected observation converts directly into a [Finding](/findings) with a remediation due date assigned automatically from its severity (more severe → sooner). The report is marked confirmed.
@@ -184,6 +190,12 @@ Both actions are on the finding, surfaced from the engagement's **Business Owner
 An engagement completes **automatically** once every non-cancelled assessment track is confirmed, every mandatory questionnaire has finished, and **every finding is closed**. There is no separate manual go-live gate — closing out remediation is the last thing standing between the engagement and completion.
 
 On completion the engagement records its **next reassessment date**, derived from the service risk tier (higher tier → sooner). Post-onboarding Risk Assessments then continue for the life of the vendor relationship; the due date surfaces as a hint on the engagement, and you launch the reassessment deliberately when you're ready.
+
+The progress strip keeps telling the story after onboarding: one node per periodic assessment cycle — **Pending**, **Triggered** (with the vendor), **Ongoing** (under TPRM review), or **Completed** — year-qualified once there are several, with hover detail showing the questionnaire, dates, and risk rating. A Pending node turns amber when the next cycle is overdue, and cycles started from a sibling engagement on the same vendor appear too.
+
+### The Risk Assessment report
+
+Once an engagement has a completed Risk Assessment, a **Report** button on the engagement header downloads it as a controls-format PDF: a meta block (vendor, engagement, consuming entities, nature of service, completion date, risk rating) followed by one row per scored question — control number, control objective, domain, question, and a **Compliant / Non-Compliant / Not Applicable** status derived from the answer against the question's expected answer. A dropdown on the button lists every completed RA cycle, newest first, so you can pull an earlier year's report as well as the latest. Available to anyone who can view the engagement.
 
 ## Permissions
 

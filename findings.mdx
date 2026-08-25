@@ -83,6 +83,8 @@ Auto-generated findings inherit their control ID, framework, category, and addit
 
 When an analyst approves a TPRM observation report on an assessment (see [Engagements](/engagements)), each accepted observation becomes a finding: the observation text and recommendation become the description, the anchoring assessment question becomes the source context, and the finding links back to the observation it came from. The engagement's Findings tab badges each finding's origin — **From Observation**, **Assessment**, or **Manual**.
 
+The engagement's Findings tab is built for the remediation loop: a status triage bar (**In Remediation / Open / Closed / All**) filters the list, vendor updates show their attachments for download, and a finding can be **closed in place** — the close dialog pre-fills an AI-drafted resolution note composed strictly from the question, the observation, and the vendor's own submitted updates, marked as a draft for the reviewer to edit or regenerate. Closing the last finding can complete the engagement.
+
 The remediation due date is set from the observation's severity, counted from the approval date:
 
 | Severity | Due window |

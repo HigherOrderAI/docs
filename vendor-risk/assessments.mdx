@@ -55,6 +55,7 @@ The Questions tab is a three-column layout: a **domain rail**, the **question li
 - Sub-domains nest under the selected domain.
 - A **Sort by: least answered** toggle turns the rail into a chase list of what's outstanding.
 - A live **risk-score chip** shows the current [assessment risk score](/concepts/risk-scoring) — marked as in-flight until the assessment closes, when the score is stamped final.
+- Each domain carries its own **score chip**, shown from that domain's first scored answer — before the overall score's coverage threshold is met — so weak domains surface while the vendor is still answering. A domain with no scored answers shows no chip, never a zero.
 
 ### The question list
 
@@ -65,6 +66,8 @@ The toolbar filters the list with **bucket pills** — All, Ready to Approve, Re
 ### What the reviewer sees — and when
 
 Until the vendor actually submits an answer, an N/A claim, or an ETA on a question, the reviewer sees **nothing AI-generated for it** — no score, no gaps, no suggested answer. Evidence uploads alone don't count as a submission. This keeps the review honest: decisions are made on what the vendor said, not on what the platform guessed they might say.
+
+On a template in **audited-reports-sufficient** mode, a closed-form question (yes/no, single- or multi-select) with a defined expected answer is judged **deterministically** — a matching selection auto-verifies with no model call, and a shortfall is held for the reviewer with the unticked options listed as gaps. A closed-form question with **no** expected answer configured is never auto-verified; it always waits for a human decision. Text questions still go through model evaluation.
 
 ### Attention items — gaps and contradictions
 
@@ -101,7 +104,7 @@ An engagement can fan out into multiple concurrent assessments — for example a
 
 Alternatively, one assessment can be assembled from **several questionnaire templates — or category subsets of them**. A scope picker records which template and which categories each block came from, why, and by whom; one questionnaire is **primary** and its document checklist and evidence policy govern the assessment.
 
-On a merged assessment, a chip strip names each questionnaire with its own risk rating (each scores against its own template's bands; the assessment score is their average). With two or more questionnaires, each can carry an **assignee** — a soft assignment that routes the work without locking anyone out. Clicking a chip filters the question list to that questionnaire.
+On a merged assessment, a chip strip names each questionnaire with its own risk rating (each scores against its own template's bands; the assessment score is their average). With two or more questionnaires, each can carry an **assignee** — a soft assignment that routes the work without locking anyone out. The assignee is notified by email with a link that opens the review workbench pre-filtered to their questionnaire. Clicking a chip filters the question list to that questionnaire.
 
 ## Adjusting scope after launch
 
