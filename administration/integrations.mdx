@@ -1,6 +1,6 @@
 ---
 title: "Integrations"
-description: "Connect SharePoint, OneDrive, Dropbox, Jira, and Freshdesk to pull documents, evidence, and metrics; IdP/SSPM connectors live under Exposure"
+description: "Connect SharePoint, OneDrive, Google Drive, Dropbox, Jira, and Freshdesk to pull documents, evidence, and metrics"
 ---
 
 The Integrations tab in Administration wires HigherOrder into the document stores and support tools that produce evidence or metrics for vendor risk. Configuration lives at **Administration → Integrations**. Each integration is a per-tenant setup with its own auth, sync behavior, and status.
@@ -15,12 +15,13 @@ The Integrations tab in Administration wires HigherOrder into the document store
 
 ## What it does
 
-Five integrations are wired end to end:
+Six integrations are wired end to end:
 
 | Integration | Auth | Purpose |
 |---|---|---|
 | **SharePoint Online** | App-only (Entra ID app + client secret) | Sync vendor documents from a SharePoint site — optionally scoped to specific folders — into the standard document analysis pipeline |
 | **OneDrive for Business** | App-only (shares the Microsoft 365 connection) | Sync vendor documents from specific users' OneDrive accounts — per-account grants, optionally scoped to folders — into the same pipeline |
+| **Google Drive** | OAuth 2.0 (customer's own Google OAuth client) | Sync vendor documents from selected Drive folders — My Drive, shared folders, and shared drives — into the same pipeline |
 | **Dropbox** | OAuth 2.0 (PKCE) | Scan Dropbox for contract files matching configured keywords and file types; index them into the Contracts inventory |
 | **Jira** | OAuth 2.0 (PKCE) | Sync selected Jira projects; calculate SLA compliance, ticket velocity, and other vendor-related metrics |
 | **Freshdesk** | API Key | Monitor selected Freshdesk support groups; track group-level SLA compliance and ticket metrics |
@@ -108,6 +109,39 @@ OneDrive **shares the Microsoft 365 connection with SharePoint**. If SharePoint 
 - **Sync report** — each run reports per-account-and-folder counts, vendors added, and files skipped (with reasons), and flags vendors created from a single document as worth a duplicate check.
 - **Removing an account** removes its folders from scope but keeps already-synced documents. **Disconnecting** removes the connector and its account list; the shared Microsoft 365 credentials are deleted only when the last connector using them is removed.
 
+## Google Drive
+
+**Purpose.** Sync vendor documents (SOC 2 reports, VAPT reports, questionnaires, DPAs, policies) from Google Drive into HigherOrder. Synced files run through the same document pipeline as SharePoint and OneDrive: classified, matched to a vendor, added to the inventory, and analyzed.
+
+Google Drive uses **your own Google OAuth client**: an admin creates an OAuth client in their Google Cloud project and signs in with the Google account whose Drive holds the documents. HigherOrder requests read-only Drive access and reads **only the folders you select** — the folder restriction is enforced by the platform, the same model as SharePoint's folder scoping. Marking the OAuth consent screen *Internal* (Google Workspace) keeps the app entirely inside your organization, with no Google verification required. The full admin walkthrough is in the Google Drive Integration Setup Guide.
+
+### Setup
+
+<Steps>
+  <Step title="Create a Google OAuth client">
+    In a Google Cloud project, enable the **Google Drive API**, then create an OAuth client of type **Web application** with the redirect URI shown in the HigherOrder connect dialog, and mark the consent screen **Internal**. No existing Google Cloud usage is required — projects are free to create with any Workspace account, nothing in this setup is billable, and a dedicated project (rather than one already in use) is the recommended home for the client. Enabling the Drive API is a separate step from creating the client; the setup guide walks through both.
+  </Step>
+  <Step title="Connect">
+    In HigherOrder → Administration → Integrations, open **Google Drive**, enter the **Client ID** and **Client secret**, and click **Connect Google Drive**. You are redirected to Google to sign in and approve read-only access, then returned to HigherOrder.
+  </Step>
+  <Step title="Select folders and fetch">
+    Pick one or more folders in the folder browser — My Drive, folders shared with you, and shared drives are all browsable — or paste a folder link from Google Drive. A ticked parent covers everything beneath it. Then **Fetch now**.
+  </Step>
+</Steps>
+
+<Note>
+**Connected, but folder browsing fails with "Access to this folder was denied"?** The Google sign-in doesn't touch the Drive API, so the connection can succeed while the Drive API is still disabled on the OAuth client's project — and then every browse and fetch is refused. Enable the Google Drive API on that project (APIs &amp; Services → Library) and reopen the picker; no reconnect is needed. If the API is already enabled, the Drive permission was likely unticked on Google's consent screen — reconnect and leave it ticked.
+</Note>
+
+### Sync behavior
+
+- **Folder-scoped by design** — at least one folder must be selected before a fetch runs; there is no whole-account sync.
+- **File types**: PDF, Word (`.doc`, `.docx`), Excel (`.xls`, `.xlsx`), and CSV by default. Google-native files are converted on the way in: Docs arrive as Word, Sheets as Excel, Slides as PDF. Up to 50 MB per file, 250 files per run — a capped run continues where it left off on the next fetch.
+- **Manual sync only** — runs on **Fetch now**; there is no scheduler. Sync is strictly read-only: the platform never writes to Google Drive.
+- **Change detection** — unchanged files are skipped on re-fetch, so a second run is cheap.
+- **Sync report** — each run reports per-folder counts, vendors added, and files skipped (with reasons: unsupported type, too large, shortcut outside the selected folders), and names any selected folder that no longer exists.
+- **Disconnecting** revokes HigherOrder's access at Google and deletes the stored credentials; already-synced documents and analyses are kept.
+
 ## Dropbox
 
 **Purpose.** Pull contract files from a Dropbox account into HigherOrder as documents. Files matching the configured keywords and file types are indexed into the Contracts inventory and become available for extraction.
@@ -174,12 +208,13 @@ Matching files appear as documents in the Contracts inventory and are queued thr
 
 ## Sync cadence
 
-For Dropbox, Jira, and Freshdesk, the connector scheduler ticks every 30 seconds and dispatches any connector whose sync interval has elapsed. Daily and Weekly schedules are best-effort — sync fires on the next tick after the interval expires, not at a specific wall-clock time. Manual runs via **Sync Now** are dispatched immediately. SharePoint and OneDrive are manual-sync only (see above).
+For Dropbox, Jira, and Freshdesk, the connector scheduler ticks every 30 seconds and dispatches any connector whose sync interval has elapsed. Daily and Weekly schedules are best-effort — sync fires on the next tick after the interval expires, not at a specific wall-clock time. Manual runs via **Sync Now** are dispatched immediately. SharePoint, OneDrive, and Google Drive are manual-sync only (see above).
 
 ## Limitations
 
 - SharePoint folder selection is a filter within one granted site collection; a folder from a different site collection needs its own site grant and connection. The folder browser is available only after the connection is saved.
 - OneDrive covers OneDrive for Business only — consumer OneDrive (`onedrive.live.com`) is out of scope. Each account needs its own one-time read grant, and a OneDrive that the user has never opened may not exist yet (OneDrive is provisioned on first use).
+- Google Drive's consent screen shows read access to the whole Drive (that is how Google's read-only scope works); HigherOrder reads only the selected folders, and the setup guide explains the wording. Very large Google-native files can exceed Google's export limit and are skipped with a reason in the sync report.
 - Dropbox indexes files it can see with the OAuth token's scope; files outside that scope are invisible.
 - Jira and Freshdesk sync is read-only. HigherOrder does not create or modify tickets or issues.
 - Access-token refresh is automatic for OAuth connectors; if a refresh fails (revoked scope, expired grant), the connector moves to **Failed** and requires re-authorization from the setup dialog.
