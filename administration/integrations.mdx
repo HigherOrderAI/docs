@@ -119,7 +119,7 @@ Google Drive uses **your own Google OAuth client**: an admin creates an OAuth cl
 
 <Steps>
   <Step title="Create a Google OAuth client">
-    In your Google Cloud project, enable the **Google Drive API** and create an OAuth client of type **Web application** with the redirect URI shown in the HigherOrder connect dialog. Mark the consent screen **Internal**.
+    In a Google Cloud project, enable the **Google Drive API**, then create an OAuth client of type **Web application** with the redirect URI shown in the HigherOrder connect dialog, and mark the consent screen **Internal**. No existing Google Cloud usage is required — projects are free to create with any Workspace account, nothing in this setup is billable, and a dedicated project (rather than one already in use) is the recommended home for the client. Enabling the Drive API is a separate step from creating the client; the setup guide walks through both.
   </Step>
   <Step title="Connect">
     In HigherOrder → Administration → Integrations, open **Google Drive**, enter the **Client ID** and **Client secret**, and click **Connect Google Drive**. You are redirected to Google to sign in and approve read-only access, then returned to HigherOrder.
@@ -128,6 +128,10 @@ Google Drive uses **your own Google OAuth client**: an admin creates an OAuth cl
     Pick one or more folders in the folder browser — My Drive, folders shared with you, and shared drives are all browsable — or paste a folder link from Google Drive. A ticked parent covers everything beneath it. Then **Fetch now**.
   </Step>
 </Steps>
+
+<Note>
+**Connected, but folder browsing fails with "Access to this folder was denied"?** The Google sign-in doesn't touch the Drive API, so the connection can succeed while the Drive API is still disabled on the OAuth client's project — and then every browse and fetch is refused. Enable the Google Drive API on that project (APIs &amp; Services → Library) and reopen the picker; no reconnect is needed. If the API is already enabled, the Drive permission was likely unticked on Google's consent screen — reconnect and leave it ticked.
+</Note>
 
 ### Sync behavior
 
