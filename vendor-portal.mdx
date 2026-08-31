@@ -11,13 +11,13 @@ The Vendor Portal is where your third-party vendors respond to the assessments y
 
 ## What it does
 
-- Presents the assessment as a three-step journey: upload documents (optional, recommended), answer questions, review and submit.
+- Presents the assessment as a three-step journey: upload documents (optional, recommended — with an **Upload documents here** action that brings the document checklist into view), answer questions, review and submit.
 - Analyzes uploaded documents against the questionnaire and proposes answers — each with the source document and a confidence score — which the vendor can accept individually or sweep-accept in bulk.
 - Lets vendors answer directly in the question list; answers stage locally and submit in batches, so a vendor can work through dozens of questions and submit once.
 - Shows each question's reviewer findings, customer queries, and AI analysis inline; flags contradictions between answers.
 - Lets the primary contact delegate all or part of the assessment to teammates, each with their own access code and scope.
 - Lets vendors respond to findings — post an update with evidence, or request a remediation-date extension (up to 30 days, with justification).
-- Enforces that every visible question is answered, marked N/A, or given an ETA before submission. Documents are **not** required to submit.
+- Enforces that every visible question is answered or marked N/A before submission. Documents are **not** required to submit.
 
 ## Inputs
 
@@ -35,13 +35,20 @@ Access codes can be reissued via **Get a new access code**. Requesting a new cod
 
 Most questions are answered **inline in the list**: pick an option or type the answer, optionally add context, and move on. Each answered row stages locally — a bottom bar counts "*N answered, not submitted*" and a single **Submit N** sends the batch. Rows the server refuses (locked by customer approval, out of scope, already answered) stay staged with a plain-English reason.
 
+Each answer card states where it stands: green with "*Saved — change your answer to update it*" once it holds an answer, amber with a hint naming what is missing while it is outstanding. Secondary actions sit on one row: *Add notes · Add evidence · Doesn't apply to us*.
+
 Opening a question's detail view adds the full response options:
 
-- **Answer with evidence** — attach a supporting file; the AI evaluator scores the answer against the required evidence.
-- **Need more time?** — propose an ETA date with an optional note.
+- **Answer with evidence** — attach a supporting file. The upload is analyzed in the background: a "*Checking your document…*" state shows while the AI reads it against the question, and the analysis and evidence count appear on their own — no reload needed.
 - **Doesn't apply to us** — mark as N/A with a required reason. The reviewer decides whether to accept it.
 
+More time is requested at the document level — the ETA action on the Overview's document checklist — rather than per question. (Previously proposed per-question dates still display and still count as resolved.)
+
 Accepted file formats: **PDF, DOC, DOCX, XLSX, XLS, PNG, JPG, JPEG**. One file per upload, up to **50 MB**.
+
+#### When a document names a different company
+
+If an uploaded document appears to belong to a different company than the vendor under assessment, it is **parked** rather than rejected: the vendor resolves it in the portal with one of four answers — **It's ours** (the name is registered as a known alias), **Third-party document** (with a short note on whose it is), **Wrong file** (withdraws it), or **Decide later**. A document still parked when the questionnaire is submitted is withdrawn. Re-uploading a file that was rejected earlier answers with the stored rejection reason.
 
 Questions can nest: answering a parent question reveals its conditional follow-ups immediately, and not-yet-asked follow-ups appear as read-only previews so vendors can see what's coming.
 
@@ -74,7 +81,7 @@ The **Findings** screen lists findings the reviewer has raised, split into open 
 
 - **Left rail** — a tree of questionnaire → domain → sub-domain, each row showing answered counts; a "Next unanswered" jump; uploaded documents double as filters ("show the questions this file answered")
 - **Center** — the question sheet with sticky section headers, question numbers, inline answering, and status chips (Answered, Not submitted, Approved — locked, Not applicable, Date proposed)
-- **Tabs** — All / Answered / Unanswered, plus two lenses: **AI suggested** and **Customer asked** (questions where the reviewer wrote back)
+- **Tabs** — All / Answered / Unanswered, plus two lenses: **AI suggested** and **Customer asked** (questions where the reviewer wrote back). Counts are per question and agree across the tabs, the rail, and the section headings (Answered + Unanswered = All). The **Unanswered** tab is a worklist: a question group renders as one card with its own progress pill, members already done collapse to a confirmed line with a **Change** action, and a group finished during the visit folds in place. Once everything is answered, the worklist clears to show the submit panel
 - **Detail view** — the full question with customer guidance, reviewer findings, and a right rail with **AI Analysis**, **Messages**, and **Activity** tabs. Contradictions with other answers surface as a "Conflicts with another answer" card.
 - **Keyboard navigation** — `←`/`→` step between questions in the detail view (`⌘←`/`⌘→` inside text fields); `⌘↵` sends a message
 
@@ -86,7 +93,7 @@ Vendors can download their own uploaded evidence files and an Excel export of th
 
 ### Submission
 
-**Submit for review** unlocks once every question is answered, marked N/A, or given an ETA — and is held while staged answers are unsubmitted or background evaluation is still running. After submission the assessment moves to Under Review; vendors can still upload documents. If the reviewer flags a question, the vendor returns to edit mode with previous state retained.
+**Submit for review** unlocks once every question is answered or marked N/A — and is held while staged answers are unsubmitted or background evaluation is still running. Submitting keeps the vendor's place on the sheet. After submission the assessment moves to Under Review; vendors can still upload documents. If the reviewer flags a question, the vendor returns to edit mode with previous state retained.
 
 ## Access-code lifecycle
 

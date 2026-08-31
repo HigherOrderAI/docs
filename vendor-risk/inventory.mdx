@@ -43,6 +43,16 @@ Typical documents uploaded at intake:
 
 The dialog closes immediately on submit. The new vendor appears in the inventory in the `Processing` state while extraction runs in the background.
 
+### Add from a URL
+
+Instead of uploading files, paste a **URL** — from the Add Vendor flow, or from an existing vendor's **Documents** tab. The URL can be a direct document link or a page hosting several documents, such as a public trust center or a support-portal attachment page. The platform fetches what it finds — up to 25 documents per run, 50 MB per file — and each fetched file enters the same pipeline as an upload: classification, analysis, threat assessment.
+
+- **The vendor name is optional** on Add Vendor. Left blank, the platform identifies the vendor from the first fetched document and attaches the rest to it.
+- **Recognized trust centers hand off.** If the page is a SafeBase or Conveyor trust center, the run saves it as the vendor's Trust Center, pulls its public documents through the standard trust-center machinery, and reports how many documents are NDA-gated (fetch those via **Fetch from Trust Center** once access is granted).
+- **Every run produces a per-document report** — what was fetched, what was skipped, and why — visible while the run progresses.
+
+Re-running the same URL re-analyzes nothing: already-ingested documents are recognized and skipped.
+
 A PDF that wraps other files — a cover letter carrying a trust package of embedded reports and spreadsheets — is unpacked automatically: each embedded file is extracted and registered as a document of its own, classified and analyzed independently. One portfolio upload lands as the wrapper plus every attachment on the vendor's Documents tab. This applies on every ingestion path (upload dialogs, vendor portal, trust center, SharePoint, OneDrive, Dropbox).
 
 ## Outputs
@@ -103,5 +113,6 @@ Documents can also enter the inventory automatically via **Trust Center extracti
 - Risk Band and Last Assessed are blank until at least one risk-bearing document has been processed for the vendor.
 - Annual Value and Renewal Date populate from contract documents. If no contract has been uploaded, or the contract did not contain those fields, those columns remain empty.
 - A full threat assessment takes up to an hour or so after documents land; the Threat Model, Controls, Vendor Questions, and Evidence tabs show an in-progress notice and fill in without a reload. A vendor with no documents gets no assessment.
+- URL ingest fetches up to 25 documents per run at 50 MB per file. Pages that require a login or NDA cannot be fetched — for gated trust centers, the run reports the gated count and the documents come through the Trust Center flow once access exists.
 - 4th-Party sub-processor visibility is behind a feature flag; enable per tenant.
 - Vendor deletion is irreversible and removes all attached documents. There is no soft-delete or restore for vendors (individual documents do support soft delete).

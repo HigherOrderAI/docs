@@ -146,6 +146,10 @@ Each track:
 
 Mandatory tracks block completion until they finish. Beyond pre-onboarding, a vendor-level **Risk Assessment** can be launched at any time with **Start Post-Onboarding Assessment**; it is shared across all of that vendor's engagements and visible read-only from each of them.
 
+**What the vendor receives at launch.** Two mails, with distinct jobs: the **invitation** carries the access code and nothing else, and the **programme brief** — your own copy, templated per tenant — is the mail the conversation happens on, with the due date highlighted and the business owner on CC. Everything goes out under your tenant's own sender address with Reply-To set to your risk desk (the `tprm` [notification team](/administration#tenant-settings)), so a vendor's reply reaches your team. The due date comes from the client deadline if one was set, otherwise from the due windows of the questionnaires in scope; for engagement assessments it is a chase target — a vendor past the date is followed up with, never locked out mid-questionnaire.
+
+**Send Invite** (on the track) records the invitee as an engagement contact — filed as vendor or business automatically based on your portal allowed domains — and briefs them if they are on the vendor side. Removing an engagement contact revokes their portal access on every active assessment. Correcting a contact's email address rotates the access code without sending anything; resend the invite when ready.
+
 **Your next step:** when a track comes back, review its observations.
 
 ## Stage 5: Review observations and create findings
@@ -195,7 +199,11 @@ The progress strip keeps telling the story after onboarding: one node per period
 
 ### The Risk Assessment report
 
-Once an engagement has a completed Risk Assessment, a **Report** button on the engagement header downloads it as a controls-format PDF: a meta block (vendor, engagement, consuming entities, nature of service, completion date, risk rating) followed by one row per scored question — control number, control objective, domain, question, and a **Compliant / Non-Compliant / Not Applicable** status derived from the answer against the question's expected answer. A dropdown on the button lists every completed RA cycle, newest first, so you can pull an earlier year's report as well as the latest. Available to anyone who can view the engagement.
+Once an engagement has a completed Risk Assessment, a **Report** button on the engagement header downloads it as a controls-format PDF. It opens with a **compliance summary** — the headline compliance percentage, count tiles, and a per-domain breakdown — followed by a meta block (vendor, engagement, consuming entities printed by their legal names, nature of service, completion date, risk rating) and one row per applicable scored question: control number, control objective, domain, question, and a **Compliant / Non-Compliant** status derived from the answer against the question's expected answer. Not Applicable answers are excluded, and control numbering runs dense over the applicable controls only. A dropdown on the button lists every completed RA cycle, newest first, so you can pull an earlier year's report as well as the latest. Available to anyone who can view the engagement.
+
+## The email trail
+
+The engagement's **Activity** tab carries an **Email** view: one row per mail the platform actually sent for this engagement — invitations, briefs, chase mails, review notices — each with its own subject, To/Cc, Reply-To, and delivery status, and the full rendered body available in a drawer. Where one event produced different mails for different audiences (the vendor's copy and the risk team's copy of an "assessment sent," say), each appears as its own row. Vendor access codes are stripped before a body is stored, so the trail can be read by anyone with engagement view access without exposing credentials.
 
 ## Permissions
 

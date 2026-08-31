@@ -57,3 +57,4 @@ Your IdP requires the HigherOrder **Redirect URI**, which the SSO dialog display
 - SAML is not supported. OIDC only.
 - Front-channel logout only. Logging out of HigherOrder does not propagate a logout to the IdP; users close the SSO session at the IdP separately.
 - SSO is per-tenant. Each tenant configures its own provider; users cannot cross tenants via a single SSO session.
+- SSO users are never challenged for a second factor by HigherOrder — the IdP owns MFA. HigherOrder's own [two-factor authentication](/administration/mfa) applies to password accounts only.

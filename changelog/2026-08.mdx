@@ -1,8 +1,18 @@
 ---
 title: "August 2026"
-description: "Vendor Portal redesign, SharePoint, OneDrive, and Google Drive integrations, threat assessment v2, and the Risk Assessment report"
+description: "Vendor Portal redesign, SharePoint / OneDrive / Google Drive integrations, threat assessment v2, two-factor authentication, URL ingest"
 ---
-August centers on the vendor-facing experience and on connecting HigherOrder to the systems your teams already use. The Vendor Portal is rebuilt on a lighter, clearer design, and SharePoint Online — followed by OneDrive for Business and Google Drive — joins the integrations for document ingestion. Risk Scoring reaches V0.5 with per-option scores and a normalized 0–100 rating, and questionnaire import closes the loop for vendors who answer by email. In the back half of the month, the entity-level threat assessment becomes the default for every vendor, the Service Risk Profile gains a pre-submit consistency check, and a completed Risk Assessment exports as a controls-format report.
+August centers on the vendor-facing experience and on connecting HigherOrder to the systems your teams already use. The Vendor Portal is rebuilt on a lighter, clearer design, and SharePoint Online — followed by OneDrive for Business and Google Drive — joins the integrations for document ingestion. Risk Scoring reaches V0.5 with per-option scores and a normalized 0–100 rating, and questionnaire import closes the loop for vendors who answer by email. In the back half of the month, the entity-level threat assessment becomes the default for every vendor, the Service Risk Profile gains a pre-submit consistency check, and a completed Risk Assessment exports as a controls-format report. The month closes with two-factor authentication for password sign-in, assessment email that goes out under your own name and replies to your risk desk, and vendor documents ingested straight from a pasted URL.
+
+## Week of Aug 31
+
+### New
+- URL document ingest — point HigherOrder at a URL instead of uploading files, from **Add Vendor** and from a vendor's **Documents** tab. The URL can be a direct document link or a page hosting several documents (a public trust center, a help-desk attachment page); fetched files enter the standard document pipeline — classification, analysis, threat assessment — exactly as if uploaded. The vendor name is optional on Add Vendor: left blank, the platform identifies the vendor from the first fetched document. A recognized SafeBase or Conveyor trust center hands off to the existing trust-center machinery, with any NDA-gated documents counted and reported. Each run produces a per-document fetch report; up to 25 documents per run, 50 MB per file. See [Vendor Inventory](/vendor-risk/inventory)
+
+### Improved
+- Risk Assessment report — the controls-format PDF now opens with a compliance summary: the headline compliance percentage, count tiles, and a per-domain breakdown table. Consuming entities print their legal names instead of internal slugs, Not Applicable rows are excluded so control numbering runs dense over the applicable controls only, and the report's tables render cleanly across page breaks
+- **Send Invite** now records the invitee as an engagement contact (filed as vendor or business automatically, based on your portal allowed domains) and sends the programme brief to them — so the person you invite is the person who is briefed, including when the invite happens after launch. Removing an engagement contact revokes their portal access on every active assessment
+- Correcting a contact's email address no longer fires an invitation the moment the field is saved — it rotates the access code, and you resend the invite deliberately
 
 ## Week of Aug 24
 
@@ -12,6 +22,11 @@ August centers on the vendor-facing experience and on connecting HigherOrder to 
 - Risk Assessment report V0.1 — download a completed Risk Assessment as a controls-format PDF from the **Report** button on the engagement header: one row per scored question with its control objective, domain, and Compliant / Non-Compliant / Not Applicable status. A dropdown on the button lists every completed RA cycle, newest first
 - Engagement intake editing — the intake-captured fields (name, product/service, use case, consuming entities, notes) are editable from the engagement's Overview tab, with every change in the audit trail. The vendor record can be renamed — the dialog states how many engagements and assessments the rename touches — or the engagement repointed to a different vendor record while no assessment or SRP submission exists yet
 - Post-onboarding tracker — the engagement's progress strip now continues past onboarding, with one node per periodic assessment cycle (Pending / Triggered / Ongoing / Completed, year-qualified once there are several) and hover detail showing the questionnaire, dates, and risk rating
+- Two-factor authentication for password sign-in — passkeys (Touch ID, Windows Hello, a phone, or a security key) with a 6-digit authenticator-app code as fallback, plus ten single-use recovery codes minted on first enrolment. Governed per tenant from Tenant Settings: **Off** (default — the feature is hidden), **Optional** (users who enrol are challenged; everyone else signs in as before), or **Required** (every password user enrols at their next sign-in). Adding or removing a factor requires the current password and sends a security-alert email; the admin user list shows each user's 2FA status. SSO users are never affected — their identity provider owns MFA. See [Two-Factor Authentication](/administration/mfa)
+- Assessment email now goes out as you, and replies reach your risk desk — every mail the platform sends on your behalf uses your tenant's own sender address, with Reply-To set to your risk team, so a vendor hitting Reply lands in your team's inbox, never a personal one. A **programme brief** — your own copy, templated per tenant — goes to the vendor at assessment launch with the business owner on CC, and engagement assessments carry a visible due date (a chase target: the vendor is never locked out mid-questionnaire for passing it)
+- Email trail — the engagement's Activity tab gains an **Email** view: one row per mail actually sent, with its own subject, To/Cc, Reply-To, and delivery status, and the full rendered body in a drawer. Vendor access codes are stripped before a body is ever stored
+- Vendor document ownership confirmation — a portal upload whose document names a different company is no longer rejected outright: it is parked and the vendor resolves it in the portal — *It's ours* (registers the name as an alias), *Third-party document*, *Wrong file* (withdraw), or *Decide later*. Documents still parked at submission are withdrawn; customer-side uploads keep the existing customer-resolved flow
+- Per-questionnaire response window — each questionnaire template carries its own due window (default 15 days), replacing the hardcoded 15-day deadline. An assessment launched without an explicit deadline derives its due date from the questionnaires actually in scope, counted once per template. See [Questionnaire Templates](/vendor-risk/questionnaire-templates)
 
 ### Improved
 - Closed-form answers (yes/no, single- and multi-select) with a defined expected answer are now judged deterministically in audited-reports-sufficient mode — a matching selection auto-verifies with no model call; a shortfall is held for a reviewer with the unticked options listed as gaps
@@ -20,9 +35,18 @@ August centers on the vendor-facing experience and on connecting HigherOrder to 
 - Question numbers in questionnaire templates are stable: reordering, re-categorizing, nesting, or deleting questions no longer renumbers the rest, so numbers quoted to vendors or matched to an incumbent system stay put
 - SRP consistency findings show each cited question's full text and answer, not just its code
 - Choice questions can no longer be saved with an expected answer that matches none of their options
+- Sub-question evaluation is family-aware — an answer or document on a sub-question ("Please provide additional comments") is now judged with its parent question's context, so a privacy policy attached to a comment box under "Does the company have a privacy program?" counts as the evidence it is
+- The Vendor Portal's **Unanswered** tab is now a worklist — counts agree everywhere (Answered + Unanswered = All, and the rail, tabs, and section headings finally say the same number), question groups render as one card with a progress pill, and finished members collapse to a confirmed line with a **Change** action. The answer card states what it is doing — "Saved — change your answer to update it," amber for outstanding — instead of a greyed-out button. The per-question "Need more time?" action is retired; the document-level ETA on the Overview remains
+- Step 1 of the portal journey — "Upload your documents" — gains an **Upload documents here** action that brings the document checklist into view, instead of describing an uploader a full screen below
+- Evidence uploaded on a portal question now settles on screen by itself: a "Checking your document…" state shows while the AI reads it, and the analysis and document count appear without a browser reload
+- Customer-app sessions now expire after 4 hours of inactivity rather than 4 hours after login — an active user is no longer signed out mid-work
+- Changing your password now signs out every other session for that account
 
 ### Fixed
 - A closed-form answer with no configured expected answer no longer self-approves into the bulk-approval bucket — it is held for a human decision
+- A review that closes with zero findings now tells the vendor — "review complete, nothing further needed" — instead of ending in silence
+- Re-uploading a file the platform had rejected earlier now answers with the stored rejection reason, instead of producing a blank document row visible to vendor and customer alike
+- Submitting a batch of portal answers keeps the vendor's place on the question sheet instead of jumping to the top, and a fully answered sheet clears its worklist to show the submit panel
 - Returning from an engagement detail page restores the correct list tab
 
 ## Week of Aug 17

@@ -16,6 +16,7 @@ A library of reusable security questionnaires, each tagged to one or more vendor
 - Supports four answer types — **text, yes/no, single-select, multi-select** — with per-option answer choices, customer-authored vendor guidance, and per-option numeric scores.
 - Nests **sub-questions** one level under a parent, shown to the vendor only when the parent's answer matches a condition, and evaluated with the parent's question and answer as context.
 - Sets the template's **evidence policy**: evidence required (default), answers sufficient (attestation), or audited-reports sufficient — plus an optional cross-answer consistency check that runs after vendor submission.
+- Carries a **due window** — the number of days (1–100, default 15) a vendor gets to respond to this questionnaire. An assessment launched without an explicit deadline derives its due date from the due windows of the questionnaires in scope, counted once per template.
 - Owns the **scoring configuration** — question weights, score ranges and direction, per-option scores, and rating bands — on a dedicated Scoring page with a best-case/worst-case preview.
 - **Archives** templates instead of deleting them; archived templates leave the active list and tier resolution but keep existing assessments working, and can be restored.
 - Exports any template to Excel (one worksheet per category) in a format that round-trips back through upload.

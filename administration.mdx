@@ -59,6 +59,7 @@ User table:
 | Role | Access level (User / Manager / Admin / Auditor) |
 | Additional Roles | The user's custom/system roles |
 | Manager | Reporting manager (if assigned) |
+| 2FA | Whether the user has a second factor enrolled (read-only; see [Two-Factor Authentication](/administration/mfa)) |
 | Status | Active / Inactive / Pending |
 | Last Login | Date of last sign-in |
 | Created | Date the user was added |
@@ -103,8 +104,9 @@ A schema-driven tab for tenant-level configuration. Each setting renders as its 
 
 - **Assessment launch mode** — whether an engagement's matched questionnaires run as parallel assessment tracks or merge into one assessment (see [Vendor Assessments](/vendor-risk/assessments))
 - **Portal allowed domains** — the business email domains permitted for portal contacts and viewer invites; personal email providers are always blocked
-- **Notification teams** — named recipient groups (team key → email list) that notification rules resolve to
+- **Notification teams** — named recipient groups (team key → email list) that notification rules resolve to. The **tprm** team doubles as the Reply-To on every mail the platform sends on the tenant's behalf, so vendor replies land with the risk desk
 - **Branding** — the tenant's identity on outbound email and the Vendor Portal (below)
+- **Two-factor authentication** and **Permitted second factors** — the MFA policy for password sign-in (see [Two-Factor Authentication](/administration/mfa))
 - **Customer legal entities** — the entity list offered on the intake form
 - **Outsourcing profile** and **external due-diligence provider** — configuration for outsourcing-report analysis
 
@@ -112,7 +114,7 @@ Access is gated by a dedicated tenant-settings permission; Admins hold it by def
 
 ### Email and portal branding
 
-The **Branding** setting carries five fields: a **wordmark** and **tagline** (rendered as live text), a **primary color** and **accent color** (hex), and a **sender name** (the From display name on outbound email). One setting drives both the notification-email header band and the Vendor Portal identity bar.
+The **Branding** setting carries a **wordmark** and **tagline** (rendered as live text), a **primary color** and **accent color** (hex), a **sender name** (the From display name on outbound email), and a **sender address** — the tenant's own address on the platform's signing domain, which becomes the From line on every mail the platform sends on the tenant's behalf, auth mails included. One setting drives both the notification-email header band and the Vendor Portal identity bar.
 
 Branding is entirely optional — unset means plain email, with no fallback to HigherOrder's own colors. The branded header band appears only when both a primary color and a wordmark are set. There is deliberately no logo image: inboxes block remote images, so identity is color plus text. Severity colors on urgent mail are fixed and cannot be overridden.
 

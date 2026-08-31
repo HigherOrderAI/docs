@@ -1,0 +1,48 @@
+---
+title: "Two-Factor Authentication"
+description: "Passkey and authenticator-app second factors for password sign-in, governed by a per-tenant policy"
+---
+
+Two-factor authentication protects password sign-in to the customer app: after the password is verified, the user presents a second factor before a session is issued. It is governed by a per-tenant policy and is **off by default** — nothing changes for a tenant until an admin turns it on.
+
+<Note>
+Single sign-on users are never challenged by HigherOrder — their identity provider owns MFA. This feature applies to password accounts only. See [Single Sign-On](/administration/sso).
+</Note>
+
+## What it does
+
+- Challenges password users for a second factor at sign-in, per the tenant policy.
+- Supports two factor types: **passkeys** (WebAuthn) and **authenticator-app codes** (TOTP).
+- Issues ten single-use **recovery codes** when a user enrols their first factor.
+- Sends a security-alert email on every factor change — passkey added, authenticator app added, factor removed, recovery code used.
+- Shows each user's 2FA status in a read-only column on the admin user list.
+
+## Policy
+
+Set in **Administration → Tenant Settings → Two-factor authentication**:
+
+| Policy | Behavior |
+|---|---|
+| **Off** (default) | The feature is hidden entirely — nobody is challenged and nobody can enrol |
+| **Optional** | Users can add a passkey or authenticator app themselves; only users who have enrolled are challenged. Everyone else signs in exactly as before |
+| **Required** | Every password user must enrol a factor at their next sign-in, before a session is issued |
+
+A second setting, **Permitted second factors**, controls which factor types the tenant allows (both by default). Restricting the tenant to passkeys alone is stronger, but under a **Required** policy a user with no way to register a passkey is then locked out, and account recovery runs through HigherOrder support rather than tenant admins.
+
+## Factors
+
+- **Passkey** — Touch ID, Windows Hello, a phone, or a hardware security key. Phishing-resistant, and the recommended factor. A user can register several passkeys (e.g., laptop plus phone).
+- **Authenticator app (TOTP)** — a standard 6-digit code from any authenticator app. The fallback for users who cannot register a passkey: managed devices, shared browsers, contractors.
+
+Users enrol and manage factors from their own account settings. Adding or removing a factor requires the current password, and every change triggers a security-alert email to the account.
+
+## Recovery codes
+
+Enrolling a first factor mints **ten single-use recovery codes**, shown once. Each code signs the user in exactly once in place of a factor — for a lost phone or security key — and using one sends a security alert. The remaining-code count is visible in account settings.
+
+## Limitations
+
+- Applies to password sign-in only; SSO sign-in is never challenged.
+- Repeated failed factor attempts lock the challenge and escalate; the user must restart sign-in.
+- A user who exhausts their recovery codes and loses all factors is recovered by HigherOrder support, not by tenant admins.
+- SMS codes are not supported as a factor.
