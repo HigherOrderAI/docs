@@ -20,14 +20,14 @@ The vendor inventory is the central list of every third-party vendor in your ten
 
 ## Inputs
 
-Vendors enter the inventory through the **Add Vendor** action, which opens a two-step dialog:
+Vendors enter the inventory through the **Add Vendor** action, which opens a dialog with two halves:
 
 <Steps>
   <Step title="Identify the vendor">
     Select an existing vendor from the combobox or enter a new vendor name. Selecting an existing vendor attaches the uploaded documents to that vendor; a new name creates a new vendor record.
   </Step>
-  <Step title="Upload supporting documents">
-    Drag-and-drop one or more files, or browse to attach them. Supported types: PDF, DOCX, TXT, XLSX, up to 10 MB per file. Password-protected files are accepted with a password field.
+  <Step title="Add supporting documents">
+    Drag-and-drop one or more files, or browse to attach them. Supported types: PDF, DOCX, TXT, XLSX, up to 10 MB per file. Password-protected files are accepted with a password field. Or paste a URL to fetch documents instead — see [Add from a URL](#add-from-a-url).
   </Step>
 </Steps>
 
@@ -44,6 +44,10 @@ Typical documents uploaded at intake:
 The dialog closes immediately on submit. The new vendor appears in the inventory in the `Processing` state while extraction runs in the background.
 
 ### Add from a URL
+
+<Frame caption="Add Vendor: paste a URL instead of uploading — a trust-center page or a direct document link.">
+  <img src="/images/screenshots/add-vendor-url.png" alt="Add Vendor dialog with the add-documents-from-a-URL field" />
+</Frame>
 
 Instead of uploading files, paste a **URL** — from the Add Vendor flow, or from an existing vendor's **Documents** tab. The URL can be a direct document link or a page hosting several documents, such as a public trust center or a support-portal attachment page. The platform fetches what it finds — up to 25 documents per run, 50 MB per file — and each fetched file enters the same pipeline as an upload: classification, analysis, threat assessment.
 
