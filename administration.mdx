@@ -1,6 +1,6 @@
 ---
 title: "Administration"
-description: "Manage users, roles, integrations, SSO, and the platform audit trail"
+description: "Manage users, roles, integrations, SSO, notifications, tenant settings, and the platform audit trail"
 ---
 
 The administration surface hosts everything that configures the tenant — users and their roles, custom permissions, single sign-on, third-party integrations, tenant-level settings and branding, and the audit trail. Visible to Admins only.
@@ -20,8 +20,11 @@ The administration surface hosts everything that configures the tenant — users
   <Card title="SSO" icon="key" href="/administration/sso">
     Configure OIDC-based single sign-on.
   </Card>
+  <Card title="Notifications" icon="bell" href="/administration/notifications">
+    Every email the platform sends — switch, recipients, cadence, preview, and the tenant-wide activity trail.
+  </Card>
   <Card title="Tenant Settings" icon="sliders" href="#tenant-settings">
-    Tenant-level configuration — launch mode, portal domains, notification teams, email branding, legal entities.
+    Tenant-level configuration — launch mode, assignment routing, work thresholds, evidence policy, outsourcing report, branding, legal entities.
   </Card>
   <Card title="Audit Log" icon="list" href="#audit-log">
     Search and filter every action taken in the tenant.
@@ -61,7 +64,7 @@ User table:
 | Manager | Reporting manager (if assigned) |
 | 2FA | Whether the user has a second factor enrolled (read-only; see [Two-Factor Authentication](/administration/mfa)) |
 | Status | Active / Inactive / Pending |
-| Last Login | Date of last sign-in |
+| Last signed in | Date of last sign-in |
 | Created | Date the user was added |
 | Actions | Edit · Manage roles |
 
@@ -100,17 +103,46 @@ OIDC SSO providers (Okta, Entra ID, Google Workspace, or generic OIDC) are confi
 
 ## Tenant Settings
 
-A schema-driven tab for tenant-level configuration. Each setting renders as its own card, saves independently, can be reset to its default, and every change lands in the audit log. Settings include:
+A schema-driven tab for tenant-level configuration, grouped into sub-tabs. Each setting renders as its own card, saves independently, can be reset to its default, and every change lands in the audit log. Every setting the platform reads is editable here — nothing requires a change outside the UI — and a setting type this version of the app does not recognise renders read-only with a reload prompt rather than failing.
 
-- **Assessment launch mode** — whether an engagement's matched questionnaires run as parallel assessment tracks or merge into one assessment (see [Vendor Assessments](/vendor-risk/assessments))
-- **Portal allowed domains** — the business email domains permitted for portal contacts and viewer invites; personal email providers are always blocked
-- **Notification teams** — named recipient groups (team key → email list) that notification rules resolve to. The **tprm** team doubles as the Reply-To on every mail the platform sends on the tenant's behalf, so vendor replies land with the risk desk
-- **Branding** — the tenant's identity on outbound email and the Vendor Portal (below)
-- **Two-factor authentication** and **Permitted second factors** — the MFA policy for password sign-in (see [Two-Factor Authentication](/administration/mfa))
-- **Customer legal entities** — the entity list offered on the intake form
-- **Outsourcing profile** and **external due-diligence provider** — configuration for outsourcing-report analysis
+| Sub-tab | Settings |
+|---|---|
+| **Standard** | **Assessment launch mode** — parallel tracks or one merged assessment (see [Vendor Assessments](/vendor-risk/assessments)) · **Pre-onboarding questionnaire validity** (months) — how long a vendor's PQ covers its later engagements; blank never expires and sends no annual questionnaire · **Branding** (below) |
+| **SSO** | Provider and enforcement — see [Single Sign-On](/administration/sso); **Two-factor authentication** and **Permitted second factors** — see [Two-Factor Authentication](/administration/mfa) |
+| **Findings** | **Finding remediation targets** — days to remediation by criticality |
+| **Assignment** | **Assignment routing** — who a questionnaire goes to at launch, by kind (below) |
+| **Work Thresholds** | **Team thresholds (days)** — how long each kind of item may sit before [My Work](/my-work) marks it held, plus the *Coming up* look-ahead (screenshot below) |
+| **Notifications** | **Notification teams** — named recipient groups (team key → email list) that notification rules resolve to; the **tprm** team's *first* address is the Reply-To on every mail the platform sends, so vendor replies land with the risk desk · **Portal allowed domains** — business email domains permitted for portal contacts and viewer invites; personal providers are always blocked · **Outbound email allowed domains** — when set, recipients outside the list are dropped before a mail leaves (see [Notifications](/administration/notifications)) · **Business SPOC directory** — name → email rows the [engagement request](/engagement-requests) router resolves against · **Engagement request tracker** switch |
+| **Outsourcing Report** | **Outsourcing profile**, **external due-diligence provider**, **due-diligence validity / reuse window**, and **Strategic goals** with *Suggest from public sources* — see [Outsourcing Risk](/outsourcing-risk) |
+| **Policy Watch** | The per-tenant switch for scheduled policy-document monitoring (off by default) |
+| **Others** | **Standard dashboards**, **Questionnaire kinds** (template → kind mapping, exact match — used by dashboards, assignment routing, and the engagement list), **High-risk countries**, **Customer legal entities** — the entity list offered on the intake form |
+| **Evidence policy** | Document validity and attestation rules by category and type (below) |
 
 Access is gated by a dedicated tenant-settings permission; Admins hold it by default and it can be granted to a custom role.
+
+### Assignment
+
+**Assignment routing** decides who holds each questionnaire the moment an engagement launches it. One row per questionnaire kind (the kinds come from the **Questionnaire kinds** setting): leave the kind with the **engagement owner** (default), pick **one person**, or pick **several** — the questionnaire goes to whichever of them has the least open work (open requests owned plus questionnaires held on live runs). A stored address that is no longer an active user is shown in amber. Routing applies on every launch path — SRP auto-launch, manual launch, plan updates, post-onboarding, and additions through *Edit scope* — never blocks a launch, and sends no email; a questionnaire someone later reassigns by hand still emails its new assignee.
+
+Engagement requests are not routed by this setting: every new request goes to the active analyst (a user with the *User* access level) with the least open work, and managers reassign from the request's triage drawer.
+
+<Frame>
+  <img src="/images/screenshots/tenant-settings-assignment.png" alt="Tenant Settings — Assignment routing, one row per questionnaire kind" />
+</Frame>
+
+<Frame>
+  <img src="/images/screenshots/tenant-settings-work-thresholds.png" alt="Tenant Settings — Team thresholds (days) under Work Thresholds" />
+</Frame>
+
+### Evidence policy
+
+The **Evidence policy** sub-tab is a grid of the six document categories — certificate, audit report, attestation or declaration letter, policy or procedure, diagram, other — against five rules: **Validity** (months), **Grace** (days after expiry), **When expired** and **When undated** (allow, or ask the vendor), and **Mention sufficient?** — whether a statement in a document of this category can settle a practice question on its own (*Never*, *External only*, *Any attester*). Every cell shows the value in force with a **System** or **Tenant** chip; setting a cell back to the default removes the override. Exceptions by individual document type sit beneath (a built-in row for BCP/DR plans, and **Add exception** for any type), and an *Effective policy for* preview shows what a given type resolves to — tenant type over tenant category over system type over system category. One **Save** writes the whole tenant tier; a save that races another admin's is refused with a reload prompt rather than overwriting it.
+
+Today the policy has one effect in evaluation: on a questionnaire in **audited-reports-sufficient** mode, the document types whose *Mention sufficient?* is anything but *Never* are the ones a specific statement can be accepted from. By default that is every audit-report type and every policy type; certificates and attestation letters are ordinary evidence. Validity and attester rules are stored on every classified document and will drive expiry handling in a later release.
+
+<Frame>
+  <img src="/images/screenshots/tenant-settings-evidence-policy.png" alt="Tenant Settings — Evidence policy grid by document category" />
+</Frame>
 
 ### Email and portal branding
 

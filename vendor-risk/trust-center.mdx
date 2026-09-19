@@ -3,23 +3,24 @@ title: "Trust Center Extraction"
 description: "Pull vendor evidence directly from public Trust Centers; handle NDA-gated documents through a one-time email forwarding setup"
 ---
 
-Trust Center Extraction pulls a vendor's public security evidence — SOC 2, ISO 27001, VAPT, Privacy Policy, DPA, sub-processor lists — straight from their Trust Center portal, without waiting for a questionnaire response. Native support ships for SafeBase and Conveyor; other portals (Vanta, Drata, OneTrust, Whistic) are detected and scraped via a fallback anchor extractor. NDA-gated documents are surfaced with an email-based unlock flow.
+Trust Center Extraction pulls a vendor's public security evidence — SOC 2, ISO 27001, VAPT, Privacy Policy, DPA, sub-processor lists — straight from their Trust Center portal, without waiting for a questionnaire response. Native support ships for SafeBase, Conveyor, and SecurityPal; other portals (Vanta, Drata, OneTrust, Whistic) are detected and scraped via a fallback anchor extractor. Gated documents are surfaced with an email-based unlock flow: a forwarded magic link for SafeBase, a pasted or forwarded data-room approval for SecurityPal.
 
 ## What it does
 
 - Discovers a vendor's Trust Center portal automatically when the vendor is added.
 - Extracts public documents into the vendor's Documents tab, tagged with a shield icon indicating the Trust Center origin.
 - Recognizes document types and routes them through the same analyzers that handle uploaded evidence (SOC 2, ISO 27001, VAPT, Privacy Policy).
-- Handles NDA-gated documents through a one-time tenant setup — sign the NDA once on the vendor's portal, forward the magic-link email, and subsequent fetches unlock automatically.
+- Handles NDA-gated documents through a one-time tenant setup — sign the NDA once on the vendor's portal, forward the magic-link email, and subsequent fetches unlock automatically (SafeBase).
+- Fetches a SecurityPal data room from the vendor's approval email — pasted on the vendor's Documents tab, or forwarded to the tenant's inbound alias — without ever signing an NDA on the tenant's behalf.
 
 ## How it works
 
 <Steps>
   <Step title="Discovery">
-    When a vendor is added (or on manual re-fetch), the discovery service probes the vendor's domain for a Trust Center portal. Six portal platforms are recognized: SafeBase, Conveyor, Vanta, Drata, OneTrust, Whistic.
+    When a vendor is added (or on manual re-fetch), the discovery service probes the vendor's domain for a Trust Center portal. Seven portal platforms are recognized: SafeBase, Conveyor, SecurityPal, Vanta, Drata, OneTrust, Whistic. The discovered portal is recorded on the vendor and shown as a badge on the Documents tab.
   </Step>
   <Step title="Extraction">
-    SafeBase and Conveyor are extracted with native recipes that read the portal's structured data. Other portals fall through to an anchor extractor that harvests document links from the HTML.
+    SafeBase, Conveyor, and SecurityPal are extracted with native recipes that read the portal's structured data (for SecurityPal, the profile the page serves — public documents download directly, the rest are NDA-gated). Other portals fall through to an anchor extractor that harvests document links from the HTML.
   </Step>
   <Step title="Bucketing">
     Extracted items are sorted into three buckets:
@@ -72,6 +73,19 @@ NDA-gated documents are not downloaded automatically. Instead they appear as **m
 
 After setup, NDA-gated documents that were previously **metadata only** move into the processing queue on the next fetch cycle.
 
+### SecurityPal data rooms
+
+SecurityPal has no magic link to relogin with; access to the private tier is a **data-room approval** the vendor grants per request. Request access on the vendor's Assurance Profile using the tenant's Trust Center email address. When the approval email arrives:
+
+- **Paste the link** — on the vendor's Documents tab, **Paste Trust Center Access Link** takes the link from the approval email (tracking wrappers from SES or Outlook are unwrapped automatically). The platform lists the data room, downloads every document it is permitted to, and records the portal on the vendor.
+- **Or forward the email** to the tenant's inbound alias. The platform binds the email to the vendor whose recorded portal matches — exactly one match wakes or creates the fetch; no match, or several, leaves the email unmatched rather than guessing, and a paste on the right vendor resolves it for next time.
+
+<Frame caption="Paste Trust Center Access Link on the vendor's Documents tab — the key icon beside Fetch from Trust Center.">
+  <img src="/images/screenshots/trust-center-access-link.png" alt="Paste Trust Center Access Link dialog on a vendor's Documents tab" />
+</Frame>
+
+The platform never signs an NDA: a data room whose NDA is unsigned is parked as *NDA signature required* until a person signs it on the portal. An expired approval link is parked as *link expired — re-request*, since SecurityPal cannot re-issue it. Documents are deduplicated by the portal's own document id (every download is freshly watermarked, so file checksums differ).
+
 ## Where you see it in the product
 
 - **Vendor Profile → Documents tab.** Trust Center-sourced documents carry a shield icon next to the filename. Everything else about them (reprocess, delete, download) behaves the same as an uploaded document.
@@ -80,7 +94,8 @@ After setup, NDA-gated documents that were previously **metadata only** move int
 
 ## Limitations
 
-- Native extraction is only fully reliable for **SafeBase** and **Conveyor**. Other portals (Vanta, Drata, OneTrust, Whistic) fall through to the generic anchor extractor — results vary by portal implementation.
-- The NDA email-forwarding flow assumes the vendor's portal uses magic-link authentication. Portals with SSO, MFA, or account-based login are not supported by the auto-relogin flow.
+- Native extraction is only fully reliable for **SafeBase**, **Conveyor**, and **SecurityPal**. Other portals (Vanta, Drata, OneTrust, Whistic) fall through to the generic anchor extractor — results vary by portal implementation.
+- The NDA email-forwarding flow assumes the vendor's portal uses magic-link authentication (SafeBase). Portals with SSO, MFA, or account-based login are not supported by the auto-relogin flow; SecurityPal approvals must be re-requested when they expire.
+- Approval emails wrapped by opaque link trackers (Brevo, Mimecast, SendGrid) are not unwrapped; paste the destination link instead.
 - No customer-facing job-status UI. Extraction runs in the background; documents appear in the Documents tab asynchronously.
 - Documents that require signed NDAs the tenant does not want to sign remain **metadata only** — there is no way to force a public download of an NDA-gated document.

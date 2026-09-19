@@ -1,0 +1,53 @@
+---
+title: "Notifications"
+description: "Govern every email the platform sends — switch, recipients, cadence, preview, and a tenant-wide activity trail"
+---
+
+**Administration → Notifications** lists every email the platform can send on the tenant's behalf — one row per notification — and lets an admin switch each on or off, choose who receives it, change when scheduled mails go out, preview the rendered mail, and read the trail of everything actually sent. The shipped defaults are code; the tenant stores only its deviations, and every deviation is marked.
+
+<Frame>
+  <img src="/images/screenshots/admin-notifications.png" alt="Administration — Notifications tab listing every notification with its switch and recipients" />
+</Frame>
+
+## What it does
+
+- **One row per notification**, in two groups: *When something happens* (event-driven: intake submitted, assessment sent, vendor submitted, review complete, finding closed, assessment closed out, …) and *On a schedule* (the progress nudge, the weekday questions email to vendors, the team morning digest, the request digests).
+- **Email switch** per row. Off stops that mail for every engagement in the tenant.
+- **Recipient pills** — one click adds or removes a role (Risk team, Business Owner, Business Head, Vendor, and the tenant's configured notification teams). A role the mail cannot address is absent rather than greyed. Roles bound to the event — the assigned reviewer, or whoever asked a question — are shown as fixed and cannot be added elsewhere.
+- **Edit panel** (pencil, or click the name): the rule's note, *Also to* internal addresses, and for schedule rules a **cadence editor** — day chips and hour, shown in the tenant timezone — plus a single **Revert to default**.
+- **Preview** (eye): every copy the tenant's roles would produce, as branded HTML with sample To / CC / Reply-To, with an audience switch. It is the same rendering the email trail records.
+- **Changed from defaults** marking: a *Changed* tag on the row, an added recipient ringed, a removed shipped recipient struck, a switched-off ring, a changed cadence highlighted, "+N address"; each group header counts how many rules differ, with an *All / Changed* filter; the panel states the difference in one sentence and names who last changed it.
+- **Activity**: the engagement email trail, tenant-wide — one row per mail actually sent, with the engagement named, the same reader chips (All / Vendor / Business / Risk / Failed), twenty per page, and the rendered body in a drawer.
+
+<Frame caption="A scheduled rule opened for editing: recipients, the rule's note, extra internal addresses, and the cadence in the tenant's timezone.">
+  <img src="/images/screenshots/admin-notifications-edit.png" alt="Notifications — the Assessment progress nudge rule expanded with its cadence editor" />
+</Frame>
+
+<Frame caption="Preview: the internal copy of a notification rendered with sample data.">
+  <img src="/images/screenshots/admin-notifications-preview.png" alt="Notifications — preview drawer showing the rendered email with sample recipients" />
+</Frame>
+
+## Outbound email domain policy
+
+A tenant setting under **Tenant Settings → Notifications**, *Outbound email allowed domains*, restricts where mail can go. When set, every To, CC, and Reply-To address outside the listed domains (subdomains included, look-alikes rejected) is dropped before the mail reaches the transport; a mail left with no To is not sent. Blocked readers are recorded on the ledger as failed with the reason, so the trail shows what did not go out. Unset, nothing changes. Built for test tenants that hold real vendor contacts; a delivery banner on the Notifications tab says when the policy is in force.
+
+## How recipients resolve
+
+Every mail is addressed by role, and roles resolve per engagement:
+
+- **Risk team** is the tenant's `tprm` [notification team](/administration#tenant-settings). Its first address is also the Reply-To on every mail the platform sends.
+- **Business Owner** and **Business Head** are the engagement's business contacts and its accountable head.
+- **Vendor** is the engagement's vendor contacts.
+- Configured teams (Finance, EDD, IT, …) are the named recipient groups under Tenant Settings.
+
+A combined mail — one template with no per-role split — goes to everyone internal on one To line, and the trail tags it against every role that read it, so filtering by *Business* shows the mails the business owner's address was on.
+
+## Permissions
+
+The tab is gated by a dedicated *admin.notifications.modify* permission. Admins hold it by default; it can be granted to a custom role.
+
+## Limitations
+
+- Email has no retry: a mail that fails to send is recorded as failed and is not re-sent.
+- Roles bound to an event (assigned reviewer, question asker) are filled per mail and cannot be configured.
+- Ticketing (mirroring engagement events into Jira) is not part of this release.

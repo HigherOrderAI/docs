@@ -61,7 +61,13 @@ The Questions tab is a three-column layout: a **domain rail**, the **question li
 
 Questions group into domain › sub-domain sections. Each row carries one status chip and three fixed actions: **decide with note**, **Reject**, and **Approve** — the note is composed and visible *before* the click, so approving is genuinely one click. A decided row's primary action becomes **Undo**. On an N/A claim the same buttons record accept-N/A / reject-N/A.
 
-The toolbar filters the list with **bucket pills** — All, Ready to Approve, Review, ETA Extensions, N/A Claims, Waiting on Vendor, Approved, Rejected, Bookmarked — plus search, a questionnaire filter on merged assessments, and a density switch. A `?` legend defines every bucket in place.
+The toolbar filters the list with **bucket pills** — All, Answered, Ready to Approve, Needs Review, N/A Claims, Waiting on Vendor, Awaiting reply, Approved, Rejected, Bookmarked (the last two of these appear only when they have something to show) — plus search, a questionnaire filter on merged assessments, and a density switch. A `?` legend defines every bucket in place.
+
+**Awaiting vendor reply.** A question where the risk team wrote to the vendor last and the answer is not yet approved carries a teal *Awaiting vendor reply* chip under its status with the age of the ask ("asked 3 days ago"); the **Awaiting reply** pill filters to them. The same questions are listed per questionnaire on [My Work](/my-work), mailed to the vendor each weekday at 17:00, and shown to the vendor on the portal's *Customer asked* tab — one rule, so every surface agrees.
+
+<Frame caption="A question the reviewer has written to the vendor about: the Awaiting vendor reply chip with its age, the Awaiting reply pill in the toolbar, and the detail pane's Conversation tab.">
+  <img src="/images/screenshots/assessment-awaiting-reply.png" alt="Review workbench with an Awaiting vendor reply chip and the Awaiting reply filter pill" />
+</Frame>
 
 ### What the reviewer sees — and when
 
@@ -74,6 +80,10 @@ On a template in **audited-reports-sufficient** mode, a closed-form question (ye
 Each answered question carries a consolidated attention list, in severity order: **gaps** (what's still missing), **contradictions** (conflicts with another answer, from the post-submission consistency sweep), **expected options left unticked**, and **no supporting evidence**. The scope header counts how many questions "need a second look," and any of these marks a question unsafe for bulk approval.
 
 An answer that scores high without actually meeting the defined expectation is held at **partial** — it is excluded from Ready to Approve and from bulk approval, and must be walked one by one.
+
+### Control-mapped questions
+
+A question the template maps to SOC 2 criteria or ISO 27001 controls (see [control crosswalk](/vendor-risk/questionnaire-templates#control-crosswalk)) is judged from the vendor's audit report rather than from its "Yes". Its row and detail pane carry a **Controls checked** pane — one line per mapped criterion: in scope, tested (with the auditor's sample size), and the result — with the auditor's exception text and management response quoted beneath, and the report named in the header. The verdict is **Verified** when every mapped control is in scope and tested with no exceptions; an exception or an untested control holds it at **Partial**; with no accepted report on file the row is capped and says so. An auditor exception is its own attention item — **Exception** — and drops the row out of the *Approve N ready* batch into *Needs a second look*. Where the "nothing matched" line would normally say the verdict rests on the vendor's written answer, a control-mapped question says instead that it rests on the controls check against the named report.
 
 ### The detail pane
 
@@ -104,7 +114,7 @@ An engagement can fan out into multiple concurrent assessments — for example a
 
 Alternatively, one assessment can be assembled from **several questionnaire templates — or category subsets of them**. A scope picker records which template and which categories each block came from, why, and by whom; one questionnaire is **primary** and its document checklist and evidence policy govern the assessment.
 
-On a merged assessment, a chip strip names each questionnaire with its own risk rating (each scores against its own template's bands; the assessment score is their average). With two or more questionnaires, each can carry an **assignee** — a soft assignment that routes the work without locking anyone out. The assignee is notified by email with a link that opens the review workbench pre-filtered to their questionnaire. Clicking a chip filters the question list to that questionnaire.
+On a merged assessment, a chip strip names each questionnaire with its own risk rating (each scores against its own template's bands; the assessment score is their average). With two or more questionnaires, each can carry an **assignee** — a soft assignment that routes the work without locking anyone out. Assignees are set automatically at launch by the tenant's [assignment routing](/administration#assignment) (by questionnaire kind: the engagement owner, a named person, or the least-loaded of several); reassigning by hand from the chip emails the new assignee a link that opens the review workbench pre-filtered to their questionnaire. Clicking a chip filters the question list to that questionnaire. The assessments list marks runs that have something to decide with a **Needs Review** chip.
 
 ## Adjusting scope after launch
 

@@ -1,0 +1,81 @@
+---
+title: "My Work"
+description: "The landing page — everything waiting on you, on others, and coming up, with AI-drafted vendor follow-ups and a team view for managers"
+---
+
+**My Work** is the page you land on after sign-in. It lists every open item across the programme that involves you — a questionnaire that came back, an observation report to confirm, a finding past its date, a business review pending, a request nobody has triaged — grouped by who the ball is with, and it drafts the vendor chase for you when you decide to send one. Admins and managers land on the team view instead: the same items across everyone, with who holds what and what nobody owns.
+
+<Frame caption="Team Work: summary tiles, who holds what, items nobody owns, and items held past the team threshold.">
+  <img src="/images/screenshots/my-work-team.png" alt="Team Work view with summary tiles and per-analyst load" />
+</Frame>
+
+## What it does
+
+- Builds a per-person work list from sixteen kinds of work, each with its own definition of "waiting" and its own age threshold.
+- Splits the list into **Waiting on me**, **Waiting on others**, and **Coming up**, each capped at ten rows with a **Show all** expander.
+
+<Frame caption="My Work for one analyst: decisions waiting on them, chases waiting on others (with the last nudge and a Draft follow-up on each row), and what is coming up.">
+  <img src="/images/screenshots/my-work-mine.png" alt="My Work personal view with Waiting on me, Waiting on others, and Coming up" />
+</Frame>
+- For admins and managers, a **Team Work** view: tiles for items with no owner, items held past threshold, reassessments due in 60 days, and emails sent this week; a **Who holds what** table (click a person to filter to their items); and collapsed groups for unowned and held items.
+- Drafts a vendor follow-up from the engagement's own facts, in one click, and sends it from HigherOrder or hands it to Gmail.
+- Sends TPRM managers a Monday and Thursday morning digest with the same figures as the team view.
+
+## The kinds of work
+
+Every row on My Work is one of these. Each has an owner (the person it appears under) and a threshold (the age at which it counts as held too long):
+
+| Kind | Waiting on | Owner |
+|---|---|---|
+| Engagement classified but not launched | me | the engagement owner |
+| Request needing a business SPOC or triage | me | the request's TPRM owner |
+| Questionnaire submitted, review not started | me | the questionnaire assignee, else the run lead |
+| AI review ready to confirm | me | the questionnaire assignee |
+| Observation report awaiting confirmation | me | the questionnaire assignee |
+| Business review pending | others | the engagement owner |
+| Questionnaire gone quiet with the vendor | others | the questionnaire assignee |
+| Questionnaire past its due date | others | the questionnaire assignee |
+| Questions awaiting the vendor's reply | others | the questionnaire assignee |
+| Vendor thread reply received | me | the questionnaire assignee |
+| Finding in remediation / overdue | others | the finding's assignee, else the engagement owner |
+| External DD report missing or expired | others | the engagement owner |
+| Request waiting on the business | others | the request's TPRM owner |
+| Reassessment coming up | — | the engagement owner |
+
+"Engagement owner" is the user who created the engagement; it can be handed on from the **Owner** column of the engagement list. "Questionnaire assignee" is the per-questionnaire assignment set at launch by [assignment routing](/administration#assignment) or by hand from the assessment header.
+
+The thresholds live under **Administration → Tenant Settings → Work Thresholds** as *Team thresholds (days)*, one per kind of wait — *Request assigned a SPOC* (1), *Questionnaire picked up after submit* (2), *Questionnaire review finished* (5), *Vendor message answered* (2), *Vendor question answered* (3), *Finding response reviewed* (3), *Observation report confirmed* (3), *Assessments launched after classification* (2), *Business review answered* (5), *Vendor quiet on a live questionnaire* (3), *Questionnaire past its due date* (0, so it is held from the day after the deadline) — plus the *Coming-up look-ahead* (60 days) for reassessments. Blank keeps the default.
+
+## Drafting a follow-up
+
+Every row has **Draft follow-up**. The draft is written from facts the platform already holds for that engagement — each questionnaire's status in the vendor's words, its sent date, progress and due date while it is with the vendor, the latest messages in the thread, and any reminders already sent — so the mail says what is actually outstanding.
+
+<Frame caption="The drafting panel: recipients and subject pre-filled, the draft in the message box, and the facts it was written from.">
+  <img src="/images/screenshots/my-work-draft.png" alt="Draft follow-up panel on My Work" />
+</Frame>
+
+- **Send from HigherOrder** sends under the tenant's own identity with Reply-To set to the risk desk, and files the mail on the engagement's **Activity → Email** trail as *Email written by the Risk team*.
+- **Open in Gmail** hands the draft to your own mail client; the platform records that it was opened there.
+- Recipients are limited to the engagement's contacts and the tenant's own email domains. A second send to the same engagement on the same day warns before it goes.
+- For a row about questions awaiting the vendor's reply, the draft names the oldest five questions and quotes what the risk team asked on each.
+- If nothing is actually waiting on the vendor when the panel opens (they replied since the page loaded), no draft is written and the message box opens empty with the facts still shown.
+
+The same panel is available from the engagement page's actions menu as **Email vendor**, for any engagement in any state.
+
+## The morning digest
+
+On Monday and Thursday at 08:00 tenant time, the managers of the TPRM team receive a digest with the team view's figures: items with no owner, items held past threshold by kind, and reassessments upcoming. It is not sent on a morning when nothing is unassigned or held. The rule is governed under [Notifications](/administration/notifications) like every other mail.
+
+<Note>
+The digest goes to the *managers* of the members of the `tprm` notification team. If those users have no reporting manager set in User Management, no digest goes out.
+</Note>
+
+## Permissions
+
+Opening My Work needs engagement *view* (the same as the engagement list). The team view is admin and manager only. Drafting needs *view* on the engagement; sending needs *manage*.
+
+## Limitations
+
+- Rows show what the platform can see: an engagement always has an owner (its creator), so nothing on an engagement is ever listed as unowned — only requests can be.
+- "Questionnaire gone quiet" measures from the last activity on the run, which reviewer actions also move; a late run under active review can drop out of that group until it passes its due date, at which point it appears under *past its due date*.
+- The draft is one professional tone; edit the message box directly before sending.

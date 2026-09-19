@@ -8,7 +8,7 @@ An **Engagement** is one vendor-and-product relationship, tracked end to end as 
 Where [Vendor Intake](/vendor-intake) is the front door, an Engagement is the workflow that runs behind it: it replaces the older one-shot intake request with a durable record that stays open across the full onboarding and continues into periodic reassessment.
 
 <Frame>
-  <img src="/images/screenshots/engagements-list.jpg" alt="Vendor Engagements list with per-engagement current state and disposition" />
+  <img src="/images/screenshots/engagements-list.png" alt="Vendor Engagements list with category, SRP tier, questionnaire status and rating, disposition, next due, and owner" />
 </Frame>
 
 ## The stages at a glance
@@ -50,7 +50,13 @@ You never have to guess what to do next. On every engagement's detail page:
   <img src="/images/screenshots/engagement-detail.jpg" alt="Engagement detail showing state-chain progress and the per-assessment track matrix" />
 </Frame>
 
-Open an engagement from **Engagements** in the sidebar. The list has three tabs — **Not yet onboarded**, **Onboarded**, and **All** — so you can see everything still in flight separately from what's live.
+Open an engagement from **Engagements** in the sidebar. The list has three tabs — **Not yet onboarded**, **Onboarded**, and **All** — so you can see everything still in flight separately from what's live, with search beside the tabs. Each row carries the engagement and vendor (both linked), **Category**, **SRP tier**, the pre-onboarding questionnaire (**PQ**) and **Risk Assessment (RA)** status — *Not sent / In progress / Completed*, with the sent date beneath, and a link icon where the PQ is covered by a sibling engagement — the **PQ rating** and **RA rating** (tier chip with the score beneath), **Disposition**, **Next due**, and **Owner**. A tag line under each row shows every hero chip. The **Owner** chip names the engagement's owner (its creator until handed on) and reassigns inline — nobody is emailed, and questionnaires stay with their assignees. The arrow on a row expands it to show each assessment and questionnaire on the engagement with its owner.
+
+Three icon buttons sit beside the list: **Filters** (with a count of what is applied) opens a filter sheet covering the whole [dashboard](/dashboards) vocabulary with an *Applied* strip; **Columns** picks the column set, remembered per user; **Export** builds an Excel file of exactly the rows and filters on screen.
+
+<Frame caption="Export: the scope line states the rows and filters; the column picker starts from the defaults on every open, so a column unticked for one recipient never leaks to the next.">
+  <img src="/images/screenshots/engagement-export.png" alt="Export engagements dialog with the grouped column picker" />
+</Frame>
 
 <Note>
 Each stage below ends with a **Your next step** line. That is exactly what the guided banner will prompt you to do when the engagement reaches that stage.
@@ -117,7 +123,9 @@ Classification is automatic. On SRP submit, the platform reads the answers and d
 - per-domain **risk ratings** (e.g. information security, data privacy, business continuity),
 - and **review flags** — enhanced due diligence, specific report requirements (SOC 1 / SOC 2), regulatory determinations, and the reassessment cadence.
 
-The result appears on the engagement's overview. There is nothing to approve here — classification decides which assessments the next stage will launch.
+The result appears on the engagement's overview as hero chips — Category (Cat 1 in red), Material, Outsourcing or UAE Entity, and report requirements such as **ICFR** or **Infosec Required**. Where the classifier has no basis for a verdict it shows no chip rather than a false negative. There is nothing to approve here — classification decides which assessments the next stage will launch.
+
+An engagement classified as outsourcing also gains an **Outsourcing Risk** tab — a ten-dimension report rated from the outsourcing questionnaire, the external due-diligence report, the Risk Assessment, and public-source research. See [Outsourcing Risk](/outsourcing-risk).
 
 <Note>
 Classification uses the **declared** answers in the SRP. It is distinct from the validated [Risk Band](/concepts/risk-scoring) produced later, once the assessments analyze the vendor's actual evidence.
@@ -144,9 +152,17 @@ Each track:
 - follows the normal [assessment](/vendor-risk/assessments) lifecycle (sent → received → under review → confirmed),
 - and reports its own status on the **track matrix**, so you can see at a glance which questionnaires are out, which are back, and which are in remediation.
 
-Mandatory tracks block completion until they finish. Beyond pre-onboarding, a vendor-level **Risk Assessment** can be launched at any time with **Start Post-Onboarding Assessment**; it is shared across all of that vendor's engagements and visible read-only from each of them.
+Mandatory tracks block completion until they finish. Beyond pre-onboarding, a vendor-level **Risk Assessment** can be launched at any time with **Start Post-Onboarding Assessment**; it is shared across all of that vendor's engagements and visible read-only from each of them. The start dialog previews the scope — routed questionnaires pre-checked but editable, templates already live for the vendor shown as included — the recipient, the business contact, and the due days before anything is emailed.
 
-**What the vendor receives at launch.** Two mails, with distinct jobs: the **invitation** carries the access code and nothing else, and the **programme brief** — your own copy, templated per tenant — is the mail the conversation happens on, with the due date highlighted and the business owner on CC. Everything goes out under your tenant's own sender address with Reply-To set to your risk desk (the `tprm` [notification team](/administration#tenant-settings)), so a vendor's reply reaches your team. The due date comes from the client deadline if one was set, otherwise from the due windows of the questionnaires in scope; for engagement assessments it is a chase target — a vendor past the date is followed up with, never locked out mid-questionnaire.
+**The pre-onboarding questionnaire is asked once per vendor.** A first-time vendor is unchanged: the PQ launches on SRP submit. A later engagement for a vendor whose PQ is completed and still within the tenant's validity window stops at Assessments with a coverage dialog: **Complete pre-onboarding** links the engagement to the covering run and onboards it with nothing sent, or **Send a questionnaire anyway** opens the scope tree with the covered domains locked — a covered domain can be re-asked with a reason. If the vendor's PQ is still with the vendor, the new engagement simply follows it and completes when that run is approved; the owning engagement's lane reads "Also covers #N". Validity is the **Pre-onboarding questionnaire validity** tenant setting: blank means a completed PQ never expires and no annual questionnaire is sent; set, the annual renewal becomes one questionnaire per vendor, sent from the newest onboarded engagement with the union of its engagements' scopes.
+
+**Who reviews each questionnaire** is decided at launch by the **Assignment** tenant setting — per questionnaire kind, the engagement owner (default), one named person, or a pool of people balanced by least open work. Every routed questionnaire gets its own assignment, automatic assignments send no email, and routing never blocks a launch. See [Administration](/administration#assignment).
+
+**What the vendor receives at launch.** Two mails, with distinct jobs: the **invitation** carries the access code and nothing else, and the **programme brief** — your own copy, templated per tenant — is the mail the conversation happens on, with the due date highlighted and the business owner on CC. Everything goes out under your tenant's own sender address with Reply-To set to your risk desk — the **first** address in the `tprm` [notification team](/administration#tenant-settings); put a group address first to reach the whole desk — so a vendor's reply reaches your team. The due date comes from the client deadline if one was set, otherwise from the due windows of the questionnaires in scope; for engagement assessments it is a chase target — a vendor past the date is followed up with, never locked out mid-questionnaire.
+
+**While the questionnaire is out**, two scheduled mails keep it moving without anyone drafting them: a **progress nudge** to the vendor's contacts every Monday and Thursday at 09:00 tenant time — progress so far, days remaining, an offer of help, with the business owner and risk desk on CC; nothing in the first five days after launch — and, Monday to Friday at 17:00, a **questions-waiting email** listing the questions the risk team has asked in the portal that the vendor has not yet answered, deep-linked to the portal's *Customer asked* tab, with whoever asked on CC. Both are governed under [Notifications](/administration/notifications). The review page marks each such question **Awaiting vendor reply** with its age, and [My Work](/my-work) lists them per questionnaire.
+
+To write to the vendor yourself, **Email vendor** on the engagement's actions menu opens the drafting panel from My Work, pre-filled with the engagement's questionnaire facts and recent thread; the mail sends under the tenant's identity and files on the Activity → Email trail.
 
 **Send Invite** (on the track) records the invitee as an engagement contact — filed as vendor or business automatically based on your portal allowed domains — and briefs them if they are on the vendor side. Removing an engagement contact revokes their portal access on every active assessment. Correcting a contact's email address rotates the access code without sending anything; resend the invite when ready.
 
@@ -170,7 +186,7 @@ Where an observation is a **contradiction** between answers, it cites every ques
 2. **Select** the observations you want to carry forward.
 3. Click **Approve**. Each selected observation converts directly into a [Finding](/findings) with a remediation due date assigned automatically from its severity (more severe → sooner). The report is marked confirmed.
 
-From there, findings enter the normal remediation lifecycle and go to the vendor to fix.
+From there, findings enter the normal remediation lifecycle and go to the vendor to fix. Closing a finding — by remediation, waiver, or reviewer decision — emails the vendor and the business, and an assessment that closes out after onboarding announces itself the same way.
 
 **Your next step:** track the findings to closure — and handle any extension requests (below).
 
@@ -203,7 +219,7 @@ Once an engagement has a completed Risk Assessment, a **Report** button on the e
 
 ## The email trail
 
-The engagement's **Activity** tab carries an **Email** view: one row per mail the platform actually sent for this engagement — invitations, briefs, chase mails, review notices — each with its own subject, To/Cc, Reply-To, and delivery status, and the full rendered body available in a drawer. Where one event produced different mails for different audiences (the vendor's copy and the risk team's copy of an "assessment sent," say), each appears as its own row. Vendor access codes are stripped before a body is stored, so the trail can be read by anyone with engagement view access without exposing credentials.
+The engagement's **Activity** tab carries an **Email** view: one row per mail the platform actually sent for this engagement — invitations, briefs, chase mails, review notices — each with its own subject, To/Cc, Reply-To, and delivery status, and the full rendered body available in a drawer. Where one event produced different mails for different audiences (the vendor's copy and the risk team's copy of an "assessment sent," say), each appears as its own row; a combined mail that went to several roles on one To line is tagged with every role that read it, so filtering by *Business* shows the mails the business owner's address was on. Mails written by hand from My Work or *Email vendor* appear as *Email written by the Risk team*. The same trail, tenant-wide, is under [Administration → Notifications](/administration/notifications). Vendor access codes are stripped before a body is stored, so the trail can be read by anyone with engagement view access without exposing credentials.
 
 ## Permissions
 

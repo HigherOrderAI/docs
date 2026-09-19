@@ -35,7 +35,14 @@ A library of reusable security questionnaires, each tagged to one or more vendor
 - **Answer type** — Text, Yes/No, Single-select, or Multi-select. Select types take 2–12 options.
 - **Expected answer** (text questions) or **answer options** (choice questions). On a choice question, the expected answer must be picked from the configured options — a free-text expectation that matches no option cannot be saved, since it would silently fall back to model review instead of deterministic matching.
 - **Guidance** — optional customer-authored help shown to the vendor on the portal.
-- **Sub-question settings** — the parent to group under and the parent answers that reveal the question. Only yes/no and select parents can gate sub-questions; a hidden sub-question is excluded from the vendor's completion stats and submit gate, and reappears with its state intact if the parent's answer changes.
+- **Sub-question settings** — the parent to group under and the parent answers that reveal the question. Only yes/no and select parents can gate sub-questions; a hidden sub-question is excluded from the vendor's completion stats and submit gate, and reappears with its state intact if the parent's answer changes. Withdrawing a parent from an assessment's scope withdraws its follow-ups with it, and restoring it brings them back.
+- **Control crosswalk** — the SOC 2 criteria and ISO 27001 controls the question maps to, shown read-only on the row (below).
+
+### Control crosswalk
+
+A question can carry a map to audit-framework controls — `SOC 2: CC3.2, CC6.1 · ISO 27001: A.6.3, A.8.2`. Such a question is a **control crosswalk** question: the vendor's audit report, not the vendor's answer, is the evidence. At evaluation time the platform reads a roster of controls from the accepted SOC 2 report (per criterion: the controls, whether they were tested, and any exceptions) and judges the question from it — **Verified** when every mapped criterion is in scope and tested with no exceptions, **Partial** on an exception or an untested criterion, capped when no report is on file. The verdict is deterministic and costs no model call to recompute when an answer changes.
+
+By default a mapped question is verified from the tested controls alone. Where a control being tested is not enough — the question asks for something specific the report must also cover — tick **Report must also cover the question's specifics** on the row; such questions show a *Report coverage required* badge in the list and additionally require the report passage to address the question's substance. The maps are set on the template and snapshotted onto each assessment at launch; the coverage rule is read live, so marking it reaches in-flight assessments at their next evaluation. See the reviewer's side under [Vendor Assessments](/vendor-risk/assessments#control-mapped-questions).
 
 ### Evidence policy (evaluation mode)
 
@@ -45,7 +52,7 @@ Set per template and snapshotted onto each assessment at creation, so changing t
 |---|---|
 | **Evidence required** (default) | Every answer is evaluated against uploaded evidence |
 | **Answers sufficient** | Attestation mode — a matching answer verifies as-is; evidence is requested only where the question explicitly demands a document |
-| **Audited reports sufficient** | A specific statement in a submitted SOC 2 or VAPT report counts as primary evidence for practice questions; questions demanding a deliverable still require it |
+| **Audited reports sufficient** | A specific statement in an accepted document counts as primary evidence for practice questions; questions demanding a deliverable still require it. Which document types are accepted comes from the tenant's [Evidence policy](/administration#evidence-policy) — by default every audit-report type and every policy type, with certificates and attestation letters as ordinary evidence |
 
 A separate **consistency check** toggle runs a cross-answer contradiction sweep after the vendor submits.
 
@@ -80,6 +87,6 @@ Archiving is blocked while an engagement assessment plan references the template
 ## Limitations
 
 - No template duplication/clone and no version history.
-- Replacing a template's questions via re-upload is destructive and irreversible; the action requires an explicit confirmation.
+- Replacing a template's questions via re-upload is destructive and irreversible; the action requires an explicit confirmation. A re-upload or Excel round-trip does not carry control crosswalk maps or their coverage rule.
 - The question filter dropdown on the template detail still filters by Text and Yes/No only; select-type questions appear under All.
 - Scoring changes never re-score completed assessments.

@@ -1,0 +1,63 @@
+---
+title: "Outsourcing Risk"
+description: "The engagement's outsourcing risk report — ten RBI-defined risk dimensions rated from the questionnaire, the external DD report, the Risk Assessment, and vendor research"
+---
+
+An engagement classified as outsourcing carries an **Outsourcing Risk** tab: a report that rates the vendor across the ten risk dimensions the RBI outsourcing guidelines define, each opening with the regulator's own definition, from four inputs — the outsourcing questionnaire, the external due-diligence report, the engagement's own Risk Assessment, and a one-time public-source research pass on the vendor. Every rating carries its reasons and an evidence drawer.
+
+## What it does
+
+- Rates ten dimensions in the RBI order, each Low / Medium / High with a reason line and an evidence drawer, and an overall rating with "N of 10 dimensions computed".
+- Shows an **Inputs** strip — the outsourcing questionnaire, the external DD report, the contract — with the action each needs (launch, upload, attach).
+- Withholds any rating that rests on an **expired** DD report until a reviewer explicitly accepts the report, and then caveats every rating that uses it.
+- Reads the vendor's public record once — breaches, outages, regulatory actions, ownership events, strategic moves — and cites the sources.
+- Downloads as a workbook, with the coverage of each row stated.
+
+## The dimensions
+
+| Dimension | Rated from |
+|---|---|
+| **Cyber Security** | Breach and incident answers on the questionnaire, raised by the vendor's public breach or ransomware record (within 24 months → High, older → Medium), and the worse of that and the engagement's own completed **Risk Assessment** rating. An approved "no incidents" answer beside a public disclosure rates High and names the contradiction |
+| **Reputational** | The DD report's customer-feedback score (above 70 Low · 40–70 Medium · below 40 High) |
+| **Operational** | Four checks, worst wins: financial capacity (financial-health tests, counterparty score, audit opinion) · fraud (enforcement and adverse-media screens, defaulter / insolvency / criminal flags) · process controls (KPI, SLA, and reconciliation answers, non-blocking until reviewed) · technology failure (widespread outages on the public record within 12 months) |
+| **Concentration & Systemic** | The tenant's own concentration in the vendor (engagement-count bands) plus industry-wide exposure — a listed systemic provider, or the research verdict on overlap with the tenant's industries |
+| **Strategic** | The vendor's business on its own behalf: line exits affecting this engagement's products, change of control (to a sanctioned owner or a competitor in the tenant's industries), and material moves read against the tenant's **strategic goals** — a conflicting move rates Medium and names the goal. The vendor acting as *acquirer* is context, never a change of control |
+| **Legal** | Litigation banded on the respondent side, flags, and supervisory actions (licence action or enforcement listing → High; penalty, consent order, or warning within 36 months → Medium); indemnity and liability clauses noted |
+| **Compliance**, **Country**, **Contractual**, **Exit Strategy** | Compliance from the DD report; Country from the vendor's registered country; Contractual and Exit Strategy from the contract on file |
+
+Seven further dimensions (sub-contracting, conduct, counterparty, financial crime, fraud, systemic, concentration) are computed and stored but no longer displayed on their own — their inputs feed the composed rows above. The overall rating is over the visible ten.
+
+A composed row stays a visible blank — "Awaiting … — so far: …" — while an input is still pending, and an input that arrived but established nothing becomes a caveat on a computed row.
+
+## The external DD report
+
+The **External DD report** card on the Inputs strip tracks the third-party due-diligence report (Rubix or equivalent). A report past its validity window shows an amber **Expired** pill with the expiry named, and every report-fed row waits: "Awaiting a current external DD report (the one on file expired on … — accept it to rate on it)". Two ways forward:
+
+- **Upload report** — a current report replaces the expired one automatically.
+- **Continue with expired report** — behind a confirmation; records who accepted it and when, and every rating that rests on it then carries "report expired …, accepted by *name* on *date*". **Revoke** returns the rows to waiting. A fresh upload clears the acceptance.
+
+Reports extracted before the report's vocabulary grew (the customer-feedback score, the AML / PEP screens) self-heal: the row says "Re-extracting … (queued)" and fills in without a reload.
+
+## Vendor research
+
+The first time a report is viewed, the platform runs one public-source research pass on the vendor for this tenant — industry exposure, strategic moves, security incidents with type and scope, and regulatory actions — and stores it for twelve months. Evidence lines from it are labelled **Industry research** and link to the public source. The pass re-runs when the tenant's strategic goals or the engagement's products change; it never runs on a page load.
+
+## Configuration
+
+Under **Administration → Tenant Settings → Outsourcing Report**:
+
+- **Strategic goals** — up to ten "Title — one-line description" rows the Strategic dimension reads against. **Suggest from public sources** drafts them from the tenant's own public strategy into a review tray with sources; nothing is saved until you tick and save. With no goals configured, the alignment check reports itself as not assessed and the other checks still run.
+- **Outsourcing profile** and **external DD provider** — the report's vocabulary and thresholds.
+- **Due-diligence validity / reuse window** — how long a report stays current and may be reused across the vendor's engagements.
+
+<Frame caption="Tenant Settings → Outsourcing Report: due-diligence validity and reuse window, and the Strategic goals list with Suggest from public sources.">
+  <img src="/images/screenshots/tenant-settings-strategic-goals.png" alt="Tenant Settings — Outsourcing Report sub-tab with the Strategic goals card" />
+</Frame>
+
+The methodology behind every rating is downloadable from the tab as a PDF.
+
+## Limitations
+
+- Ratings are only as current as their inputs: an outsourcing questionnaire still with the vendor or a missing DD report leaves the dependent rows blank rather than guessed.
+- The Risk Assessment folded into Cyber Security is this engagement's own post-onboarding RA; a Risk Assessment run from a sibling engagement of the same vendor is never borrowed.
+- The systemic-provider list and the industry mapping of the tenant's legal entities are tenant configuration; a tenant without them sees the Strategic industry checks reported as not applied.

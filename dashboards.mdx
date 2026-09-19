@@ -1,0 +1,48 @@
+---
+title: "Dashboards"
+description: "Five standard TPRM dashboards where every number drills into the list that produced it, plus natural-language custom dashboards"
+---
+
+**Vendor Dashboards** is the programme's reporting surface: five standard dashboards over vendors, engagements, assessments, findings, and outsourcing tracking, on one shared filter bar. Every bar, slice, and KPI is a link — clicking it opens the Engagements, Vendors, or Findings list carrying exactly the filters that produced the number, so a dashboard figure always equals its landing list's row count.
+
+<Frame>
+  <img src="/images/screenshots/dashboards-vendors.png" alt="Vendor Dashboards — the Vendors dashboard with KPI tiles and charts" />
+</Frame>
+
+## The standard dashboards
+
+| Dashboard | What it reports |
+|---|---|
+| **Vendors** | Tiles for vendors on record, critical vendors, high-risk-country vendors (the country list from Tenant Settings), and new in 90 days; **Vendor status** (all vendors by lifecycle status), **Vendors by country**, and **Concentration risk** — vendors with more than one live engagement, stacked by engagement category |
+| **Engagements** | **Engagement category** and **SRP tier** (classifier output on live engagements), **Engagements by legal entity** (consuming entity × disposition), **Pre-questionnaire rating** and **Risk assessment rating** (latest completed run per engagement), and **Renewals by month** — live Category 1 engagements by the month their next assessment falls due, twelve months out |
+| **Assessments** | A **questionnaire kind** switch (Pre-onboarding, Risk Assessment, Data Localization, Outsourcing, DPSC, … and *All*) narrows every chart; **More…** lists templates that map to no kind. **Assessments by status**, **Started by month and status**, **Risk rating**, **Category 2 with a risk assessment**, and the by-assessor charts — **Completed by month and assessor**, **Questionnaire owners**, **Overdue by due month**, **Started by month and assessor**, **Cycle time** (days from sent to completed) — which count questionnaires under their own owner, so a merged run with several questionnaires credits each to the person holding it |
+| **Findings** | **Severity**, **Open findings by vendor** (top twelve, new vs existing engagement), **Ageing by vendor** (stacked by ageing bucket), **Finding ageing** (days open or days to close), and **Overdue by due month** (open and past the remediation date, stacked by severity) |
+| **Outsourcing Tracking** | Engagements classified as outsourcing under either regime (RBI or UAE): their external DD report status, the outsourcing questionnaire's progress, and the outsourcing report's ratings |
+
+A sixth tab, **Regulatory Compliance**, is a placeholder in this release.
+
+### Filters and drill-through
+
+The filter bar (vendor, legal entity, date range, and per-dashboard extras) applies to every chart on the page. Drilling into a chart opens the matching list with the same filters as chips, and the list shows **Back to *X* dashboard** so you can return. On the Assessments dashboard, a bar in an owner chart lands on exactly the engagements it counted; the *All* total drills to engagements with at least one run of any kind.
+
+### Export and methodology
+
+**Export Excel** and **Export PDF** in the page header export the dashboard's tables and charts. **How these numbers are computed (PDF)** opens the methodology document: the definition behind every tile and chart, including how a run is assigned to a questionnaire kind and how an owner is resolved.
+
+## Custom dashboards
+
+**New dashboard** builds a dashboard from a natural-language prompt. The request compiles once to a saved, deterministic chart specification; viewing the dashboard later re-runs the query, not the model.
+
+## Configuration
+
+Three tenant settings shape the dashboards (Administration → Tenant Settings → Others):
+
+- **Standard dashboards** — which of the five are shown
+- **Questionnaire kinds** — the mapping from questionnaire template to kind. Kinds are an exact match on this setting; a template that is not mapped is reported as *Other*. The same mapping drives [assignment routing](/administration#assignment) and the engagement list's PQ / RA columns
+- **High-risk countries** — the list behind the *High-risk country vendors* tile
+
+## Limitations
+
+- Numbers are computed at view time over the current data; there is no historical snapshotting of a dashboard.
+- The engagement list that a drill-through lands on loads its full projection; on very large tenants this is slower than the dashboard itself.
+- Regulatory Compliance has no definition yet.

@@ -102,9 +102,9 @@ Critical intentionally shares High's 30-day window — the finding keeps its Cri
 - **Escalate** — escalate to a stakeholder with a reason. Moves the finding to "Escalated."
 - **Update Remediation** — log progress percentage and notes.
 - **Assign** — reassign the finding to another user (inline in the header).
-- **Close** — final state. Requires a close reason and note.
+- **Close** — final state. Requires a close reason and note. Closing emails the vendor and the business (the *Finding closed* notification), whichever path closed it — remediation completed, waiver approved, or closed by the reviewer.
 
-Every action lands in the Activity Feed with actor, timestamp, and field-level diff.
+Every action lands in the Activity Feed with actor, timestamp, and field-level diff. Findings in remediation and findings past their due date also surface on [My Work](/my-work) under the finding's assignee, with a one-click drafted follow-up to the vendor.
 
 ## Vendor extension requests — two-stage business approval
 

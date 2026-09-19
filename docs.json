@@ -16,7 +16,10 @@
     "eyebrows": "breadcrumbs"
   },
   "contextual": {
-    "options": ["copy", "view"]
+    "options": [
+      "copy",
+      "view"
+    ]
   },
   "seo": {
     "metatags": {
@@ -31,15 +34,28 @@
         "groups": [
           {
             "group": "Getting Started",
-            "pages": ["introduction"]
+            "pages": [
+              "introduction",
+              "my-work"
+            ]
           },
           {
             "group": "Concepts",
-            "pages": ["concepts/risk-scoring"]
+            "pages": [
+              "concepts/risk-scoring"
+            ]
+          },
+          {
+            "group": "Dashboards",
+            "pages": [
+              "dashboards"
+            ]
           },
           {
             "group": "AI Assistant",
-            "pages": ["ai-assistant"]
+            "pages": [
+              "ai-assistant"
+            ]
           },
           {
             "group": "Vendor Risk",
@@ -53,15 +69,21 @@
           },
           {
             "group": "Vendor Database",
-            "pages": ["vendor-database"]
+            "pages": [
+              "vendor-database"
+            ]
           },
           {
             "group": "Findings",
-            "pages": ["findings"]
+            "pages": [
+              "findings"
+            ]
           },
           {
             "group": "Customer Risk",
-            "pages": ["customer-risk/golden-standards"]
+            "pages": [
+              "customer-risk/golden-standards"
+            ]
           },
           {
             "group": "Contracts",
@@ -72,20 +94,29 @@
           },
           {
             "group": "Vendor Intake",
-            "pages": ["vendor-intake"]
+            "pages": [
+              "vendor-intake"
+            ]
           },
           {
             "group": "Engagements",
-            "pages": ["engagements"]
+            "pages": [
+              "engagements",
+              "engagement-requests",
+              "outsourcing-risk"
+            ]
           },
           {
             "group": "Vendor Portal",
-            "pages": ["vendor-portal"]
+            "pages": [
+              "vendor-portal"
+            ]
           },
           {
             "group": "Administration",
             "pages": [
               "administration",
+              "administration/notifications",
               "administration/roles-and-permissions",
               "administration/sso",
               "administration/mfa",
@@ -100,6 +131,7 @@
           {
             "group": "Releases",
             "pages": [
+              "changelog/2026-09",
               "changelog/2026-08",
               "changelog/2026-07",
               "changelog/2026-06",

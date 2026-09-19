@@ -1,0 +1,76 @@
+---
+title: "Engagement Requests"
+description: "The tracker that turns inbound signals — PSR mail, new-vendor mail, the monthly supplier list — into requests, assigns an owner, and chases until answered"
+---
+
+**Engagement Requests** is the front of the funnel for a programme that learns about new vendors from outside the platform: a weekly PSR list, new-vendor mail, a quarterly business note, or the monthly supplier export from the ERP. Each signal becomes a request — *does this supplier need an engagement, and who owns the answer?* — that is assigned to a TPRM analyst, routed to a business SPOC, chased on a cadence, and closed either by opening an engagement or by a recorded decision that none is needed.
+
+<Frame caption="The tracker: status tiles, the Requests / EBS / Inbound mail tabs, and the monthly supplier-list upload.">
+  <img src="/images/screenshots/engagement-requests-ebs-upload.png" alt="Engagement Requests tracker with the Upload EBS supplier list dialog open" />
+</Frame>
+
+## What it does
+
+- Reads inbound mail on the tenant's intake alias — PSR notifications and new-vendor mail — and raises one request per supplier, matched against the vendor inventory.
+- Raises requests from the monthly **EBS supplier list** upload, and onboards the suppliers that need no question as Category 2 engagements with nobody emailed.
+- Runs the quarterly business note and the on-hold note sweeps from the page header.
+- Assigns every new request a **TPRM owner** automatically — the active analyst with the least open work — and lets managers reassign from the triage drawer.
+- Routes each request to a **business SPOC** from the tenant's SPOC directory, chases on a follow-up cadence, and escalates when nobody answers.
+- Closes a request against the engagement that answers it, and keeps the full trail on the request.
+
+## The list
+
+Three top-level tabs: **Requests**, **EBS**, and **Inbound mail**.
+
+**Requests** carries the tiles (Open, Waiting on Business, Needs Triage, Closed) and the queue, filterable by status — *Open, Waiting on business, Waiting on TPRM, Triage, Stalled, Closed, All* — and by TPRM owner (*All owners, Mine, Unassigned*, or a person with their open-work count). Columns: vendor / engagement, source, reference (a PSR requirement or an EBS supplier number), business SPOC, TPRM owner, follow-ups sent, creation date with age beneath, status, and next action. *All* is ordered newest first; every other tab keeps the triage order, most-chased first. A request the system closed reads *Nobody asked* in the SPOC cell — it owes nobody an assignment.
+
+Opening a row shows the triage drawer: the request's facts, the SPOC picker, the **TPRM Owner** picker (analysts first with their open work, then managers and admins; a hint says whether the owner was set automatically or reassigned, and by whom), the follow-up history, and the activity trail.
+
+**EBS** shows what each monthly upload did: the engagements it created (vendor and engagement linked), with the supplier's creation date in EBS beside the record's creation date here, and the upload runs — file, window, rows, and what each produced — collapsed beneath as the audit trail.
+
+**Inbound mail** is the log of every message the intake alias received and what the tracker did with it.
+
+## Monthly EBS supplier list
+
+**Upload EBS list** takes the month's supplier export. Nothing is written until you commit; the preview and the upload are the same run with dry-run flipped, so the preview promises exactly what the upload will do:
+
+<Steps>
+  <Step title="Choose the export and the window">
+    The window defaults to last month and is editable. Editing the dates makes the preview stale, and nothing can be raised or reported until it catches up.
+  </Step>
+  <Step title="Read the preview">
+    Three counts — suppliers whose BD owner will be emailed the PSR question · suppliers that onboard silently as Category 2 (engagement plus SRP, and how many get a vendor record only) · owners the tracker cannot mail, which go to Triage. Then what is **held back** with nothing written: an inactive vendor, two suppliers sharing one name, an earlier upload's unfinished intake, a simplified-name match awaiting confirmation. And suppliers that **changed side** since an earlier upload — "3 open requests will be closed — those suppliers are Cat 2 now, so the engagement answers them."
+  </Step>
+  <Step title="Download the row-by-row check">
+    An Excel workbook — Summary, All suppliers, To email, Cat 2 entries, Needs attention — with a sentence per row explaining the rule that placed it.
+  </Step>
+  <Step title="Commit">
+    Requests are raised, Category 2 engagements are created with their SRP submitted as the standard profile, and auto-onboarded suppliers are recorded as requests closed by the system in the same act.
+  </Step>
+</Steps>
+
+The sort is a rule tree, in order: excluded supplier types first, then the Category 2 rules (supplier type, tax organisation, business unit), then the types that are asked; anything the tree does not name is asked *and* flagged so an unrecognised type surfaces instead of being guessed at. One supplier number maps to one engagement, forever: a re-upload creates nothing twice, and a row with no supplier number is skipped and counted rather than minting a fresh record every month.
+
+<Warning>
+Category 2 auto-onboarding is silent by design — no invitation, no brief, no annual scan. A Category 2 engagement a person builds through the wizard is still swept and chased normally.
+</Warning>
+
+## Automatic assignment
+
+Every new request, from any source, is assigned to the active analyst with the least open work (open requests owned plus questionnaires held on live runs). The write is guarded on "still no owner", so a manual choice always wins, and automatic assignments send no email. The same open-work measure balances questionnaire routing under **Tenant Settings → Assignment** — see [Administration](/administration#assignment).
+
+## Configuration
+
+- **Engagement request tracker** switch (Tenant Settings → Notifications) — off, the mail workers skip every inbound message and the EBS upload is refused. Turning it back on does not reprocess mail that arrived while it was off. The same card carries the follow-up cadence: send window, escalation, and the maximum number of follow-ups.
+- **Business SPOC directory** (Tenant Settings → Notifications) — name → email rows the router resolves SPOCs from.
+- The request digests are governed under [Notifications](/administration/notifications).
+
+## Permissions
+
+Viewing the tracker needs *engagement_request.view*; running sweeps, uploading the EBS list, triaging, and reassigning need *engagement_request.manage*.
+
+## Limitations
+
+- The analyst pool for automatic assignment is every active user with the *User* access level; managers and admins are excluded.
+- The EBS rule tree and the Category 2 SRP profile are tenant-specific configuration; a tenant whose SRP form does not fit the standard profile gets a vendor record only for those suppliers, and the preview says so.
+- A supplier held back for a person is never recorded as a request until a person looks at it.
