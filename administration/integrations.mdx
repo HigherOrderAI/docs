@@ -1,6 +1,6 @@
 ---
 title: "Integrations"
-description: "Connect SharePoint, OneDrive, Google Drive, Dropbox, Jira, and Freshdesk to pull documents, evidence, and metrics"
+description: "Connect SharePoint, OneDrive, Google Drive, Dropbox, Jira, and Freshdesk for documents, evidence, tickets, and metrics"
 ---
 
 The Integrations tab in Administration wires HigherOrder into the document stores and support tools that produce evidence or metrics for vendor risk. Configuration lives at **Administration → Integrations**. Each integration is a per-tenant setup with its own auth, sync behavior, and status.
@@ -23,7 +23,7 @@ Six integrations are wired end to end:
 | **OneDrive for Business** | App-only (shares the Microsoft 365 connection) | Sync vendor documents from specific users' OneDrive accounts — per-account grants, optionally scoped to folders — into the same pipeline |
 | **Google Drive** | OAuth 2.0 (customer's own Google OAuth client) | Sync vendor documents from selected Drive folders — My Drive, shared folders, and shared drives — into the same pipeline |
 | **Dropbox** | OAuth 2.0 (PKCE) | Scan Dropbox for contract files matching configured keywords and file types; index them into the Contracts inventory |
-| **Jira** | OAuth 2.0 (PKCE) | Sync selected Jira projects; calculate SLA compliance, ticket velocity, and other vendor-related metrics |
+| **Jira** | OAuth 2.0 (PKCE) | Sync selected Jira projects for SLA compliance and ticket-velocity metrics; bring tickets in as engagement requests; post engagement milestones as comments on the ticket an engagement came from |
 | **Freshdesk** | API Key | Monitor selected Freshdesk support groups; track group-level SLA compliance and ticket metrics |
 
 Each integration has a per-connector status card showing the current health, last sync time, and edit/disconnect controls.
@@ -66,7 +66,7 @@ Unlike the OAuth connectors, SharePoint uses **app-only credentials**: a Microso
 
 ### Sync behavior
 
-- **File types**: PDF, Word (`.doc`, `.docx`), Excel (`.xls`, `.xlsx`), and CSV by default; plain text available as an option. Up to 50 MB per file, 250 files per run.
+- **File types**: PDF, Word (`.doc`, `.docx`), plain text, Markdown, Excel (`.xls`, `.xlsx`, and macro-enabled `.xlsm`), and CSV by default; JSON and XML can be ticked on the connection form, and images are never synced. A connection left on the default follows the default as it changes. A `.xlsm` file is read like `.xlsx` — cell values only; macros are never run. Up to 50 MB per file, 250 files per run.
 - **Manual sync** — runs on **Sync now**; there is no scheduler for SharePoint yet.
 - **Change detection** — unchanged files are skipped on re-sync; an edited file re-ingests as a new revision.
 - **Sync report** — each run reports per-folder counts (found, new, unchanged, skipped) and names any selected folder that no longer exists. A single failed file is recorded and skipped; it never fails the run.
@@ -103,7 +103,7 @@ OneDrive **shares the Microsoft 365 connection with SharePoint**. If SharePoint 
 ### Sync behavior
 
 - **Scope is per account** — an account with folders ticked syncs only those folders; an account with nothing ticked syncs its entire OneDrive.
-- **File types**: PDF, Word (`.doc`, `.docx`), Excel (`.xls`, `.xlsx`), and CSV by default; plain text available as an option. Up to 50 MB per file, 250 files per run — a capped run continues where it left off on the next fetch.
+- **File types**: PDF, Word (`.doc`, `.docx`), plain text, Markdown, Excel (`.xls`, `.xlsx`, and macro-enabled `.xlsm`), and CSV by default; JSON and XML can be ticked on the connection form, and images are never synced. A connection left on the default follows the default as it changes. Up to 50 MB per file, 250 files per run — a capped run continues where it left off on the next fetch.
 - **Manual sync only** — runs on **Fetch now**; there is no scheduler. Sync is strictly read-only: the platform never writes to OneDrive.
 - **Change detection** — unchanged files are skipped on re-fetch, so a second run is cheap.
 - **Sync report** — each run reports per-account-and-folder counts, vendors added, and files skipped (with reasons), and flags vendors created from a single document as worth a duplicate check.
@@ -136,7 +136,7 @@ Google Drive uses **your own Google OAuth client**: an admin creates an OAuth cl
 ### Sync behavior
 
 - **Folder-scoped by design** — at least one folder must be selected before a fetch runs; there is no whole-account sync.
-- **File types**: PDF, Word (`.doc`, `.docx`), Excel (`.xls`, `.xlsx`), and CSV by default. Google-native files are converted on the way in: Docs arrive as Word, Sheets as Excel, Slides as PDF. Up to 50 MB per file, 250 files per run — a capped run continues where it left off on the next fetch.
+- **File types**: PDF, Word (`.doc`, `.docx`), plain text, Markdown, Excel (`.xls`, `.xlsx`, `.xlsm`), and CSV. Google-native files are converted on the way in: Docs arrive as Word, Sheets as Excel, Slides as PDF. Up to 50 MB per file, 250 files per run — a capped run continues where it left off on the next fetch.
 - **Manual sync only** — runs on **Fetch now**; there is no scheduler. Sync is strictly read-only: the platform never writes to Google Drive.
 - **Change detection** — unchanged files are skipped on re-fetch, so a second run is cheap.
 - **Sync report** — each run reports per-folder counts, vendors added, and files skipped (with reasons: unsupported type, too large, shortcut outside the selected folders), and names any selected folder that no longer exists.
@@ -169,24 +169,47 @@ Matching files appear as documents in the Contracts inventory and are queued thr
 
 ## Jira
 
-**Purpose.** Sync selected Jira projects into HigherOrder; calculate SLA compliance and ticket-velocity metrics per project. Used for vendor operational-risk signals.
+**Purpose.** Jira does three things once connected:
+
+- **Metrics** — syncs the selected projects and calculates SLA compliance and ticket-velocity metrics per project, used for vendor operational-risk signals.
+- **Ticket intake** — tickets in the selected projects become [engagement requests](/engagement-requests), fetched once a day.
+- **Ticket comments** — an engagement created from an uploaded Jira ticket reports its milestones back to that ticket as comments.
 
 ### Setup
 
 <Steps>
   <Step title="Register a Jira OAuth app">
-    Create an OAuth 2.0 (3LO) app in Atlassian Developer console and copy the Client ID and Client Secret.
+    Create an OAuth 2.0 (3LO) app in the Atlassian Developer Console with the scopes `read:jira-work`, `read:jira-user`, `read:project:jira`, and `write:jira-work` (used only to comment), add the callback URL shown in the HigherOrder dialog, and copy the Client ID and Client Secret.
   </Step>
   <Step title="Authorize">
     In HigherOrder, click **Add Jira**, paste the credentials, and complete the OAuth flow.
   </Step>
   <Step title="Configure">
-    Pick the **Projects** to sync from a checklist populated live from your Jira instance, set the **Sync Schedule** (Manual / Daily / Weekly), and toggle **SLA Tracking** on if you want per-project SLA metrics.
+    Pick the **Projects** to sync from a checklist populated live from your Jira instance, set the **Sync Schedule** for metrics (Manual / Daily / Weekly), and toggle **SLA Tracking** on if you want per-project SLA metrics. The same project selection decides which tickets the daily fetch reads.
   </Step>
   <Step title="Verify">
-    **Test Connection** confirms the credentials. **Calculate Metrics** runs the metric pipeline against synced issues on demand.
+    **Test Connection** confirms the credentials. **Calculate Metrics** runs the metric pipeline against synced issues on demand. The dialog shows the connected **Jira Site** and a **Ticket Fetch** line.
   </Step>
 </Steps>
+
+### Ticket intake
+
+A Jira ticket reaches HigherOrder in one of two ways:
+
+- **Upload a ticket export.** On Engagement Requests → **Inbound Requests**, the upload dialog takes a Jira ticket export (XML, Excel, or Word) and runs it through the same pipeline as a forwarded email. This needs no Jira connection.
+- **Daily ticket fetch.** Once a day, tickets created or changed in the past week in the selected projects become inbound requests. A ticket with every detail present creates its engagement automatically, owned by the admin who connected Jira until it is reassigned; one with something missing stays an open request; one that overlaps an engagement the vendor already has is held for the risk team. The fetch is off until it is enabled by HigherOrder for your deployment.
+
+The **Ticket Fetch** line in the Jira dialog reports the last run: when it ran and how many tickets it brought in, any projects skipped or tickets that could not be read, why a run was skipped (for example, no projects selected), or why it failed. *Not run yet* means no fetch has run for the tenant.
+
+See [Engagement Requests](/engagement-requests) for what happens to a ticket after it arrives.
+
+### Ticket comments
+
+An engagement created from an uploaded Jira ticket posts a short comment on that ticket at each milestone — intake submitted, classified, assessment sent, assessment submitted, review complete, extension requested and decided, and completed. HigherOrder only comments; it never creates or changes a ticket. Comments post for any tenant with Jira connected, and each milestone has its own **Jira** switch under [Administration → Notifications](/administration/notifications#jira-comments), where the activity trail also lists every comment posted or refused.
+
+<Note>
+**Connected Jira before ticket fetch and comments were available?** Disconnect and reconnect it once. The reconnect grants the comment permission (`write:jira-work`, which must also be added to the OAuth app) and lets the connection renew itself without a new sign-in.
+</Note>
 
 ## Freshdesk
 
@@ -208,7 +231,7 @@ Matching files appear as documents in the Contracts inventory and are queued thr
 
 ## Sync cadence
 
-For Dropbox, Jira, and Freshdesk, the connector scheduler ticks every 30 seconds and dispatches any connector whose sync interval has elapsed. Daily and Weekly schedules are best-effort — sync fires on the next tick after the interval expires, not at a specific wall-clock time. Manual runs via **Sync Now** are dispatched immediately. SharePoint, OneDrive, and Google Drive are manual-sync only (see above).
+For Dropbox, Jira metrics, and Freshdesk, the connector scheduler ticks every 30 seconds and dispatches any connector whose sync interval has elapsed. Daily and Weekly schedules are best-effort — sync fires on the next tick after the interval expires, not at a specific wall-clock time. Manual runs via **Sync Now** are dispatched immediately. SharePoint, OneDrive, and Google Drive are manual-sync only (see above).
 
 ## Limitations
 
@@ -216,6 +239,7 @@ For Dropbox, Jira, and Freshdesk, the connector scheduler ticks every 30 seconds
 - OneDrive covers OneDrive for Business only — consumer OneDrive (`onedrive.live.com`) is out of scope. Each account needs its own one-time read grant, and a OneDrive that the user has never opened may not exist yet (OneDrive is provisioned on first use).
 - Google Drive's consent screen shows read access to the whole Drive (that is how Google's read-only scope works); HigherOrder reads only the selected folders, and the setup guide explains the wording. Very large Google-native files can exceed Google's export limit and are skipped with a reason in the sync report.
 - Dropbox indexes files it can see with the OAuth token's scope; files outside that scope are invisible.
-- Jira and Freshdesk sync is read-only. HigherOrder does not create or modify tickets or issues.
+- Freshdesk sync is read-only. In Jira, HigherOrder reads projects and tickets and adds comments to the ticket an engagement was uploaded from; it does not create, transition, or edit tickets.
+- The daily Jira ticket fetch runs only where HigherOrder has enabled it for the deployment, and reads tickets created or changed in the past week.
 - Access-token refresh is automatic for OAuth connectors; if a refresh fails (revoked scope, expired grant), the connector moves to **Failed** and requires re-authorization from the setup dialog.
 - The connector catalog contains placeholders for **Salesforce** and **Vanta** — these do not yet have a working setup flow.

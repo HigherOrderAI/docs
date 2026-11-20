@@ -20,7 +20,7 @@ Trust Center Extraction pulls a vendor's public security evidence — SOC 2, ISO
     When a vendor is added (or on manual re-fetch), the discovery service probes the vendor's domain for a Trust Center portal. Seven portal platforms are recognized: SafeBase, Conveyor, SecurityPal, Vanta, Drata, OneTrust, Whistic. The discovered portal is recorded on the vendor and shown as a badge on the Documents tab.
   </Step>
   <Step title="Extraction">
-    SafeBase, Conveyor, and SecurityPal are extracted with native recipes that read the portal's structured data (for SecurityPal, the profile the page serves — public documents download directly, the rest are NDA-gated). Other portals fall through to an anchor extractor that harvests document links from the HTML.
+    SafeBase, Conveyor, and SecurityPal are extracted with native recipes that read the portal's structured data (for SecurityPal, the profile the page serves — public documents download directly, the rest are NDA-gated). Other portals fall through to an anchor extractor that harvests document links from the HTML. It follows links to PDF, Word (`.docx`, `.doc`), plain text, Markdown, Excel (`.xlsx`, `.xlsm`, `.xls`), and CSV files; presentations, images, and other file types are not fetched.
   </Step>
   <Step title="Bucketing">
     Extracted items are sorted into three buckets:
@@ -51,7 +51,7 @@ The anchor extractor and classifier route documents into these categories:
 - GDPR-related documents
 - Terms of Service
 
-Non-analyzable items (SOC bridge letters, marketing whitepapers, ISO variants without dedicated analyzers) are skipped before processing to avoid noise.
+Some items are skipped before download to avoid noise: marketing whitepapers, ISO variants without dedicated analyzers, and SOC bridge letters. A bridge letter is a recognised document type when a vendor uploads it in the [Vendor Portal](/vendor-portal#document-validity) — where it keeps an expired SOC 1 or SOC 2 report current — but Trust Center extraction does not fetch one.
 
 ## NDA-gated documents
 
@@ -97,5 +97,6 @@ The platform never signs an NDA: a data room whose NDA is unsigned is parked as 
 - Native extraction is only fully reliable for **SafeBase**, **Conveyor**, and **SecurityPal**. Other portals (Vanta, Drata, OneTrust, Whistic) fall through to the generic anchor extractor — results vary by portal implementation.
 - The NDA email-forwarding flow assumes the vendor's portal uses magic-link authentication (SafeBase). Portals with SSO, MFA, or account-based login are not supported by the auto-relogin flow; SecurityPal approvals must be re-requested when they expire.
 - Approval emails wrapped by opaque link trackers (Brevo, Mimecast, SendGrid) are not unwrapped; paste the destination link instead.
+- SOC bridge letters listed on a Trust Center are not fetched.
 - No customer-facing job-status UI. Extraction runs in the background; documents appear in the Documents tab asynchronously.
 - Documents that require signed NDAs the tenant does not want to sign remain **metadata only** — there is no way to force a public download of an NDA-gated document.

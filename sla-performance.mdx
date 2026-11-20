@@ -1,0 +1,171 @@
+---
+title: "SLA & Performance"
+description: "Track vendor availability and performance against targets each period, from typed values, uploaded reports, or the vendor's submission"
+---
+
+Every engagement carries an **SLA & Performance** tab: a grid of readings — one per tracked metric and calendar month or quarter — shown against each metric's target, with the source of every value and the file it was read from. Readings are typed in, read from an uploaded report, loaded from a sheet, or submitted by the vendor through an emailed link that needs no sign-in.
+
+## What it does
+
+- Shows the last six completed periods per metric, in a **Monthly** and a **Quarterly** section, with the metric's **Target** beside them.
+- Marks where each value came from: **Entered here**, **From an upload**, or **Reported by vendor** (tinted).
+- Opens any value to its inputs, source, who recorded it and when, the note, the **Attached file**, and the actions **Edit** and **Raise finding**.
+- Computes availability from downtime minutes instead of accepting a typed percentage.
+- Reads a screenshot, PDF, or spreadsheet for the metrics the engagement tracks and prefills the readings for review. Nothing is saved until a person confirms it.
+- Mails a vendor contact a link to a report page for one period, and records what the vendor submits.
+- Turns a reading into an **SLA breach** finding when a reviewer chooses to raise one.
+
+## Inputs
+
+### Metrics
+
+A metric is defined once and then collects one reading per period. An engagement tracks two kinds:
+
+- **Catalog metrics** — defined under **Administration → Metrics**. A catalog metric appears on every engagement its *Applies to* rule matches; it is not picked per engagement.
+- **The engagement's own metrics** — added from the tab with **New metric**, and tracked on that engagement only.
+
+Two metric types ship:
+
+| Type | What is recorded | Value |
+|---|---|---|
+| **Availability** | Unplanned downtime (minutes), planned downtime (minutes, optional — blank counts as 0), and optionally the service minutes in the period | Computed as a percentage |
+| **Performance** | One measured figure, as the metric's statistic (Average, p50, p90, p95, p99, Max) in its unit (ms, s, count, %) | The figure itself |
+
+Each metric has a name, a cadence (**Monthly** or **Quarterly**), and an optional target. An availability target reads "at least"; a performance target reads "at most" by default, and the catalog lets an administrator choose the direction.
+
+An availability metric also has a **Service window**, which sets how many minutes a period holds:
+
+- **24×7** — the calendar minutes of the period.
+- **Market hours (NSE)** — weekdays 09:15–15:30 IST.
+- **Business hours** — weekdays 09:00–18:00 in the tenant's time zone.
+- **Custom** — every day or weekdays, a start and end time, and a time zone.
+
+### Readings
+
+Four ways to record a reading:
+
+<AccordionGroup>
+  <Accordion title="Add reading — type the values">
+    **Add reading**, or **— add** in an empty cell. Pick the metric and the period, enter the inputs, and optionally add a note (up to 1,000 characters) and a **Source file**. For availability the dialog shows the computed percentage and its formula as you type, beside the target the reading will carry.
+
+    A file dropped on **Source file** is read for that metric and period and fills the inputs; change them if they are wrong. If the file holds nothing for the metric, type the value — the file stays attached as the source.
+  </Accordion>
+  <Accordion title="Upload file — read several metrics from a report">
+    **Upload file** takes a period and up to five files (PNG, JPG, WEBP, PDF, XLSX, CSV; 10 MB each). The files are read against the metrics the engagement tracks for that period, and a review step lists what was found:
+
+    - **Matched** — a value found for a tracked metric, prefilled and marked *from file*.
+    - **Missing** — a tracked metric the file does not contain.
+    - **Converted** — a value that was converted or rests on an assumption (a unit, a different statistic, planned downtime taken as zero) and should be checked.
+    - **New** — a figure in the file that is not a tracked metric. **Create metric** adds it to the engagement; **Ignore** drops it.
+
+    Every value is editable before **Save N readings**. The files are kept with the readings they were read into.
+  </Accordion>
+  <Accordion title="Request SLA report — ask the vendor">
+    **Request SLA report** mails one of the engagement's vendor contacts a link to the report page for one completed period. See [The vendor's report page](#the-vendors-report-page).
+  </Accordion>
+  <Accordion title="Upload SLA readings — a sheet for many engagements">
+    On the engagement list, **Upload SLA readings** sits beside Export. Download the template, fill one row per engagement, metric, and period, and upload it as `.xlsx` or `.csv`. The sheet is checked first: the dialog counts rows, engagements matched, readings to add and to update, metrics to create, and rows skipped with the reason for each. Nothing is saved until you confirm.
+
+    A row that names a metric the catalog does not have, and gives its type, name, and unit, creates that metric for every engagement with no target. Uploading the same sheet twice updates the readings rather than duplicating them, and a blank cell keeps what the reading already holds.
+  </Accordion>
+</AccordionGroup>
+
+## Outputs
+
+- **The grid** — one row per metric, one column per period, the target in the last column. A retired metric keeps its row and its readings and takes no new ones.
+- **The reading** — click a value for the period's minutes and inputs, the source, who recorded it and when, whether it was edited, the note, and the attached file.
+- **The request strip** — above the grid, the state of the latest vendor request: requested from whom and when, or submitted, with how many of the period's metrics are in and which are still open. **Resend** sends the link again.
+- **SLA breach findings** — see below.
+
+### Findings
+
+**Raise finding** on a reading creates a finding with the source *SLA breach*. The dialog asks for a criticality (Critical, High, Medium, Low) and an optional description; without one, the finding's text states the metric, the period, the value, and the target.
+
+- The finding is assigned to the engagement's business owner and appears on the engagement's Findings tab and in [Findings](/findings).
+- Its due date comes from the tenant's finding ETA window for the chosen criticality.
+- The finding's source context shows the metric, period, value, and target.
+- One finding per reading. Once raised, the reading shows **View finding**, its value is locked, and it cannot be deleted.
+
+Raising a finding is a reviewer's decision. The platform does not compare readings to targets or raise findings on its own.
+
+## How it works
+
+### How availability is computed
+
+```text
+availability % = (service minutes − planned downtime − unplanned downtime)
+                 ÷ (service minutes − planned downtime) × 100
+```
+
+Service minutes come from the first of these that applies: the minutes stated on the reading, the metric's service window counted over the period, or the period's calendar minutes. The service window does not know public holidays, so a holiday-shortened period is corrected by entering **Service minutes in the period** on the reading.
+
+### Targets
+
+A reading takes the metric's target at the moment it is first saved and keeps it. Changing a metric's target later applies to new readings; saved readings keep theirs.
+
+### The vendor's report page
+
+<Steps>
+  <Step title="Request">
+    In **Request SLA report**, pick the period and a vendor contact from the engagement's Contacts tab, and optionally add a message (up to 1,000 characters). The dialog previews the mail: the metrics asked for, what to report for each, and the last value reported.
+  </Step>
+  <Step title="The vendor opens the link">
+    The link opens a report page for that engagement and period without a portal account or sign-in. It is valid for 30 days.
+  </Step>
+  <Step title="Upload or type">
+    The vendor uploads the report they already produce (up to five files, 10 MB each: screenshot, PDF, Excel, or CSV) or types the values. Uploaded files are read into the table and shown to the vendor before anything is submitted. When two files give the same metric, the spreadsheet wins and the page says so.
+  </Step>
+  <Step title="Submit">
+    The vendor enters their email and submits. A partial report is accepted; the vendor can return through the same link to add the remaining metrics or correct a value until the link expires.
+  </Step>
+  <Step title="Readings appear on the tab">
+    Submitted values appear in the grid, tinted as vendor-reported, with the vendor's files attached. A value the vendor sends back unchanged stays as it was recorded.
+  </Step>
+</Steps>
+
+One request is sent per engagement and period. Requesting the same period again offers to send that period's link again, to the same or another contact. The link stops working when the engagement is dropped or offboarded.
+
+### Notifications
+
+Two rules appear under **Administration → [Notifications](/administration/notifications)** and can be switched, previewed, and governed like any other:
+
+| Rule | Sent | To |
+|---|---|---|
+| **SLA report request to the vendor** | When a report is requested or the request is resent | The one vendor contact chosen |
+| **Vendor submitted an SLA report** | Each time the vendor submits figures: what came in, what is still open, the files attached | The risk team |
+
+### The metrics catalog
+
+**Administration → Metrics** lists the tenant's catalog: Name, Category, Type, Statistic / unit, Cadence, Default target, Applies to, and Status.
+
+- **Add metric** / **Edit** — type, name, a description (shown to the vendor in the request), cadence, service window, statistic and unit, default target and direction, and **Applies to**.
+- **Applies to** — leave empty for every engagement, or narrow by classification, by risk tier, or both.
+- **Retire** — the metric's readings stay on every engagement, and no new periods can be recorded against it. **Reactivate** reverses it.
+- Once a metric has any reading, its type, statistic, unit, cadence, and service window cannot change, so that periods stay comparable.
+
+On the engagement tab, **Edit metric** changes only the name and target of that engagement's own metrics. Catalog metrics are edited in the catalog.
+
+## Permissions
+
+| Action | Needs |
+|---|---|
+| View the tab and its readings | Access to the engagement |
+| Add a metric to an engagement | Access to the engagement |
+| Add or edit readings, upload files, request a report, raise a finding, edit an engagement's own metric | *Manage vendor engagements* (`engagement.manage`) on that engagement |
+| Administration → Metrics | *Configure engagement workflow* (`engagement.admin`) |
+| Upload SLA readings | The Admin role |
+
+Admins hold these by default; other roles receive them through a custom role under [Roles and Permissions](/administration/roles-and-permissions).
+
+## Limitations
+
+- Readings are not graded against targets. A missed target is not highlighted and does not raise a finding automatically.
+- Periods are calendar months and quarters, and a reading can be recorded only once its period has ended. The tab shows the last six periods per cadence.
+- A reading can be edited from the tab but not deleted there.
+- Reading a file is limited to the first 10 pages of a PDF and the first sheet of a workbook (500 rows by 30 columns). At most 20 files are read per engagement and period; past that, values are typed.
+- Values read from a file are a prefill for a person to confirm, on the tab and on the vendor's page alike.
+- The service window does not account for public holidays.
+- The vendor request has no reminder mail, no cancel, and no saved draft on the vendor's page.
+- The report request goes to a vendor contact already on the engagement's Contacts tab; an address cannot be typed into the dialog.
+- The catalog holds at most 50 active metrics, and an engagement at most 50 active metrics of its own.
+- The readings sheet takes `.xlsx` and `.csv` (not `.xls`), up to 10,000 rows.

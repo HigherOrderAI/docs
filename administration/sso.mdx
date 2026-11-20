@@ -29,6 +29,7 @@ Your IdP requires the HigherOrder **Redirect URI**, which the SSO dialog display
 - End users see a "Log in with [display name]" button on the HigherOrder login page.
 - Successful login lands the user on their default dashboard.
 - First-time SSO login creates a HigherOrder user with the **User** role; an Admin then assigns the appropriate role in User Management.
+- A user an Admin adds in User Management receives an account email, sent under the HigherOrder name and naming your organisation. With **Single Sign-On (SSO)** as the authentication method it is a welcome email — "Your account is ready" — with one button that starts sign-in at your identity provider; there is no code and no password. With **Password** it is a setup email carrying a verification code (valid 24 hours) and a button that opens the sign-in page on the code and new-password step; the code is typed in, never carried in the link.
 
 ## How to configure
 
@@ -53,6 +54,7 @@ Your IdP requires the HigherOrder **Redirect URI**, which the SSO dialog display
 ## Limitations
 
 - No SCIM. Users are created on first login (JIT) or manually in User Management — there is no push provisioning from the IdP.
+- If the welcome email to an admin-added SSO user cannot be sent, the user is still created; the Add User confirmation says so, and the user can sign in from the login page.
 - No IdP group → role mapping. Roles are assigned inside HigherOrder even when users authenticate via SSO.
 - SAML is not supported. OIDC only.
 - Front-channel logout only. Logging out of HigherOrder does not propagate a logout to the IdP; users close the SSO session at the IdP separately.

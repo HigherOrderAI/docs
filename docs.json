@@ -42,7 +42,8 @@
           {
             "group": "Concepts",
             "pages": [
-              "concepts/risk-scoring"
+              "concepts/risk-scoring",
+              "concepts/evidence-validity"
             ]
           },
           {
@@ -64,7 +65,8 @@
               "vendor-risk/assessments",
               "vendor-risk/questionnaire-templates",
               "vendor-risk/contract-standards",
-              "vendor-risk/trust-center"
+              "vendor-risk/trust-center",
+              "vendor-risk/policy-watch"
             ]
           },
           {
@@ -77,6 +79,12 @@
             "group": "Findings",
             "pages": [
               "findings"
+            ]
+          },
+          {
+            "group": "Threat Intelligence",
+            "pages": [
+              "threat-intelligence"
             ]
           },
           {
@@ -103,7 +111,8 @@
             "pages": [
               "engagements",
               "engagement-requests",
-              "outsourcing-risk"
+              "outsourcing-risk",
+              "sla-performance"
             ]
           },
           {
@@ -117,6 +126,7 @@
             "pages": [
               "administration",
               "administration/notifications",
+              "administration/workflows",
               "administration/roles-and-permissions",
               "administration/sso",
               "administration/mfa",
@@ -131,6 +141,8 @@
           {
             "group": "Releases",
             "pages": [
+              "changelog/2026-11",
+              "changelog/2026-10",
               "changelog/2026-09",
               "changelog/2026-08",
               "changelog/2026-07",

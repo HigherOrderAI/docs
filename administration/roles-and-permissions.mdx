@@ -36,7 +36,7 @@ Permissions are organized by module. The catalog below is illustrative — the f
 | Module | Example permissions |
 |---|---|
 | **Intake** | `intake.review`, `intake.approve` |
-| **Vendors** | `vendor.delete`, `vendor.assign` |
+| **Vendors** | `vendor.modify`, `vendor.delete`, `vendor.assign` |
 | **Assessments** | `assessment.assign`, `assessment.delete` |
 | **Team** | `team.set_manager` |
 | **Contracts** | `golden_contract.modify`, `questionnaire.modify` |
@@ -45,12 +45,22 @@ Permissions are organized by module. The catalog below is illustrative — the f
 
 Permissions are enforced server-side on every API call, not just in the UI. A hidden button in the UI does not grant hidden permission at the API layer.
 
+## What needs no permission
+
+Some actions are open to every signed-in user in the tenant, whatever their role:
+
+- **Reading engagements.** The engagement list and every engagement page are readable by all users, with no role or permission required and no team filter. Changing an engagement — editing details, launching assessments, recording decisions — still requires the engagement *manage* permission, and [My Work](/my-work) and Team Work keep their own scoping.
+- **Engagement contacts.** Any signed-in user can add, edit, and remove the contacts on an engagement's Contacts tab.
+- **Vendor notes.** The shared note on a vendor's Overview can be read and edited by anyone on the team.
+
+Renaming a vendor (`vendor.modify`) and deleting one (`vendor.delete`) are held by Admins only by default.
+
 ## Manager assignment and team scoping
 
 Every non-Admin user can be assigned a **reporting manager** via User Management. Manager assignment does two things:
 
 1. **Team hierarchy.** A user's team is defined transitively — a Manager's team is everyone who reports to them, directly or via chained managers.
-2. **Team-scoped visibility.** Users with team-scoped roles see only the vendors, assessments, and findings owned by or assigned to someone on their team.
+2. **Team-scoped visibility.** Users with team-scoped roles see only the assessments and findings owned by or assigned to someone on their team. Engagements are not team-scoped for reading (see [What needs no permission](#what-needs-no-permission)).
 
 Assignment of a manager to a user requires the `team.set_manager` permission (granted to Admins and Managers by default).
 

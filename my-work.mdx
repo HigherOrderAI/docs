@@ -11,7 +11,7 @@ description: "The landing page — everything waiting on you, on others, and com
 
 ## What it does
 
-- Builds a per-person work list from sixteen kinds of work, each with its own definition of "waiting" and its own age threshold.
+- Builds a per-person work list from the kinds of work listed below, each with its own definition of "waiting" and its own age threshold.
 - Splits the list into **Waiting on me**, **Waiting on others**, and **Coming up**, each capped at ten rows with a **Show all** expander.
 
 <Frame caption="My Work for one analyst: decisions waiting on them, chases waiting on others (with the last nudge and a Draft follow-up on each row), and what is coming up.">
@@ -27,7 +27,7 @@ Every row on My Work is one of these. Each has an owner (the person it appears u
 
 | Kind | Waiting on | Owner |
 |---|---|---|
-| Engagement classified but not launched | me | the engagement owner |
+| Pre-launch pending — engagement classified, assessments not yet launched | me | the engagement owner |
 | Request needing a business SPOC or triage | me | the request's TPRM owner |
 | Questionnaire submitted, review not started | me | the questionnaire assignee, else the run lead |
 | AI review ready to confirm | me | the questionnaire assignee |
@@ -44,7 +44,15 @@ Every row on My Work is one of these. Each has an owner (the person it appears u
 
 "Engagement owner" is the user who created the engagement; it can be handed on from the **Owner** column of the engagement list. "Questionnaire assignee" is the per-questionnaire assignment set at launch by [assignment routing](/administration#assignment) or by hand from the assessment header.
 
-The thresholds live under **Administration → Tenant Settings → Work Thresholds** as *Team thresholds (days)*, one per kind of wait — *Request assigned a SPOC* (1), *Questionnaire picked up after submit* (2), *Questionnaire review finished* (5), *Vendor message answered* (2), *Vendor question answered* (3), *Finding response reviewed* (3), *Observation report confirmed* (3), *Assessments launched after classification* (2), *Business review answered* (5), *Vendor quiet on a live questionnaire* (3), *Questionnaire past its due date* (0, so it is held from the day after the deadline) — plus the *Coming-up look-ahead* (60 days) for reassessments. Blank keeps the default.
+A few of these need a closer definition:
+
+- **Pre-launch pending** applies to every engagement. Nothing is sent when the Service Risk Profile is submitted, so each classified engagement sits here until a reviewer opens **Launch**, checks the planned scope, and sends it — see [Engagements](/engagements#stage-4-run-the-assessments). An engagement that follows a sibling engagement's questionnaire has nothing to launch and is not listed; one whose vendor already completed the questionnaire elsewhere is listed, and the row says so.
+- **Vendor thread reply received** clears when you answer the vendor, and also when you approve or reject the question. A vendor message after the decision brings it back.
+- **Questions awaiting the vendor's reply** counts a question as answered when the vendor replies in the thread or acts on the question — changes the answer, edits the note, marks it not applicable, or attaches evidence. Setting an ETA does not count.
+- **Finding** rows name the finding: an overdue finding by its number and the first line of its description, and a *findings updated by the vendor* row by the first line of the first two findings it covers.
+- **Request** rows show their source in words — *PSR (weekly)*, *New vendor mail*, *Monthly Dump*, *Quarterly note*.
+
+The thresholds live under **Administration → Tenant Settings → Work Thresholds** as *Team thresholds (days)*, one per kind of wait — *Request assigned a SPOC* (1), *Questionnaire picked up after submit* (2), *Questionnaire review finished* (5), *Vendor message answered* (2), *Vendor question answered* (3), *Finding response reviewed* (3), *Observation report confirmed* (3), *Pre-launch pending* (0 — the launch is expected the day the engagement is classified), *Business review answered* (5), *Vendor quiet on a live questionnaire* (3), *Questionnaire past its due date* (0, so it is held from the day after the deadline) — plus the *Coming-up look-ahead* (60 days) for reassessments. Blank keeps the default.
 
 ## Drafting a follow-up
 
@@ -72,7 +80,7 @@ The digest goes to the *managers* of the members of the `tprm` notification team
 
 ## Permissions
 
-Opening My Work needs engagement *view* (the same as the engagement list). The team view is admin and manager only. Drafting needs *view* on the engagement; sending needs *manage*.
+My Work is open to every signed-in user and lists only the items that user owns; it keeps this scoping even though every user can read every engagement. The team view is admin and manager only. Drafting needs *view* on the engagement; sending needs *manage*.
 
 ## Limitations
 

@@ -3,11 +3,13 @@ title: "Risk Scoring Methodology"
 description: "The vendor-level 0–100 band scale, the deterministic assessment risk score, and the intake-time Assessment Tier"
 ---
 
-HigherOrder carries three risk labels, each answering a different question. The **Assessment Tier** is set at intake and decides how deeply a vendor is reviewed. The **vendor Risk Band** is the synthesized 0–100 view of a vendor across all evidence. The **assessment risk score** — new in August 2026 — is a deterministic 0–100 score computed from the vendor's questionnaire answers on a single assessment. All three use *higher means more risk*.
+HigherOrder carries three risk labels, each answering a different question. The **Assessment Tier** is set at intake and decides how deeply a vendor is reviewed. The **vendor Risk Band** is the synthesized 0–100 view of a vendor across all evidence. The **assessment risk score** is a deterministic 0–100 score computed from the vendor's questionnaire answers on a single assessment. All three use *higher means more risk*.
+
+Two further labels are derived from engagements rather than scored here: a vendor's **criticality** (Critical / Non-Critical) comes from how its engagements are classified — see [Vendor Inventory](/vendor-risk/inventory#criticality) — and each engagement carries its own risk tier, set when the engagement is classified. There is no manually set vendor tier.
 
 ## The vendor Risk Band — six bands, 0–100
 
-Every vendor-level risk surface — vendor inventory row, vendor profile risk overview, per-document analysis (SOC 2, ISO 27001, VAPT, Privacy Policy), contract gap risk — is expressed on the same 0–100 scale, mapped to one of six named bands. The band is the authoritative label; the numeric score is shown alongside it.
+Every document-based risk surface — the Overall Risk grade under a vendor's Document Analysis tab, per-document analysis (SOC 2, ISO 27001, VAPT, Privacy Policy), contract gap risk — is expressed on the same 0–100 scale, mapped to one of six named bands. The band is the authoritative label; the numeric score is shown alongside it.
 
 | Band | Score range | Meaning |
 |---|---|---|
@@ -22,10 +24,10 @@ The score is composed by the platform from the evidence available for the vendor
 
 - **Document analyses.** Each analyzer (SOC 2, ISO 27001, VAPT, Privacy Policy, Questionnaire, Contract) produces a category score. Missing or expired evidence contributes to a higher score.
 - **Threat model.** The entity-level threat assessment built from all of the vendor's documents (an uploaded architecture diagram enriches it but is not required).
-- **Contract gaps.** Where a vendor commitment is weaker than what you have promised your own customers (see [Customer Golden Standards](/customer-risk/golden-standards)).
+- **Contract gaps.** Where a vendor commitment is weaker than what you have promised your own customers (see [Customer Golden Template](/customer-risk/golden-standards)).
 - **Ecosystem signals.** From connected IdP / SSPM (Okta, Google Workspace, Entra ID) — undisclosed OAuth grants, undisclosed new SKUs. See Drift Center.
 
-The overall band is a synthesis across these inputs, weighted by the assessment tier. The synthesis is regenerated when new evidence lands, when a document is reprocessed, or on explicit request.
+The overall band is a synthesis across these inputs. The synthesis is regenerated when new evidence lands, when a document is reprocessed, or on explicit request.
 
 ## The assessment risk score — deterministic, answer-driven
 
@@ -44,7 +46,7 @@ Each vendor assessment carries its own 0–100 risk score computed **entirely fr
     Weighted question scores average within each sub-category; sub-category weights combine into a 0–100 score per top-level section. Sections average into the questionnaire score, and — for a merged assessment — questionnaire scores average into the assessment score.
   </Step>
   <Step title="The score maps to a rating">
-    The 0–100 score maps to one of four ratings: **Very Low / Low / Medium / High**. Band ranges are configured per questionnaire template and must tile the full 0–100 range. The default scale is 0–15 Very Low, 16–30 Low, 31–45 Medium, 46+ High.
+    The 0–100 score maps to one of four ratings: **Very Low / Low / Medium / High**. Band ranges are configured per questionnaire template and must tile the full 0–100 range. The default scale is 0–15 Very Low, 16–30 Low, 31–45 Medium, 46+ High. A template can define a different scale: the security and privacy questionnaires a newly provisioned US tenant starts with arrive scored, with Low 0–10 / Medium 11–15 / High 16–100 on every top-level category.
   </Step>
 </Steps>
 
@@ -95,8 +97,8 @@ Risk Coverage is the completeness of the evidence base behind the vendor-level s
 
 ## Where you'll see this
 
-- **Vendor Inventory** — the risk grade column shows band + score (e.g., `High · 65`) rather than a letter grade
-- **Vendor Profile** — Validated Risk section shows the band first, then coverage
+- **Vendor Inventory** — the list shows engagement-based [criticality](/vendor-risk/inventory#criticality), not the Risk Band
+- **Vendor Profile** — the header shows the worst risk tier across the vendor's counted engagements; the Risk Band sits on the Overall Risk grade card under Document Analysis
 - **Per-document analysis** — each document's contribution is scored on the same scale
 - **Assessments** — each assessment carries its own answer-driven score and four-value rating (see above)
 - **Reports** — the downloadable vendor risk report leads with the band and coverage
